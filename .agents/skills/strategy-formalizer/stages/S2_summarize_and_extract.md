@@ -31,7 +31,7 @@ Fork the corrected text into two independent views: a human-readable structured 
 
 ## Done criteria
 
-- Summary has all six section markers with non-empty bodies (placeholders allowed only as `[待确认]`).
+- Summary has all six section markers with non-empty bodies. Every `[待确认]` points at an ambiguity in the text itself; none lists an unmentioned aspect (contract, session, sizing…) or asks how a concept is determined. Remove any that do before completing.
 - Term file validates; between 10 and 50 candidate terms, each with a non-empty `source_quote` and `appears_in`.
 
 ## Stop message
@@ -69,7 +69,7 @@ Ask the user to read `S2_summary_init.md` and mark disagreements (they will be d
 
 ## 完成标准
 
-- 总结六个章节标记齐全且正文非空（只允许 `[待确认]` 形式的占位）。
+- 总结六个章节标记齐全且正文非空。每个 `[待确认]` 都指向原文本身的含糊；没有任何一个在罗列原文没提的方面（合约、时段、仓位……）或询问某概念如何判定。完成前删掉不合规的标记。
 - 术语文件通过校验；候选术语 10~50 个，每个都有非空的 `source_quote` 与 `appears_in`。
 
 ## 停止消息

@@ -179,6 +179,7 @@ All paths are under `workspace/<strategy_name>/`. json files are the source of t
 - **Ask on disk first.** Dialog questions go through `sf_dialog.py add` before they are asked.
 - **One atomic question per turn.** In S3 and S6 ask exactly one question, about exactly one thing, then end the turn and wait. Never bundle sub-questions ("which instruments, which contract, which session?" is three questions). Offer lettered options when they help, always allowing a free answer. Log the answer and apply it before asking the next question.
 - **Scope of the output.** The result describes a strategy and lists the decisions delegated to the downstream agent. Do not invent indicator formulas or data sources the text does not contain; put such suggestions in `notes` or in `aux_note` terms marked as suggestions.
+- **Silence is not a gap.** What the text does not mention (instrument universe, contract, session, sizing, re-entry…) is the downstream agent's concern: it is not written into the summary, not marked `[待确认]`, and not asked about in S3 unless the user raises it. `[待确认]` marks and S3 questions are only for ambiguities in what the text does say.
 
 ## 9. Script quick reference
 
@@ -299,6 +300,7 @@ tests/                        pytest suite (`uv run pytest` from the repo root)
 - **先落盘再提问**：对话问题先 `sf_dialog.py add` 再问。
 - **每轮只问一个原子问题**：S3、S6 每次只提一个问题、只问一件事，然后结束本轮等待回答。绝不打包子问题（"做什么品种、哪个合约、哪个时段？"是三个问题）。有帮助时给出字母选项，但始终允许自由回答。记录并落实回答之后再问下一个。
 - **产出边界**：结果只描述策略并列出交给下游判断的决策；不要杜撰原文没有的指标公式或数据源，此类建议放在 `notes` 或标注为建议的 `aux_note` 术语里。
+- **原文没说不算缺口**：原文没提的方面（品种范围、合约、时段、仓位、再入场……）是下游 agent 的事：不写进总结、不标 `[待确认]`、S3 也不问（除非用户主动提出）。`[待确认]` 和 S3 的问题只针对原文说了但说得含糊的地方。
 
 ## 9. 脚本速查
 
