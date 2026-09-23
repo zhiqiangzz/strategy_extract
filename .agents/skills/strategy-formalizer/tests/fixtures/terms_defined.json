@@ -1,0 +1,274 @@
+{
+  "_comment_en": "Test fixture derived from strategy_zoo/大小周期共振 (multi-timeframe resonance + trailing stop).",
+  "_comment_zh": "测试夹具，取材自 strategy_zoo/大小周期共振。",
+  "stage": "S6",
+  "scheme_id": "role_x_phase",
+  "terms": [
+    {
+      "id": "T001",
+      "name_zh": "大周期方向判定",
+      "name_en": "major_timeframe_direction",
+      "aliases": [],
+      "status": "defined",
+      "role": "callback",
+      "phase": "market_context",
+      "is_key": true,
+      "source_quote": "大周期判断趋势方向……大周期上涨途中只做多不做空",
+      "definition_zh": "在大周期图表上判断当前趋势方向，输出 多/空/不确定；只跟随不预测。",
+      "definition_en": "Judge the current trend direction on the major timeframe chart; output long/short/uncertain. Follow, do not predict.",
+      "supports": [],
+      "appears_in": [
+        "execution_steps"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "",
+      "history": []
+    },
+    {
+      "id": "T002",
+      "name_zh": "小周期入场信号",
+      "name_en": "minor_timeframe_entry_signal",
+      "aliases": [],
+      "status": "defined",
+      "role": "callback",
+      "phase": "entry",
+      "is_key": true,
+      "source_quote": "小周期入场……用大周期来过滤小周期的噪音",
+      "definition_zh": "在小周期上出现与大周期方向一致的入场信号时给出入场指令。",
+      "definition_en": "Emit an entry when the minor timeframe shows a signal in the major direction.",
+      "supports": [],
+      "appears_in": [
+        "execution_steps"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "",
+      "history": []
+    },
+    {
+      "id": "T003",
+      "name_zh": "有利运动确认",
+      "name_en": "favorable_move_confirmed",
+      "aliases": [],
+      "status": "defined",
+      "role": "callback",
+      "phase": "position_mgmt",
+      "is_key": true,
+      "source_quote": "你得等小周期出现一定的有利运动，再把止损移到成本",
+      "definition_zh": "判断价格是否已朝持仓方向走出足够的有利运动，从而可以把止损移到成本价。",
+      "definition_en": "Decide whether price has moved favourably enough to move the stop to cost.",
+      "supports": [],
+      "appears_in": [
+        "execution_steps",
+        "exit_and_risk"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "",
+      "history": []
+    },
+    {
+      "id": "T004",
+      "name_zh": "移动止损线位置",
+      "name_en": "trailing_stop_level",
+      "aliases": [],
+      "status": "defined",
+      "role": "callback",
+      "phase": "position_mgmt",
+      "is_key": true,
+      "source_quote": "按大周期的信号移动止损",
+      "definition_zh": "根据大周期信号给出新的止损价位。",
+      "definition_en": "Return the new stop level based on major-timeframe signals.",
+      "supports": [],
+      "appears_in": [
+        "exit_and_risk"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "",
+      "history": []
+    },
+    {
+      "id": "T005",
+      "name_zh": "大周期趋势反转",
+      "name_en": "major_trend_reversal",
+      "aliases": [],
+      "status": "defined",
+      "role": "callback",
+      "phase": "exit",
+      "is_key": true,
+      "source_quote": "要么打止损出场，要么趋势反转出场",
+      "definition_zh": "判断大周期趋势是否反转，反转则清仓。",
+      "definition_en": "Decide whether the major trend has reversed; if so, close the position.",
+      "supports": [],
+      "appears_in": [
+        "exit_and_risk"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "",
+      "history": []
+    },
+    {
+      "id": "T006",
+      "name_zh": "大小周期级别差",
+      "name_en": "timeframe_gap",
+      "aliases": [],
+      "status": "defined",
+      "role": "parameter",
+      "phase": "market_context",
+      "is_key": false,
+      "source_quote": "大周期和小周期的数量级不宜差太大，差一到两级比较合适",
+      "definition_zh": "大周期与小周期相差 1~2 个数量级。",
+      "definition_en": "Major and minor timeframes differ by one to two orders of magnitude.",
+      "supports": [
+        "T001",
+        "T002"
+      ],
+      "appears_in": [
+        "scope_and_params"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "",
+      "history": []
+    },
+    {
+      "id": "T007",
+      "name_zh": "尽快但不是立刻",
+      "name_en": "asap_not_immediately",
+      "aliases": [],
+      "status": "defined",
+      "role": "aux_note",
+      "phase": "position_mgmt",
+      "is_key": false,
+      "source_quote": "它强调尽快，但不是立刻",
+      "definition_zh": "移损至成本要尽快，但必须等到出现有利运动之后。",
+      "definition_en": "Move to cost soon, but only after a favourable move has occurred.",
+      "supports": [
+        "T003"
+      ],
+      "appears_in": [
+        "execution_steps"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "",
+      "history": []
+    },
+    {
+      "id": "T008",
+      "name_zh": "止损只进不退",
+      "name_en": "stop_only_tightens",
+      "aliases": [],
+      "status": "defined",
+      "role": "constraint",
+      "phase": "position_mgmt",
+      "is_key": false,
+      "source_quote": "不断把止损朝有利方向移动",
+      "definition_zh": "止损线只能朝有利方向移动。",
+      "definition_en": "The stop may only move in the favourable direction.",
+      "supports": [
+        "T004"
+      ],
+      "appears_in": [
+        "exit_and_risk"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "",
+      "history": []
+    },
+    {
+      "id": "T009",
+      "name_zh": "逆向信号过滤",
+      "name_en": "counter_trend_filter",
+      "aliases": [],
+      "status": "defined",
+      "role": "constraint",
+      "phase": "entry",
+      "is_key": false,
+      "source_quote": "逆向的信号过滤掉",
+      "definition_zh": "与大周期方向相反的小周期信号一律忽略。",
+      "definition_en": "Ignore minor-timeframe signals against the major direction.",
+      "supports": [
+        "T002"
+      ],
+      "appears_in": [
+        "execution_steps"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "",
+      "history": []
+    },
+    {
+      "id": "T010",
+      "name_zh": "盈亏比阈值",
+      "name_en": "payoff_ratio_threshold",
+      "aliases": [],
+      "status": "defined",
+      "role": "parameter",
+      "phase": "risk",
+      "is_key": false,
+      "source_quote": "只要平均每次赢是输的三倍以上",
+      "definition_zh": "平均盈亏比不低于 3。",
+      "definition_en": "Average payoff ratio at least 3.",
+      "supports": [
+        "T004"
+      ],
+      "appears_in": [
+        "premise"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "",
+      "history": []
+    },
+    {
+      "id": "T011",
+      "name_zh": "零成本持仓",
+      "name_en": "zero_cost_position",
+      "aliases": [],
+      "status": "defined",
+      "role": "aux_note",
+      "phase": "philosophy",
+      "is_key": false,
+      "source_quote": "用零成本的头寸去博取大行情",
+      "definition_zh": "止损移到成本后头寸无亏损风险，可以博取大趋势。",
+      "definition_en": "Once the stop is at cost the position carries no loss risk.",
+      "supports": [
+        "T003"
+      ],
+      "appears_in": [
+        "premise"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "",
+      "history": []
+    },
+    {
+      "id": "T012",
+      "name_zh": "只交易碳酸锂",
+      "name_en": "lithium_carbonate_only",
+      "aliases": [],
+      "status": "dropped",
+      "role": "scope",
+      "phase": "market_context",
+      "is_key": false,
+      "source_quote": "（示例）只做碳酸锂",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [],
+      "appears_in": [
+        "scope_and_params"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "D002: 用户要求多品种交易，去掉品种限定",
+      "notes": "",
+      "history": []
+    }
+  ]
+}

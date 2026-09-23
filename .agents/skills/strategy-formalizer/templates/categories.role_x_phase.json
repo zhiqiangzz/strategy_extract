@@ -1,0 +1,57 @@
+{
+  "_comment_en": "Default classification scheme (two axes). role decides whether the downstream trading agent must implement the term as a callback; phase says at which step of the trade the term matters. Copy this file to <workspace>/S5_categories.json in S5 and adjust values with the user if needed. The legend below is the bilingual name table.",
+  "_comment_zh": "默认分类方案（双轴）。role 决定下游交易 agent 是否必须把该术语实现为回调；phase 说明术语在交易的哪一步起作用。S5 时把本文件复制为 <workspace>/S5_categories.json，必要时与用户商定后调整取值。下方 legend 即中英文对照表。",
+  "scheme_id": "role_x_phase",
+  "name_en": "Role x Phase (two axes)",
+  "name_zh": "角色 × 交易阶段（双轴）",
+  "legend": [
+    {"axis": "role", "id": "callback", "zh": "决策回调"},
+    {"axis": "role", "id": "parameter", "zh": "参数"},
+    {"axis": "role", "id": "constraint", "zh": "约束/过滤规则"},
+    {"axis": "role", "id": "aux_note", "zh": "辅助说明"},
+    {"axis": "role", "id": "scope", "zh": "适用范围"},
+    {"axis": "phase", "id": "market_context", "zh": "环境/方向判定"},
+    {"axis": "phase", "id": "entry", "zh": "入场"},
+    {"axis": "phase", "id": "position_mgmt", "zh": "持仓管理"},
+    {"axis": "phase", "id": "exit", "zh": "出场"},
+    {"axis": "phase", "id": "risk", "zh": "资金/风控"},
+    {"axis": "phase", "id": "philosophy", "zh": "理念"}
+  ],
+  "axes": [
+    {
+      "axis_id": "role",
+      "name_en": "Downstream role",
+      "name_zh": "对下游 agent 的角色",
+      "values": [
+        {"id": "callback", "name_en": "Decision callback", "name_zh": "决策回调", "needs_wrapper": true,
+         "description_en": "A judgement the strategy delegates to the downstream agent at runtime (e.g. 'major timeframe direction' -> long/short/uncertain). Must be wrapped as a function; shown in bold in the summary.",
+         "description_zh": "策略在运行时交给下游 agent 判断的事项（如'大周期方向'→ 多/空/不确定）。必须包装为函数；在总结中加粗。"},
+        {"id": "parameter", "name_en": "Parameter", "name_zh": "参数", "needs_wrapper": false,
+         "description_en": "A tunable value with a default or range (e.g. 'payoff ratio >= 3', 'timeframe gap of 1-2 orders of magnitude').",
+         "description_zh": "有默认值或范围的可调数值（如'盈亏比 ≥ 3'、'大小周期差 1~2 个数量级'）。"},
+        {"id": "constraint", "name_en": "Constraint / filter", "name_zh": "约束/过滤规则", "needs_wrapper": false,
+         "description_en": "A hard rule that limits what a callback may do (e.g. 'only take minor-timeframe signals in the major direction', 'stop moves only in the favourable direction').",
+         "description_zh": "限制回调行为的硬规则（如'只做与大周期同向的小周期信号'、'止损只进不退'）。"},
+        {"id": "aux_note", "name_en": "Auxiliary note", "name_zh": "辅助说明", "needs_wrapper": false,
+         "description_en": "Explanatory guidance attached to a key term that the implementer must read but not implement (e.g. 'as soon as possible but not immediately').",
+         "description_zh": "附着在关键术语上的解释性说明，实现者必须阅读但无需实现（如'尽快但不是立刻'）。"},
+        {"id": "scope", "name_en": "Scope", "name_zh": "适用范围", "needs_wrapper": false,
+         "description_en": "What the strategy applies to: instruments, contract selection, timeframe pair. Often filtered in S4 when the user widens the scope.",
+         "description_zh": "策略的适用对象：品种、合约选择、周期搭配。用户扩大范围时常在 S4 被过滤。"}
+      ]
+    },
+    {
+      "axis_id": "phase",
+      "name_en": "Trade lifecycle phase",
+      "name_zh": "交易生命周期阶段",
+      "values": [
+        {"id": "market_context", "name_en": "Market context / direction", "name_zh": "环境/方向判定", "description_en": "Deciding regime or direction before any order.", "description_zh": "下单前的行情环境与方向判断。"},
+        {"id": "entry", "name_en": "Entry", "name_zh": "入场", "description_en": "Timing and conditions of opening a position.", "description_zh": "开仓的时机与条件。"},
+        {"id": "position_mgmt", "name_en": "Position management", "name_zh": "持仓管理", "description_en": "Stop placement, move-to-cost, trailing, adding/reducing.", "description_zh": "止损设置、移损至成本、移动止损、加减仓。"},
+        {"id": "exit", "name_en": "Exit", "name_zh": "出场", "description_en": "How and when the position is closed.", "description_zh": "如何、何时平仓。"},
+        {"id": "risk", "name_en": "Risk / money management", "name_zh": "资金/风控", "description_en": "Sizing, per-trade loss limits, expectancy.", "description_zh": "仓位、单笔亏损上限、期望值。"},
+        {"id": "philosophy", "name_en": "Philosophy", "name_zh": "理念", "description_en": "Beliefs that motivate the rules but are not executed.", "description_zh": "支撑规则但不被执行的信念。"}
+      ]
+    }
+  ]
+}

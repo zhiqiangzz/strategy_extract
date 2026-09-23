@@ -1,0 +1,41 @@
+{
+  "stage": "S3",
+  "entries": [
+    {
+      "id": "D001",
+      "stage": "S3",
+      "round": 1,
+      "asked_at": "2026-09-23T10:00:00+08:00",
+      "question_zh": "策略是否只交易碳酸锂？",
+      "answer_zh": "不是，多品种。",
+      "answered_at": "2026-09-23T10:05:00+08:00",
+      "status": "closed",
+      "affects": {
+        "terms": [
+          "T012"
+        ],
+        "sections": [
+          "scope_and_params"
+        ]
+      },
+      "resolution": "T012 dropped"
+    },
+    {
+      "id": "D002",
+      "stage": "S3",
+      "round": 1,
+      "asked_at": "2026-09-23T10:00:00+08:00",
+      "question_zh": "交易主力合约还是远月合约？",
+      "answer_zh": "主力合约。",
+      "answered_at": "2026-09-23T10:05:00+08:00",
+      "status": "closed",
+      "affects": {
+        "terms": [],
+        "sections": [
+          "scope_and_params"
+        ]
+      },
+      "resolution": "scope section updated"
+    }
+  ]
+}

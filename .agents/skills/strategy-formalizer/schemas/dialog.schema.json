@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "strategy-formalizer dialog log",
+  "description": "EN: Audit trail of agent questions and user answers for S3 and S6. Written by sf_dialog.py; the .md twin is derived. | 中文：S3、S6 中 agent 提问与用户回答的留痕。由 sf_dialog.py 写入，.md 为派生文件。",
+  "type": "object",
+  "required": ["stage", "entries"],
+  "properties": {
+    "stage": {"enum": ["S3", "S6"]},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "stage", "round", "question_zh", "status"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^D\\d{3,}$"},
+          "stage": {"enum": ["S3", "S6"]},
+          "round": {"type": "integer", "minimum": 1},
+          "asked_at": {"type": ["string", "null"]},
+          "question_zh": {"type": "string"},
+          "answer_zh": {"type": ["string", "null"]},
+          "answered_at": {"type": ["string", "null"]},
+          "status": {"enum": ["open", "answered", "closed"]},
+          "affects": {"type": "object", "properties": {"terms": {"type": "array"}, "sections": {"type": "array"}}},
+          "resolution": {"type": ["string", "null"], "description": "what changed because of this answer / 该回答导致的改动"}
+        }
+      }
+    }
+  }
+}

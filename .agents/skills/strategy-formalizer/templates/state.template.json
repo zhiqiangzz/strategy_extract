@@ -1,0 +1,12 @@
+{
+  "_comment_en": "Pipeline state for one strategy run. Written by scripts/sf_state.py; do not edit by hand except to fix a corrupted run. Stage statuses: pending -> in_progress -> awaiting_review -> done. checkpoint_hashes hold SHA-256 of each stage output at `complete`/`accept` time so `status` can detect files the user edited during a stop.",
+  "_comment_zh": "一次策略运行的流水线状态。由 scripts/sf_state.py 写入；除非修复损坏的运行，否则不要手工编辑。阶段状态：pending -> in_progress -> awaiting_review -> done。checkpoint_hashes 保存每个产出文件在 complete/accept 时的 SHA-256，供 status 检测用户在停顿期间修改了哪些文件。",
+  "skill_version": "0.1.0",
+  "strategy_name": null,
+  "input_dir": null,
+  "scheme_id": "role_x_phase",
+  "created_at": null,
+  "updated_at": null,
+  "current_stage": "S1",
+  "stages": {}
+}

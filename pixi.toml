@@ -1,0 +1,23 @@
+# pixi manifest for NON-python system dependencies only. Python packages live in
+# pyproject.toml and are installed by uv into .venv/. Everything here installs
+# into ./.pixi/ (project-local), never globally.
+#
+# pixi 只管理非 python 的系统依赖。python 包由 uv 安装到 .venv/。
+# 这里的所有依赖都安装到项目本地的 ./.pixi/，不做全局安装。
+
+[workspace]
+name = "strategy-formalizer"
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "osx-64", "linux-64"]
+
+[dependencies]
+# graphviz provides `dot`, used by scripts/sf_graph.py --png to render the
+# S7 term-relationship graph. The .mmd/.dot files are written without it.
+graphviz = ">=12"
+
+[tasks]
+# Usage: pixi run dot -Tpng in.dot -o out.png
+# First use on a machine: `pixi run dot -c` registers the graphviz plugins inside .pixi/
+# (sf_graph.py does this automatically). 首次使用需 `pixi run dot -c` 注册插件（脚本会自动执行）。
+dot = "dot"
+graphviz-register = "dot -c"

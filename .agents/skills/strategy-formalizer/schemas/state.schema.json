@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "strategy-formalizer state",
+  "description": "EN: Pipeline state written by sf_state.py. | 中文：由 sf_state.py 写入的流水线状态。",
+  "type": "object",
+  "required": ["strategy_name", "input_dir", "current_stage", "stages"],
+  "properties": {
+    "skill_version": {"type": "string"},
+    "strategy_name": {"type": "string"},
+    "input_dir": {"type": "string"},
+    "scheme_id": {"type": "string"},
+    "created_at": {"type": ["string", "null"]},
+    "updated_at": {"type": ["string", "null"]},
+    "current_stage": {"type": "string", "pattern": "^S[1-8]$"},
+    "stages": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "status": {"enum": ["pending", "in_progress", "awaiting_review", "done"]},
+          "started_at": {"type": ["string", "null"]},
+          "completed_at": {"type": ["string", "null"]},
+          "accepted_at": {"type": ["string", "null"]},
+          "checkpoint_hashes": {"type": "object", "additionalProperties": {"type": ["string", "null"]}}
+        }
+      }
+    }
+  }
+}

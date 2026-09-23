@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "strategy-formalizer S1 sources manifest",
+  "description": "EN: Lists every text file found in the input folder and its role. primary files are corrected and merged into S1_strategy_raw.md; secondary files are context only. The user may flip roles at the S1 stop. | 中文：列出输入目录中的每个文本文件及其角色。primary 文件经矫正后合并进 S1_strategy_raw.md；secondary 仅作背景。用户可在 S1 停顿时改变角色。",
+  "type": "object",
+  "required": ["input_dir", "sources"],
+  "properties": {
+    "input_dir": {"type": "string"},
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "role"],
+        "properties": {
+          "path": {"type": "string", "description": "relative to input_dir"},
+          "role": {"enum": ["primary", "secondary", "ignored"]},
+          "kind": {"enum": ["transcript", "analysis", "reference", "other"]},
+          "note_en": {"type": "string"},
+          "note_zh": {"type": "string"}
+        }
+      }
+    }
+  }
+}

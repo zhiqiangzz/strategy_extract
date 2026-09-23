@@ -1,0 +1,22 @@
+[project]
+name = "strategy-formalizer"
+version = "0.1.0"
+description = "Claude Code skill that formalizes free-text trading strategies into term sets, callback wrappers and a relationship graph for a downstream trading agent."
+requires-python = ">=3.12"
+dependencies = [
+    "openpyxl>=3.1",
+    "pydantic>=2.7",
+    "networkx>=3.3",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.2",
+]
+
+[tool.pytest.ini_options]
+testpaths = [".agents/skills/strategy-formalizer/tests"]
+pythonpath = [".agents/skills/strategy-formalizer/scripts"]
+
+[tool.uv]
+package = false

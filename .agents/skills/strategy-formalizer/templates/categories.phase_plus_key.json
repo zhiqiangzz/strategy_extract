@@ -1,0 +1,123 @@
+{
+  "_comment_en": "Alternative scheme C: phase axis plus a minimal role axis (callback vs aux_note) so that 'needs wrapper' is still expressible. Use when the user thinks in trade stages rather than in interfaces.",
+  "_comment_zh": "备选方案 C：phase 轴加最简 role 轴（callback / aux_note），仍能表达'是否需要 wrapper'。用户习惯按交易阶段思考时使用。",
+  "scheme_id": "phase_plus_key",
+  "name_en": "Phase + key flag",
+  "name_zh": "交易阶段 + 关键标记",
+  "legend": [
+    {
+      "axis": "role",
+      "id": "callback",
+      "zh": "决策回调"
+    },
+    {
+      "axis": "role",
+      "id": "aux_note",
+      "zh": "辅助说明"
+    },
+    {
+      "axis": "phase",
+      "id": "market_context",
+      "zh": "环境/方向判定"
+    },
+    {
+      "axis": "phase",
+      "id": "entry",
+      "zh": "入场"
+    },
+    {
+      "axis": "phase",
+      "id": "position_mgmt",
+      "zh": "持仓管理"
+    },
+    {
+      "axis": "phase",
+      "id": "exit",
+      "zh": "出场"
+    },
+    {
+      "axis": "phase",
+      "id": "risk",
+      "zh": "资金/风控"
+    },
+    {
+      "axis": "phase",
+      "id": "philosophy",
+      "zh": "理念"
+    }
+  ],
+  "axes": [
+    {
+      "axis_id": "role",
+      "name_en": "Key flag",
+      "name_zh": "关键标记",
+      "values": [
+        {
+          "id": "callback",
+          "name_en": "Decision callback",
+          "name_zh": "决策回调",
+          "needs_wrapper": true,
+          "description_en": "A judgement the strategy delegates to the downstream agent at runtime (e.g. 'major timeframe direction' -> long/short/uncertain). Must be wrapped as a function; shown in bold in the summary.",
+          "description_zh": "策略在运行时交给下游 agent 判断的事项（如'大周期方向'→ 多/空/不确定）。必须包装为函数；在总结中加粗。"
+        },
+        {
+          "id": "aux_note",
+          "name_en": "Auxiliary note",
+          "name_zh": "辅助说明",
+          "needs_wrapper": false,
+          "description_en": "Explanatory guidance attached to a key term that the implementer must read but not implement (e.g. 'as soon as possible but not immediately').",
+          "description_zh": "附着在关键术语上的解释性说明，实现者必须阅读但无需实现（如'尽快但不是立刻'）。"
+        }
+      ]
+    },
+    {
+      "axis_id": "phase",
+      "name_en": "Trade lifecycle phase",
+      "name_zh": "交易生命周期阶段",
+      "values": [
+        {
+          "id": "market_context",
+          "name_en": "Market context / direction",
+          "name_zh": "环境/方向判定",
+          "description_en": "Deciding regime or direction before any order.",
+          "description_zh": "下单前的行情环境与方向判断。"
+        },
+        {
+          "id": "entry",
+          "name_en": "Entry",
+          "name_zh": "入场",
+          "description_en": "Timing and conditions of opening a position.",
+          "description_zh": "开仓的时机与条件。"
+        },
+        {
+          "id": "position_mgmt",
+          "name_en": "Position management",
+          "name_zh": "持仓管理",
+          "description_en": "Stop placement, move-to-cost, trailing, adding/reducing.",
+          "description_zh": "止损设置、移损至成本、移动止损、加减仓。"
+        },
+        {
+          "id": "exit",
+          "name_en": "Exit",
+          "name_zh": "出场",
+          "description_en": "How and when the position is closed.",
+          "description_zh": "如何、何时平仓。"
+        },
+        {
+          "id": "risk",
+          "name_en": "Risk / money management",
+          "name_zh": "资金/风控",
+          "description_en": "Sizing, per-trade loss limits, expectancy.",
+          "description_zh": "仓位、单笔亏损上限、期望值。"
+        },
+        {
+          "id": "philosophy",
+          "name_en": "Philosophy",
+          "name_zh": "理念",
+          "description_en": "Beliefs that motivate the rules but are not executed.",
+          "description_zh": "支撑规则但不被执行的信念。"
+        }
+      ]
+    }
+  ]
+}

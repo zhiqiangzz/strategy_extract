@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "strategy-formalizer formal interface",
+  "description": "EN: S7 output. callbacks are decisions the downstream agent implements; parameters are tunables; relations are typed edges between terms used by sf_graph.py. | 中文：S7 产出。callbacks 为下游实现的决策；parameters 为可调参数；relations 为术语间带类型的边，供 sf_graph.py 绘图。",
+  "type": "object",
+  "required": ["stage", "callbacks", "relations"],
+  "properties": {
+    "stage": {"const": "S7"},
+    "terms_file": {"type": "string"},
+    "callbacks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "term_id", "name_en", "output"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^CB\\d{2,}$"},
+          "term_id": {"type": "string", "pattern": "^T\\d{3,}$"},
+          "name_en": {"type": "string"},
+          "name_zh": {"type": "string"},
+          "invoked_in": {"type": "string", "description": "section key or 'execution_steps.3' / 调用位置"},
+          "inputs": {"type": "array", "items": {"type": "object", "required": ["name"], "properties": {"name": {"type": "string"}, "type": {"type": "string"}, "source_term_id": {"type": ["string", "null"]}, "description_en": {"type": "string"}}}},
+          "output": {"type": "object", "properties": {"type": {"type": "string"}, "values": {"type": "array", "items": {"type": "string"}}, "description_en": {"type": "string"}}},
+          "aux_term_ids": {"type": "array", "items": {"type": "string"}},
+          "constraint_term_ids": {"type": "array", "items": {"type": "string"}},
+          "parameter_term_ids": {"type": "array", "items": {"type": "string"}},
+          "description_en": {"type": "string"},
+          "description_zh": {"type": "string"}
+        }
+      }
+    },
+    "parameters": {"type": "array", "items": {"type": "object", "required": ["id", "term_id", "name_en"]}},
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from", "to", "type"],
+        "properties": {
+          "from": {"type": "string"}, "to": {"type": "string"},
+          "type": {"enum": ["supports", "constrains", "parameterizes", "triggers", "sequence", "conflicts"]},
+          "note": {"type": "string"}
+        }
+      }
+    }
+  }
+}

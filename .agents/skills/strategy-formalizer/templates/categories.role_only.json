@@ -1,0 +1,83 @@
+{
+  "_comment_en": "Alternative scheme B: role axis only. Use when the strategy is short and the summary sections already make the phase obvious.",
+  "_comment_zh": "备选方案 B：只用 role 轴。策略较短、总结章节已能说明阶段时使用。",
+  "scheme_id": "role_only",
+  "name_en": "Role only (one axis)",
+  "name_zh": "仅按下游角色（单轴）",
+  "legend": [
+    {
+      "axis": "role",
+      "id": "callback",
+      "zh": "决策回调"
+    },
+    {
+      "axis": "role",
+      "id": "parameter",
+      "zh": "参数"
+    },
+    {
+      "axis": "role",
+      "id": "constraint",
+      "zh": "约束/过滤规则"
+    },
+    {
+      "axis": "role",
+      "id": "aux_note",
+      "zh": "辅助说明"
+    },
+    {
+      "axis": "role",
+      "id": "scope",
+      "zh": "适用范围"
+    }
+  ],
+  "axes": [
+    {
+      "axis_id": "role",
+      "name_en": "Downstream role",
+      "name_zh": "对下游 agent 的角色",
+      "values": [
+        {
+          "id": "callback",
+          "name_en": "Decision callback",
+          "name_zh": "决策回调",
+          "needs_wrapper": true,
+          "description_en": "A judgement the strategy delegates to the downstream agent at runtime (e.g. 'major timeframe direction' -> long/short/uncertain). Must be wrapped as a function; shown in bold in the summary.",
+          "description_zh": "策略在运行时交给下游 agent 判断的事项（如'大周期方向'→ 多/空/不确定）。必须包装为函数；在总结中加粗。"
+        },
+        {
+          "id": "parameter",
+          "name_en": "Parameter",
+          "name_zh": "参数",
+          "needs_wrapper": false,
+          "description_en": "A tunable value with a default or range (e.g. 'payoff ratio >= 3', 'timeframe gap of 1-2 orders of magnitude').",
+          "description_zh": "有默认值或范围的可调数值（如'盈亏比 ≥ 3'、'大小周期差 1~2 个数量级'）。"
+        },
+        {
+          "id": "constraint",
+          "name_en": "Constraint / filter",
+          "name_zh": "约束/过滤规则",
+          "needs_wrapper": false,
+          "description_en": "A hard rule that limits what a callback may do (e.g. 'only take minor-timeframe signals in the major direction', 'stop moves only in the favourable direction').",
+          "description_zh": "限制回调行为的硬规则（如'只做与大周期同向的小周期信号'、'止损只进不退'）。"
+        },
+        {
+          "id": "aux_note",
+          "name_en": "Auxiliary note",
+          "name_zh": "辅助说明",
+          "needs_wrapper": false,
+          "description_en": "Explanatory guidance attached to a key term that the implementer must read but not implement (e.g. 'as soon as possible but not immediately').",
+          "description_zh": "附着在关键术语上的解释性说明，实现者必须阅读但无需实现（如'尽快但不是立刻'）。"
+        },
+        {
+          "id": "scope",
+          "name_en": "Scope",
+          "name_zh": "适用范围",
+          "needs_wrapper": false,
+          "description_en": "What the strategy applies to: instruments, contract selection, timeframe pair. Often filtered in S4 when the user widens the scope.",
+          "description_zh": "策略的适用对象：品种、合约选择、周期搭配。用户扩大范围时常在 S4 被过滤。"
+        }
+      ]
+    }
+  ]
+}

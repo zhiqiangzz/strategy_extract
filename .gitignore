@@ -1,0 +1,25 @@
+# inputs (large media, user-private material)
+strategy_zoo/
+scratchpad/
+*.mp4
+
+# environments (never commit)
+.venv/
+.pixi/
+.uv-cache/
+.env
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# os
+.DS_Store
+
+# caches written by factorMining into the cwd
+OutputDir/
+
+# workspace/ (pipeline outputs) IS tracked on purpose; do not ignore it.
