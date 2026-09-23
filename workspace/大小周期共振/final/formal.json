@@ -1,0 +1,564 @@
+{
+  "_comment_en": "Formalized strategy interface for the downstream trading agent. callbacks = decisions the downstream agent must implement; parameters = tunables; relations = typed edges between terms (drawn by sf_graph.py). Source of truth; the .xlsx twin is generated.",
+  "_comment_zh": "面向下游交易 agent 的形式化策略接口。callbacks = 下游必须实现的决策；parameters = 可调参数；relations = 术语之间的带类型的边（由 sf_graph.py 绘图）。此文件为真值，xlsx 由脚本生成。",
+  "stage": "S7",
+  "terms_file": "S6_terms_defined.json",
+  "generated_at": "2026-09-23T23:38:43+08:00",
+  "callbacks": [
+    {
+      "id": "CB01",
+      "term_id": "T011",
+      "name_en": "major_timeframe_direction",
+      "name_zh": "大周期方向判定",
+      "invoked_in": "execution_steps.1",
+      "inputs": [
+        {
+          "name": "major_tf_data",
+          "type": "MarketData",
+          "source_term_id": "T010",
+          "description_en": "Major-timeframe bars (price, volume) and any indicators derived from them; the time unit is the downstream agent's choice (see T010, T027)"
+        },
+        {
+          "name": "instrument",
+          "type": "Instrument",
+          "source_term_id": "T030",
+          "description_en": "The instrument being judged"
+        }
+      ],
+      "output": {
+        "type": "enum",
+        "values": [
+          "long",
+          "short",
+          "uncertain"
+        ],
+        "description_en": "Current major-timeframe direction. 'uncertain' blocks new entries; existing positions keep being managed unless T021 treats it as a high-confidence reversal."
+      },
+      "aux_term_ids": [
+        "T002",
+        "T010"
+      ],
+      "constraint_term_ids": [
+        "T005"
+      ],
+      "parameter_term_ids": [],
+      "description_en": "Judge the current trend direction on the major-timeframe chart; return exactly one of long / short / uncertain. This is following, not forecasting: an ongoing up-move is 'long' (only long trades allowed), an ongoing down-move is 'short' (only short trades allowed); do not try to call where a trend starts or ends. On 'uncertain' open no new position; existing positions keep being managed by the normal rules unless T021 judges that uncertainty to be a high-confidence reversal (then the position is closed). Inputs may be the major-timeframe bars (price, volume) and any technical indicator; the method and the re-evaluation timing are the downstream agent's choice. The text's 'turn signal on the higher timeframe' is the same judgement: a change of this output is the turn.",
+      "description_zh": "在大周期图表上判断当前趋势方向，输出 多 / 空 / 不确定 三值之一。判断是跟随而非预测：处于上涨途中为“多”（只做多不做空），处于下跌途中为“空”（只做空不做多），不判断趋势何时开始、何时结束。结果为“不确定”时不开新仓；已有持仓按原规则继续管理，除非该不确定被 T021 判定为置信度较高的反转（届时清仓）。可用输入为大周期 K 线（价格、成交量）及任何技术指标，具体方法与重新评估的时机均由下游 agent 自行决定。原文中的“高一级周期出现转向信号”与本判定是同一件事：方向改变即视为转向。"
+    },
+    {
+      "id": "CB02",
+      "term_id": "T013",
+      "name_en": "minor_timeframe_entry_signal",
+      "name_zh": "小周期入场信号",
+      "invoked_in": "execution_steps.2-3",
+      "inputs": [
+        {
+          "name": "minor_tf_data",
+          "type": "MarketData",
+          "source_term_id": "T012",
+          "description_en": "Minor-timeframe bars and any indicators"
+        },
+        {
+          "name": "major_direction",
+          "type": "Literal['long','short']",
+          "source_term_id": "T011",
+          "description_en": "Output of major_timeframe_direction; the callback is only invoked while it is long or short"
+        },
+        {
+          "name": "major_tf_context",
+          "type": "MarketData",
+          "source_term_id": "T010",
+          "description_en": "Optional major-timeframe information such as support/resistance"
+        }
+      ],
+      "output": {
+        "type": "object",
+        "values": [
+          "enter",
+          "no_enter"
+        ],
+        "description_en": "{'decision': 'enter'|'no_enter', 'entry_price': float|None} — a limit entry price accompanies 'enter'. Signal type is unrestricted but must be in the major direction (T022)."
+      },
+      "aux_term_ids": [
+        "T001",
+        "T002",
+        "T012",
+        "T026"
+      ],
+      "constraint_term_ids": [
+        "T004",
+        "T005",
+        "T022"
+      ],
+      "parameter_term_ids": [],
+      "description_en": "Decide on the minor timeframe whether to enter now; return enter / no-enter, and on 'enter' also a limit entry price. Evaluated only while T011 gives a definite direction (long or short), and may only produce entries in that direction (see T022). The signal type is unrestricted and chosen by the downstream agent; inputs may be minor-timeframe bars and any indicator, the T011 direction, and other major-timeframe information such as support/resistance. Do not chase a perfect entry. After a stop-out, re-entry on the next signal is allowed as long as the major direction is unchanged; whether to impose a cool-down or a cap on attempts is the downstream agent's decision.",
+      "description_zh": "在小周期上判断此刻是否入场，输出 入场 / 不入场；输出“入场”时附带一个入场价位（限价）。只在 T011 给出明确方向（多或空）时评估，且只能产生与该方向同向的入场（见 T022）。信号形式不限，由下游 agent 自定；可用输入为小周期 K 线及任何技术指标、T011 的方向，以及大周期的其他信息（如支撑阻力）。不追求完美入场点。被止损出场后，只要大周期方向不变即可凭下一个信号再次入场，是否设置间隔或次数上限由下游 agent 自行决定。"
+    },
+    {
+      "id": "CB03",
+      "term_id": "T014",
+      "name_en": "initial_stop_level",
+      "name_zh": "小周期止损",
+      "invoked_in": "execution_steps.3",
+      "inputs": [
+        {
+          "name": "minor_tf_data",
+          "type": "MarketData",
+          "source_term_id": "T012",
+          "description_en": "Minor-timeframe bars, indicators, volatility"
+        },
+        {
+          "name": "entry_price",
+          "type": "float",
+          "source_term_id": "T013",
+          "description_en": "The entry price returned by minor_timeframe_entry_signal"
+        },
+        {
+          "name": "direction",
+          "type": "Literal['long','short']",
+          "source_term_id": "T011",
+          "description_en": "Position direction"
+        }
+      ],
+      "output": {
+        "type": "number",
+        "values": [],
+        "description_en": "Initial stop distance from entry (points or percent, declare which); the caller converts it to a stop price and sizes the position with per_trade_loss_ratio (T004/T023). Must be 'very close': clearly smaller than one major-timeframe bar's range."
+      },
+      "aux_term_ids": [
+        "T008",
+        "T012",
+        "T026"
+      ],
+      "constraint_term_ids": [],
+      "parameter_term_ids": [
+        "T007",
+        "T023"
+      ],
+      "description_en": "At entry, determine the initial stop on the minor timeframe; return a stop distance (points or percent) that the caller converts into a stop price and, with T023, into position size (see T004). The basis is the downstream agent's choice (minor-timeframe bars, indicators, volatility, anything); the only requirement is that it is 'very close': clearly smaller than one major-timeframe bar's range, so each loss is small and the same capital fraction allows many attempts. Never place the initial stop by the major timeframe. Being stopped out right after entry is normal trial-and-error cost.",
+      "description_zh": "入场时在小周期上确定初始止损，输出一个止损距离（点数或百分比），由调用方换算成止损价位并据此与 T023 反算手数（见 T004）。依据由下游 agent 自定，可用小周期 K 线、指标、波动率等任何信息，唯一要求是“很近”：明显小于大周期一根 K 线的波动幅度，使单笔亏损很有限、同样的本金比例能试更多次。绝不按大周期设初始止损。入场后价格马上打到该止损属于正常试错成本。"
+    },
+    {
+      "id": "CB06",
+      "term_id": "T024",
+      "name_en": "favorable_move",
+      "name_zh": "有利运动",
+      "invoked_in": "execution_steps.4",
+      "inputs": [
+        {
+          "name": "major_tf_data",
+          "type": "MarketData",
+          "source_term_id": "T010",
+          "description_en": "Major-timeframe price, structure, indicators (minor timeframe must not be used, T018)"
+        },
+        {
+          "name": "position",
+          "type": "Position",
+          "source_term_id": null,
+          "description_en": "Open position: direction, entry price, current stop, time since entry"
+        }
+      ],
+      "output": {
+        "type": "bool",
+        "values": [
+          "yes",
+          "no"
+        ],
+        "description_en": "yes = a sufficient favourable move has occurred; the caller then moves the stop to cost price (T015/T016). Evaluated only while the stop is still below/above cost."
+      },
+      "aux_term_ids": [
+        "T008",
+        "T010",
+        "T016",
+        "T017"
+      ],
+      "constraint_term_ids": [
+        "T015",
+        "T018"
+      ],
+      "parameter_term_ids": [],
+      "description_en": "While holding, judge on the major timeframe whether price has made 'a certain favourable move' in the position's direction; return yes / no. 'Yes' triggers T015, moving the stop to the cost price. The criterion is the downstream agent's choice (major-timeframe price, structure, indicators, anything) but must embody 'as soon as possible, yet not immediately': moving the stop right after entry does not count, while leaving it after price has clearly moved favourably is taking unnecessary risk. Evaluated only until the stop has reached cost; a stop-out before that is normal trial-and-error cost.",
+      "description_zh": "持仓期间在大周期上判断价格是否已朝持仓方向走出“一定的有利运动”，输出 是 / 否；输出“是”即触发 T015 把止损移到成本价。认定标准由下游 agent 自定，可用大周期的价格、结构、指标等任何信息，但必须体现“尽快，但不是立刻”：入场后立即移损不算有利运动，价格已明显朝有利方向运动却迟迟不移则是在冒不必要的风险。只在止损尚未移到成本价之前评估；若在此之前被初始止损打出，属正常试错成本。"
+    },
+    {
+      "id": "CB04",
+      "term_id": "T020",
+      "name_en": "major_timeframe_trailing_stop",
+      "name_zh": "大周期移动止损",
+      "invoked_in": "execution_steps.5",
+      "inputs": [
+        {
+          "name": "major_tf_data",
+          "type": "MarketData",
+          "source_term_id": "T010",
+          "description_en": "Major-timeframe data; price is the primary signal"
+        },
+        {
+          "name": "position",
+          "type": "Position",
+          "source_term_id": null,
+          "description_en": "Open position with its current stop (already at or beyond cost)"
+        }
+      ],
+      "output": {
+        "type": "price",
+        "values": [],
+        "description_en": "New stop price, or None to hold. Only tightens: never lower for a long / higher for a short than the current stop, and never beyond cost in the adverse direction (T015)."
+      },
+      "aux_term_ids": [
+        "T010",
+        "T017",
+        "T019"
+      ],
+      "constraint_term_ids": [
+        "T018",
+        "T025"
+      ],
+      "parameter_term_ids": [
+        "T007"
+      ],
+      "description_en": "After the stop has reached cost, decide on the major timeframe, from major-timeframe signals, whether and where to move the stop; return a new stop price or 'hold'. The stop only tightens: it may only rise for a long / fall for a short, never move the other way, and never below/above cost. The basis is the downstream agent's choice with major-timeframe price as the primary signal (structure, indicators, volatility or any other major-timeframe information may also be used); evaluation timing is the downstream agent's choice. Applies while the major trend is progressing (T019); the aim is to let profits run without picking tops or bottoms, until the stop is hit or the major trend reverses and the position is closed.",
+      "description_zh": "止损移到成本价之后，在大周期上按大周期的信号决定是否以及把止损移到哪里，输出 一个新的止损价位 或 “不动”。止损只进不退：多头只能上移、空头只能下移，永不反向调整，且不低于/高于成本价。依据由下游 agent 自定，以大周期的价格为主要信号，也可用结构、指标、波动率等任何大周期信息；评估时机由下游自选。前提是大周期趋势发展顺利（T019）；目的是让利润自己跑，不猜顶猜底，直到打止损出场或大周期趋势反转清仓。"
+    },
+    {
+      "id": "CB05",
+      "term_id": "T021",
+      "name_en": "major_trend_reversal",
+      "name_zh": "趋势反转",
+      "invoked_in": "execution_steps.5 / exit_and_risk.5",
+      "inputs": [
+        {
+          "name": "major_direction",
+          "type": "Literal['long','short','uncertain']",
+          "source_term_id": "T011",
+          "description_en": "Latest output of major_timeframe_direction"
+        },
+        {
+          "name": "major_tf_data",
+          "type": "MarketData",
+          "source_term_id": "T010",
+          "description_en": "Major-timeframe data, to judge the confidence of an 'uncertain' reading"
+        },
+        {
+          "name": "position",
+          "type": "Position",
+          "source_term_id": null,
+          "description_en": "Open position (direction)"
+        }
+      ],
+      "output": {
+        "type": "bool",
+        "values": [
+          "yes",
+          "no"
+        ],
+        "description_en": "yes = trend reversed (direction flipped against the position, or 'uncertain' with high confidence as judged here); the caller closes the position actively. Independent of the stop path."
+      },
+      "aux_term_ids": [
+        "T010"
+      ],
+      "constraint_term_ids": [
+        "T018",
+        "T025"
+      ],
+      "parameter_term_ids": [],
+      "description_en": "While holding, judge on the major timeframe whether the trend has reversed; return yes / no. 'Yes' means close the position actively without waiting for the stop: this is the second exit path, independent of the stop. Reversal means either that T011's direction has flipped to the opposite of the position, or that T011 returns 'uncertain' and the downstream agent judges that uncertainty to be of high confidence ('high confidence' is not quantified; the downstream agent decides inside this callback). A low-confidence 'uncertain' from T011 is not a reversal; the position keeps being managed by the normal rules. Evaluation timing is the downstream agent's choice.",
+      "description_zh": "持仓期间在大周期上判断趋势是否已反转，输出 是 / 否；输出“是”即主动清仓，不等止损被打。这是独立于打止损的第二条出场路径。反转的含义：T011 大周期方向判定的输出翻转为与持仓相反的方向，或者 T011 输出“不确定”且下游 agent 认为该不确定的置信度较高（“置信度较高”不量化，由下游在本回调内自行判断）。T011 输出低置信度的“不确定”时不算反转，持仓按原规则继续管理。评估时机由下游自选。"
+    }
+  ],
+  "parameters": [
+    {
+      "id": "P01",
+      "term_id": "T007",
+      "name_en": "positive_expectancy_condition",
+      "name_zh": "正期望条件",
+      "default": "win_rate≈0.30, payoff_ratio≥3",
+      "unit": "ratio",
+      "range": "payoff_ratio >= 3 (acceptance criterion, not a runtime input)",
+      "description_en": "Parameter (an expectation / acceptance criterion, not a runtime rule): the positive-expectancy condition the text states, about a 30% win rate with an average win at least three times the average loss (payoff ratio >= 3). It says the edge comes from payoff ratio, not hit rate, and is used to judge backtests and to calibrate the trade-off between stop tightness (T014) and trailing (T020): loosening stops to chase a higher win rate contradicts this strategy.",
+      "description_zh": "参数（预期/验收指标，不是运行时规则）：原文给出的正期望条件——成功率约 30%，平均每次盈利是亏损的三倍以上（盈亏比 ≥ 3）即为正期望。它说明系统的盈利来源于盈亏比而非胜率，用于评估回测结果和校准止损松紧（T014）与移动止损（T020）的取舍：追求高胜率而放宽止损违背本策略。"
+    },
+    {
+      "id": "P02",
+      "term_id": "T023",
+      "name_en": "per_trade_loss_ratio",
+      "name_zh": "单笔亏损本金比例",
+      "default": "downstream-set",
+      "unit": "fraction of capital",
+      "range": "well below 0.05 (the text's 5-10% example is 'too expensive')",
+      "description_en": "Parameter: the maximum loss of one trade as a fraction of capital, used to size the position from the initial stop distance (see T004). The text gives only a counter-example: a daily-timeframe stop can lose 5% or even 10% of capital per trade, which is 'too expensive', and notes that the same capital fraction allows many more attempts with a minor-timeframe stop. The value should therefore be well below 5%; the downstream agent sets it.",
+      "description_zh": "参数：单笔交易允许的最大亏损占本金的比例，用于由初始止损距离反算手数（见 T004）。原文只给了反例——按日线设止损一次可能亏掉本金的 5% 甚至 10%，属于“太贵”——并说同样的本金比例下小周期止损能试更多次；因此该比例应明显小于 5%，具体数值由下游 agent 设定。"
+    },
+    {
+      "id": "P03",
+      "term_id": "T027",
+      "name_en": "timeframe_gap",
+      "name_zh": "周期级差一到两级",
+      "default": "1-2 levels; 1 level ≈ 4-6x time unit",
+      "unit": "levels",
+      "range": "1..2; minor timeframe never at second level; downstream may override the 4-6x default",
+      "description_en": "Constraint on the gap between major and minor timeframes: one to two levels apart, not more. By default one level means a time-unit ratio of roughly 4-6x (e.g. 5m -> 30m or 15m -> 60m is one level; 5m -> daily is about two); the downstream agent may override this default manually. Lower bound: the entry timeframe must not be absurdly small; second-level data is too noisy with too many false signals.",
+      "description_zh": "大周期与小周期之间的级差约束：相差一到两级，不宜差太大。默认“一级”按时间倍数定义，约 4~6 倍为一级（例如 5分→30分 或 15分→60分 为一级，5分→日线约两级）；下游 agent 可手动覆盖该默认值。另有下限：入场周期不能小到离谱，秒级数据噪音太大、假信号太多。"
+    }
+  ],
+  "relations": [
+    {
+      "from": "T001",
+      "to": "T013",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T002",
+      "to": "T011",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T002",
+      "to": "T013",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T004",
+      "to": "T013",
+      "type": "constrains",
+      "note": ""
+    },
+    {
+      "from": "T005",
+      "to": "T011",
+      "type": "constrains",
+      "note": ""
+    },
+    {
+      "from": "T005",
+      "to": "T013",
+      "type": "constrains",
+      "note": ""
+    },
+    {
+      "from": "T007",
+      "to": "T014",
+      "type": "parameterizes",
+      "note": ""
+    },
+    {
+      "from": "T007",
+      "to": "T020",
+      "type": "parameterizes",
+      "note": ""
+    },
+    {
+      "from": "T008",
+      "to": "T014",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T008",
+      "to": "T024",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T010",
+      "to": "T011",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T010",
+      "to": "T020",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T010",
+      "to": "T021",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T010",
+      "to": "T024",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T012",
+      "to": "T013",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T012",
+      "to": "T014",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T015",
+      "to": "T024",
+      "type": "constrains",
+      "note": ""
+    },
+    {
+      "from": "T016",
+      "to": "T024",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T016",
+      "to": "T015",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T017",
+      "to": "T024",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T017",
+      "to": "T020",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T018",
+      "to": "T024",
+      "type": "constrains",
+      "note": ""
+    },
+    {
+      "from": "T018",
+      "to": "T020",
+      "type": "constrains",
+      "note": ""
+    },
+    {
+      "from": "T018",
+      "to": "T021",
+      "type": "constrains",
+      "note": ""
+    },
+    {
+      "from": "T019",
+      "to": "T020",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T022",
+      "to": "T013",
+      "type": "constrains",
+      "note": ""
+    },
+    {
+      "from": "T023",
+      "to": "T014",
+      "type": "parameterizes",
+      "note": ""
+    },
+    {
+      "from": "T025",
+      "to": "T021",
+      "type": "constrains",
+      "note": ""
+    },
+    {
+      "from": "T025",
+      "to": "T020",
+      "type": "constrains",
+      "note": ""
+    },
+    {
+      "from": "T026",
+      "to": "T013",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T026",
+      "to": "T014",
+      "type": "supports",
+      "note": ""
+    },
+    {
+      "from": "T027",
+      "to": "T010",
+      "type": "parameterizes",
+      "note": ""
+    },
+    {
+      "from": "T027",
+      "to": "T012",
+      "type": "parameterizes",
+      "note": ""
+    },
+    {
+      "from": "CB01",
+      "to": "CB02",
+      "type": "sequence",
+      "note": "execution order"
+    },
+    {
+      "from": "CB02",
+      "to": "CB03",
+      "type": "sequence",
+      "note": "execution order"
+    },
+    {
+      "from": "CB03",
+      "to": "CB06",
+      "type": "sequence",
+      "note": "execution order"
+    },
+    {
+      "from": "CB06",
+      "to": "CB04",
+      "type": "sequence",
+      "note": "execution order"
+    },
+    {
+      "from": "CB04",
+      "to": "CB05",
+      "type": "sequence",
+      "note": "execution order"
+    },
+    {
+      "from": "CB06",
+      "to": "T015",
+      "type": "triggers",
+      "note": "favorable_move=yes triggers move stop to cost"
+    },
+    {
+      "from": "CB05",
+      "to": "T025",
+      "type": "triggers",
+      "note": "reversal=yes is the only active close"
+    },
+    {
+      "from": "CB01",
+      "to": "CB05",
+      "type": "triggers",
+      "note": "a flip or high-confidence uncertain of the direction is what reversal detects"
+    },
+    {
+      "from": "CB01",
+      "to": "CB02",
+      "type": "constrains",
+      "note": "entries only in the major direction; none while uncertain"
+    },
+    {
+      "from": "CB03",
+      "to": "T004",
+      "type": "parameterizes",
+      "note": "stop distance + per_trade_loss_ratio -> position size"
+    }
+  ]
+}
