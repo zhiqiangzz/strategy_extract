@@ -24,12 +24,12 @@ Confirm that the summary, the term set and the formal interface describe the sam
 1. `SF/sf_state.py start S8`; `SF/sf_check.py run`. Fix every ERROR at its source (summary bold, term file, formal file) and re-run until zero errors. Read the warnings; a term never mentioned in the summary is usually either stale (drop it) or a missing sentence in the summary (add it).
 2. Semantic review: for each numbered line in sections 4 and 5 and each bullet in section 6, list the terms that make it executable. A line that needs a judgement but has no callback, or a callback whose definition allows something the summary forbids, is an issue. Check the conflict log's resolutions are actually reflected in both files. Write the section into `S8_check_report.md` under "Semantic review".
 3. If an issue needs a definition change that alters meaning, stop and ask the user (a single question; log it in `S6_dialog.json` with `--stage S6` for the record), apply the answer to both files, re-run step 1. If the change is large, `reopen S6` instead.
-4. `SF/sf_check.py freeze`; `SF/sf_state.py complete S8`; final message; end the turn.
+4. `SF/sf_check.py freeze`; `SF/sf_state.py complete S8` (this marks S8 done directly; no accept step follows); final message; end the turn.
 
 ## Done criteria
 
 - `sf_check.py run` reports 0 errors; the semantic review table has no open issue.
-- `final/` contains the four files; `state.json` shows S8 `awaiting_review` (the user's `accept` marks the run done).
+- `final/` contains the four files; `state.json` shows S8 `done`.
 
 ## Final message
 
@@ -59,12 +59,12 @@ Summarize in ≤10 lines: number of live terms, number of callbacks with their n
 1. `SF/sf_state.py start S8`；`SF/sf_check.py run`。从源头（总结加粗、术语文件、形式化文件）修复每个 ERROR 并重跑直到为零。阅读警告——总结从未提到的术语通常要么过期（丢弃）要么总结漏了一句（补上）。
 2. 语义审查：对第 4、5 节每个编号行和第 6 节每个条目，列出使其可执行的术语。需要判断却没有回调、或回调定义允许总结禁止的事，都是问题。核对冲突日志的裁决是否真的体现在两个文件里。写入 `S8_check_report.md` 的"Semantic review"节。
 3. 若某问题需要改变含义的定义修改，停下来问用户（单个问题；用 `--stage S6` 记入 `S6_dialog.json` 留痕），把回答落实到两个文件后重跑第 1 步。改动大则 `reopen S6`。
-4. `SF/sf_check.py freeze`；`SF/sf_state.py complete S8`；最终消息；结束本轮。
+4. `SF/sf_check.py freeze`；`SF/sf_state.py complete S8`（直接标记 S8 为 done，之后没有 accept）；最终消息；结束本轮。
 
 ## 完成标准
 
 - `sf_check.py run` 报 0 个错误；语义审查表没有未解决的问题。
-- `final/` 含四个文件；`state.json` 显示 S8 为 `awaiting_review`（用户 `accept` 后本次运行完成）。
+- `final/` 含四个文件；`state.json` 显示 S8 为 `done`。
 
 ## 最终消息
 

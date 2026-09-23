@@ -17,7 +17,7 @@ strategy_zoo/<name>/                  input folders (git-ignored: private transc
 workspace/<name>/                     one folder per pipeline run; committed; see SKILL.md §7 for every file
 workspace/ACTIVE                      name of the workspace that `continue` resumes
 pyproject.toml, uv.lock, .venv/       python deps managed by uv (openpyxl, pydantic, networkx, pytest)
-pixi.toml, .pixi/                     non-python deps managed by pixi (graphviz for the S7 graph png)
+pixi.toml, .pixi/                     non-python deps managed by pixi (graphviz for the S7 graph pdf)
 ```
 
 ## Setup
@@ -88,7 +88,7 @@ strategy_zoo/<名称>/                  输入目录（gitignore：私有转写�
 workspace/<名称>/                     每次流水线运行一个目录；提交到 git；每个文件的含义见 SKILL.md 第 7 节
 workspace/ACTIVE                      `continue` 恢复的 workspace 名称
 pyproject.toml, uv.lock, .venv/       uv 管理的 python 依赖（openpyxl、pydantic、networkx、pytest）
-pixi.toml, .pixi/                     pixi 管理的非 python 依赖（S7 关系图 png 所需的 graphviz）
+pixi.toml, .pixi/                     pixi 管理的非 python 依赖（S7 关系图 pdf 所需的 graphviz）
 ```
 
 ## 环境

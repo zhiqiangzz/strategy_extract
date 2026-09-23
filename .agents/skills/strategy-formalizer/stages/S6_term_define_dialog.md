@@ -25,7 +25,7 @@ Give every live term an agreed definition, callback by callback, asking one atom
 
 1. `SF/sf_state.py start S6`; `SF/sf_terms.py carry S5_terms_classified.json S6_terms_defined.json --stage S6`; create `S6_conflict_log.md` with the banner and an empty list.
 2. Order the work: callbacks in execution order (section 4 then 5), each followed by its supporting terms; then remaining parameters/scope/philosophy terms.
-3. One question per turn. For each term draft a definition from the raw text and S3 answers, state the draft, and ask a single question about it (e.g. "这个定义对吗？缺什么？"). For callbacks ask, as separate consecutive questions: the allowed outputs (e.g. 多/空/不确定); what happens on "uncertain"; what inputs it may use (timeframe, indicators, position state); when it is re-evaluated. Group one term's questions under one `round` (`--new-round` when you move to the next term). Write each question with `SF/sf_dialog.py --stage S6 add` first, ask it, end the turn.
+3. One question per turn, and **every live term gets at least one confirmation question** — auxiliary notes, constraints, parameters and scope terms included, even when the text and earlier answers seem to determine the definition fully. For each term draft a definition from the raw text and S3 answers, state the draft, and ask a single question about it (e.g. "这个定义对吗？缺什么？"). Several fully-determined terms may not be bundled into one question. For callbacks ask, as separate consecutive questions: the allowed outputs (e.g. 多/空/不确定); what happens on "uncertain"; what inputs it may use (timeframe, indicators, position state); when it is re-evaluated. Group one term's questions under one `round` (`--new-round` when you move to the next term). Write each question with `SF/sf_dialog.py --stage S6 add` first, ask it, end the turn.
 4. When the answer arrives: `answer`, update `definition_zh`/`definition_en`/`status` in the json (or `add` a new term; `status: dropped` with reason for removed ones), `close` with a resolution, then ask the next question.
 5. After finishing a term: `SF/sf_terms.py validate S6_terms_defined.json --categories S5_categories.json --require-classified`, then walk the consistency checklist for the terms touched. Any conflict → write it into the log, ask the user about it as its own question, resolve, update both files.
 6. Continue until every live term is `defined` and the user confirms nothing is missing. Then a final full checklist pass over all terms and the summary; append the closing line to the conflict log.
@@ -37,7 +37,7 @@ An open entry in `S6_dialog.json` is the question to re-ask verbatim (there is a
 
 ## Done criteria
 
-- Validator with `--require-defined` passes; no open dialog entries.
+- Validator with `--require-defined` passes; no open dialog entries; every live term id appears in `affects.terms` of at least one closed entry (each term was confirmed).
 - Conflict log has the closing line and no unresolved entry.
 - Every callback has `definition_en` naming its outputs.
 
@@ -70,7 +70,7 @@ Point the user to `S6_terms_defined.xlsx` (definitions column) and `S6_conflict_
 
 1. `SF/sf_state.py start S6`；`SF/sf_terms.py carry S5_terms_classified.json S6_terms_defined.json --stage S6`；新建带横幅和空列表的 `S6_conflict_log.md`。
 2. 顺序：按执行顺序（第 4 节再第 5 节）逐个回调，每个回调后紧跟其支持术语；最后是剩余的参数/范围/理念术语。
-3. 每轮只问一个。对每个术语先根据原文和 S3 回答起草定义，陈述草稿，只问一个问题（如"这个定义对吗？缺什么？"）。回调要依次分别问：允许的输出（如 多/空/不确定）；"不确定"时怎么办；可用输入（周期、指标、持仓状态）；何时重新评估。同一术语的问题用同一个 `round`（换术语时 `--new-round`）。每个问题先 `SF/sf_dialog.py --stage S6 add` 落盘，提出，结束本轮。
+3. 每轮只问一个，且**每个存活术语至少得到一次确认提问**——辅助说明、约束、参数、范围类术语也一样，即使原文和此前的回答看起来已完全决定其定义。对每个术语先根据原文和 S3 回答起草定义，陈述草稿，只问一个问题（如"这个定义对吗？缺什么？"）。多个看似已定的术语不得打包进一个问题。回调要依次分别问：允许的输出（如 多/空/不确定）；"不确定"时怎么办；可用输入（周期、指标、持仓状态）；何时重新评估。同一术语的问题用同一个 `round`（换术语时 `--new-round`）。每个问题先 `SF/sf_dialog.py --stage S6 add` 落盘，提出，结束本轮。
 4. 收到回答：`answer`，在 json 中更新 `definition_zh`/`definition_en`/`status`（新术语用 `add`；删除的置 `status: dropped` 并写原因），`close` 并写 resolution，然后问下一个。
 5. 每完成一个术语：`SF/sf_terms.py validate S6_terms_defined.json --categories S5_categories.json --require-classified`，再对触及的术语走一遍一致性清单。有矛盾 → 写入日志、作为单独一个问题问用户、裁决后同时更新两个文件。
 6. 直到所有存活术语都 `defined` 且用户确认无遗漏。最后对全部术语和总结做一次完整清单检查；在冲突日志追加收尾行。
@@ -82,7 +82,7 @@ Point the user to `S6_terms_defined.xlsx` (definitions column) and `S6_conflict_
 
 ## 完成标准
 
-- 带 `--require-defined` 的校验通过；没有未回答的对话条目。
+- 带 `--require-defined` 的校验通过；没有未回答的对话条目；每个存活术语 id 至少出现在一条已关闭条目的 `affects.terms` 中（每个术语都被确认过）。
 - 冲突日志有收尾行且没有未解决的条目。
 - 每个回调的 `definition_en` 都写明了输出。
 

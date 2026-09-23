@@ -2,11 +2,11 @@
 Agents: read the English part only. 中文仅供人类阅读。
 
 S7/S8 tests: scaffold formal.json from the fixture terms, validate it,
-generate a compilable stub, render mermaid/dot (png if graphviz is
+generate a compilable stub, render mermaid/dot (pdf if graphviz is
 available), and run the S8 cross-check including a deliberate stray bold.
 
 S7/S8 测试：由夹具术语生成 formal.json 并校验、生成可编译的桩代码、渲染 mermaid/dot
-（有 graphviz 时渲染 png），并运行 S8 交叉核对，包括故意加入的错误加粗。
+（有 graphviz 时渲染 pdf），并运行 S8 交叉核对，包括故意加入的错误加粗。
 """
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ def _scaffold(ws):
     sf_formal.main(["--workspace", w, "scaffold", "S6_terms_defined.json", "S7_formal.json"])
     formal = load(ws / "S7_formal.json")
     for cb in formal["callbacks"]:
-        cb["inputs"] = [{"name": "bars", "type": "OHLCV[]", "source_term_id": None, "description_en": "recent bars"}]
+        cb["inputs"] = [{"name": "bars", "type": "MarketData", "source_term_id": None, "description_en": "recent bars"}]
         cb["output"] = {"type": "enum", "values": ["long", "short", "uncertain"], "description_en": ""}
     (ws / "S7_formal.json").write_text(__import__("json").dumps(formal, ensure_ascii=False, indent=2), encoding="utf-8")
     return formal
@@ -54,7 +54,8 @@ def test_scaffold_validate_stub(ws):
     sf_formal.main(["--workspace", str(ws), "gen-stub", "S7_formal.json", "--terms", "S6_terms_defined.json",
                     "--out", "S7_callbacks_stub.py", "--strategy-name", "demo"])
     code = (ws / "S7_callbacks_stub.py").read_text(encoding="utf-8")
-    assert "def major_timeframe_direction(self, bars: Any) -> Literal['long', 'short', 'uncertain']" in code
+    assert "def major_timeframe_direction(self, bars: MarketData) -> Literal['long', 'short', 'uncertain']" in code
+    assert "class MarketData" in code and "class EntryDecision" in code
     assert "尽快但不是立刻" in code
     compile(code, "stub", "exec")
 
@@ -76,21 +77,21 @@ def test_formal_xlsx_roundtrip(ws):
 
 def test_graph(ws):
     """
-    Mermaid and dot outputs contain live nodes and typed edges, exclude dropped terms, and a png is rendered when graphviz is available.
+    Mermaid and dot outputs contain live nodes and typed edges, exclude dropped terms, and a pdf is rendered when graphviz is available.
 
-    Mermaid 与 dot 输出包含存活节点和带类型的边、排除已丢弃术语；有 graphviz 时渲染 png。
+    Mermaid 与 dot 输出包含存活节点和带类型的边、排除已丢弃术语；有 graphviz 时渲染 pdf。
     """
     _scaffold(ws)
     args = ["--workspace", str(ws), "render", "S7_formal.json", "--terms", "S6_terms_defined.json"]
     if shutil.which("pixi") or shutil.which("dot"):
-        args.append("--png")
+        args.append("--pdf")
     sf_graph.main(args)
     mmd = (ws / "S7_term_graph.mmd").read_text(encoding="utf-8")
     dot = (ws / "S7_term_graph.dot").read_text(encoding="utf-8")
     assert "T001[[" in mmd and "T012" not in mmd
     assert "T008 -> T004" in dot
-    if "--png" in args:
-        assert (ws / "S7_term_graph.png").exists()
+    if "--pdf" in args:
+        assert (ws / "S7_term_graph.pdf").exists()
 
 
 def test_check_and_freeze(ws):

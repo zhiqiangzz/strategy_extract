@@ -11,12 +11,12 @@ channels = ["conda-forge"]
 platforms = ["osx-arm64", "osx-64", "linux-64"]
 
 [dependencies]
-# graphviz provides `dot`, used by scripts/sf_graph.py --png to render the
+# graphviz provides `dot`, used by scripts/sf_graph.py --pdf to render the
 # S7 term-relationship graph. The .mmd/.dot files are written without it.
 graphviz = ">=12"
 
 [tasks]
-# Usage: pixi run dot -Tpng in.dot -o out.png
+# Usage: pixi run dot -Tpdf in.dot -o out.pdf
 # First use on a machine: `pixi run dot -c` registers the graphviz plugins inside .pixi/
 # (sf_graph.py does this automatically). 首次使用需 `pixi run dot -c` 注册插件（脚本会自动执行）。
 dot = "dot"

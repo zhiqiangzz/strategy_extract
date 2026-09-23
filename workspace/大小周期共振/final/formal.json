@@ -60,7 +60,7 @@
         },
         {
           "name": "major_direction",
-          "type": "Literal['long','short']",
+          "type": "Direction",
           "source_term_id": "T011",
           "description_en": "Output of major_timeframe_direction; the callback is only invoked while it is long or short"
         },
@@ -72,12 +72,12 @@
         }
       ],
       "output": {
-        "type": "object",
+        "type": "EntryDecision",
         "values": [
           "enter",
           "no_enter"
         ],
-        "description_en": "{'decision': 'enter'|'no_enter', 'entry_price': float|None} — a limit entry price accompanies 'enter'. Signal type is unrestricted but must be in the major direction (T022)."
+        "description_en": "EntryDecision(decision='enter'|'no_enter', entry_price=<limit price when entering>). Signal type is unrestricted but must be in the major direction (T022)."
       },
       "aux_term_ids": [
         "T001",
@@ -115,15 +115,15 @@
         },
         {
           "name": "direction",
-          "type": "Literal['long','short']",
+          "type": "Direction",
           "source_term_id": "T011",
           "description_en": "Position direction"
         }
       ],
       "output": {
-        "type": "number",
+        "type": "StopDistance",
         "values": [],
-        "description_en": "Initial stop distance from entry (points or percent, declare which); the caller converts it to a stop price and sizes the position with per_trade_loss_ratio (T004/T023). Must be 'very close': clearly smaller than one major-timeframe bar's range."
+        "description_en": "StopDistance(value, unit='points'|'percent'): initial stop distance from entry; the caller converts it to a stop price and sizes the position with per_trade_loss_ratio (T004/T023). Must be 'very close': clearly smaller than one major-timeframe bar's range."
       },
       "aux_term_ids": [
         "T008",
@@ -229,7 +229,7 @@
       "inputs": [
         {
           "name": "major_direction",
-          "type": "Literal['long','short','uncertain']",
+          "type": "Literal['long', 'short', 'uncertain']",
           "source_term_id": "T011",
           "description_en": "Latest output of major_timeframe_direction"
         },

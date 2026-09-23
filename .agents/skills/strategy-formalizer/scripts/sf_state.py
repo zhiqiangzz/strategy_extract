@@ -41,9 +41,8 @@ import shutil
 from pathlib import Path
 
 from sf_common import (ACTIVE_FILE, DIALOG_STAGES, REPO_ROOT, STAGE_DOCS, STAGE_OUTPUTS, STAGE_TITLES,
-                       STAGES, STAGES_DIR, TEMPLATES_DIR, TERM_FILE_BY_STAGE, WORKSPACE_ROOT, fail,
-                       load_json, now_iso, relpath, resolve_workspace, save_json, say, sha256_of,
-                       stage_index)
+                       STAGES, STAGES_DIR, TEMPLATES_DIR, TERM_FILE_BY_STAGE, WORKSPACE_ROOT, content_hash,
+                       fail, load_json, now_iso, relpath, resolve_workspace, save_json, say, stage_index)
 
 STATE_FILE = "state.json"
 
@@ -121,7 +120,7 @@ def checkpoint(ws: Path, stage: str) -> dict[str, str | None]:
     hashes: dict[str, str | None] = {}
     missing = []
     for fname, required in STAGE_OUTPUTS[stage]:
-        h = sha256_of(ws / fname)
+        h = content_hash(ws / fname)
         if h is None and required:
             missing.append(fname)
         hashes[fname] = h
@@ -143,7 +142,7 @@ def modified_since_checkpoint(ws: Path, state: dict, stage: str) -> list[str]:
     stored = state["stages"][stage].get("checkpoint_hashes") or {}
     changed = []
     for fname, old in stored.items():
-        new = sha256_of(ws / fname)
+        new = content_hash(ws / fname)
         if new != old:
             changed.append(fname)
     return changed
@@ -252,7 +251,7 @@ def cmd_status(args: argparse.Namespace) -> None:
         for st_ in state["stages"].values():
             if rel in (st_.get("checkpoint_hashes") or {}):
                 stored = st_["checkpoint_hashes"][rel]
-        if xlsx.exists() and stored is not None and sha256_of(xlsx) != stored:
+        if xlsx.exists() and stored is not None and content_hash(xlsx) != stored:
             say(f"{relpath(xlsx)} is NEWER than its json; run `sf_terms.py from-xlsx` to merge it",
                 f"{relpath(xlsx)} 比 json 新；请先运行 sf_terms.py from-xlsx 合并")
         else:
@@ -308,10 +307,13 @@ def cmd_complete(args: argparse.Namespace) -> None:
     Record the checkpoint for a stage's outputs and set it to awaiting_review.
     This is the STOP point: after this command the agent must print the
     review checklist and end its turn. Fails if a required output is missing
-    or the stage is not in_progress.
+    or the stage is not in_progress. The last stage (S8) has nothing after
+    it to accept into, so completing it marks it done directly: freezing
+    final/ ends the run.
 
     记录该阶段产出文件的检查点并置为 awaiting_review。这就是"停止点"：此命令之后 agent
-    必须打印审阅清单并结束本轮。必需文件缺失或阶段不处于 in_progress 时报错。
+    必须打印审阅清单并结束本轮。必需文件缺失或阶段不处于 in_progress 时报错。最后一个阶段
+    （S8）之后没有需要 accept 进入的阶段，因此 complete 直接标记为 done：冻结 final/ 即结束。
     """
     ws = resolve_workspace(args.workspace)
     state = load_state(ws)
@@ -321,12 +323,19 @@ def cmd_complete(args: argparse.Namespace) -> None:
     if st["status"] != "in_progress":
         fail(f"cannot complete {stage}: status is {st['status']}", f"无法完成 {stage}：状态为 {st['status']}")
     st["checkpoint_hashes"] = checkpoint(ws, stage)
-    st["status"] = "awaiting_review"
     st["completed_at"] = now_iso()
     state["current_stage"] = stage
-    save_state(ws, state)
-    say(f"{stage} complete -> awaiting_review. STOP now and ask the user to review:",
-        f"{stage} 已完成，等待审阅。现在停止，请用户审阅：")
+    if stage == STAGES[-1]:
+        st["status"] = "done"
+        st["accepted_at"] = st["completed_at"]
+        save_state(ws, state)
+        say(f"{stage} complete -> done. The run is finished; final/ is frozen. Print the final message:",
+            f"{stage} 已完成并标记 done。本次运行结束，final/ 已冻结。请打印最终消息：")
+    else:
+        st["status"] = "awaiting_review"
+        save_state(ws, state)
+        say(f"{stage} complete -> awaiting_review. STOP now and ask the user to review:",
+            f"{stage} 已完成，等待审阅。现在停止，请用户审阅：")
     for fname, _ in STAGE_OUTPUTS[stage]:
         if (ws / fname).exists():
             print(f"    - {relpath(ws / fname)}")

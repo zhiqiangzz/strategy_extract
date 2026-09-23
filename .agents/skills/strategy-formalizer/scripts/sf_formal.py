@@ -366,18 +366,42 @@ def from_xlsx(formal: dict, xlsx: Path) -> None:
 # --------------------------------------------------------------------------- #
 
 
+STANDARD_TYPES = ("MarketData", "Bar", "Position", "Instrument", "Direction", "EntryDecision", "StopDistance")
+
+
+def py_type(name: str) -> str:
+    """
+    Map a type name used in formal.json (inputs[].type / output.type) to a
+    Python annotation in the stub: the standard interface types defined in
+    templates/callbacks_stub.template.py are used verbatim, `enum` outputs
+    become Literal[...] (handled by py_literal_type), scalar names map to
+    builtins, `Literal[...]` and `Optional[...]` strings pass through, and
+    anything unknown becomes Any.
+
+    把 formal.json 中的类型名（inputs[].type / output.type）映射为桩代码的 Python 标注：
+    templates/callbacks_stub.template.py 定义的标准接口类型原样使用，enum 输出由
+    py_literal_type 变成 Literal[...]，标量名映射为内置类型，`Literal[...]`/`Optional[...]`
+    字符串原样透传，未知类型为 Any。
+    """
+    name = (name or "").strip()
+    if name in STANDARD_TYPES or name.startswith(("Literal[", "Optional[", "list[", "dict[")):
+        return name
+    return {"number": "float", "price": "float", "float": "float", "bool": "bool", "int": "int",
+            "str": "str", "string": "str"}.get(name, "Any")
+
+
 def py_literal_type(output: dict) -> str:
     """
-    Map an output spec to a Python annotation: enum -> Literal[...], number
-    -> float, bool -> bool, price -> float, anything else -> Any.
+    Map an output spec to a Python annotation: enum -> Literal[...], a
+    standard interface type or scalar via py_type, anything else -> Any.
 
-    把输出规格映射为 Python 类型标注：enum -> Literal[...]，number/price -> float，
-    bool -> bool，其他 -> Any。
+    把输出规格映射为 Python 类型标注：enum -> Literal[...]，标准接口类型或标量经 py_type
+    映射，其他 -> Any。
     """
     typ = (output or {}).get("type", "")
     if typ == "enum" and output.get("values"):
         return "Literal[" + ", ".join(repr(v) for v in output["values"]) + "]"
-    return {"number": "float", "price": "float", "bool": "bool", "int": "int", "str": "str"}.get(typ, "Any")
+    return py_type(typ)
 
 
 def _wrap(text: str, indent: str, width: int = 88) -> list[str]:
@@ -406,8 +430,7 @@ def gen_stub(formal: dict, terms: dict, strategy_name: str) -> str:
     tmap = {t["id"]: t for t in terms["terms"]}
     header = read_text(TEMPLATES_DIR / "callbacks_stub.template.py")
     header = header.replace("{strategy_name}", strategy_name).replace("{generated_at}", now_iso())
-    lines = [header.rstrip("\n"), "", "from __future__ import annotations", "",
-             "from abc import ABC, abstractmethod", "from typing import Any, Literal", "", ""]
+    lines = [header.rstrip("\n"), "", ""]
     lines.append("class StrategyCallbacks(ABC):")
     lines.append('    """')
     lines.append("    Decision callbacks the downstream trading agent must implement. Each method")
@@ -424,7 +447,7 @@ def gen_stub(formal: dict, terms: dict, strategy_name: str) -> str:
         t = tmap.get(cb["term_id"], {})
         params = ["self"]
         for i in cb.get("inputs", []):
-            params.append(f"{i['name']}: Any")
+            params.append(f"{i['name']}: {py_type(i.get('type', ''))}")
         ret = py_literal_type(cb.get("output") or {})
         lines.append("    @abstractmethod")
         lines.append(f"    def {cb['name_en']}({', '.join(params)}) -> {ret}:")

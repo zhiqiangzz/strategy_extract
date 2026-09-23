@@ -7,19 +7,19 @@ sf_graph.py — draw the S7 term-relationship graph.
 Reads S7_formal.json and the defined term file and writes the same graph in
 two text formats plus an optional bitmap: S7_term_graph.mmd (Mermaid
 flowchart, renders on GitHub and in Claude Code artifacts with no tooling),
-S7_term_graph.dot (Graphviz), and S7_term_graph.png (rendered with `dot`
-from the project-local pixi environment when --png is given). Nodes are the
+S7_term_graph.dot (Graphviz), and S7_term_graph.pdf (rendered with `dot`
+from the project-local pixi environment when --pdf is given; --png also works). Nodes are the
 live terms grouped into a cluster per phase; callback terms are drawn bold,
 parameters as hexagons, constraints as diamonds, auxiliary notes as plain
 boxes. Edges are the typed relations from formal.json. Reading the graph
 answers "which auxiliary notes and constraints does callback X depend on?"
 at a glance.
 
-    sf_graph.py render S7_formal.json --terms S6_terms_defined.json [--out-prefix S7_term_graph] [--png]
+    sf_graph.py render S7_formal.json --terms S6_terms_defined.json [--out-prefix S7_term_graph] [--pdf] [--png]
 
 sf_graph.py 绘制 S7 术语关系图。读取 S7_formal.json 和已定义的术语文件，以两种文本格式
 （S7_term_graph.mmd 为 Mermaid 流程图，GitHub 与 Claude Code 可直接渲染；S7_term_graph.dot
-为 Graphviz）输出同一张图，加 --png 时用项目本地 pixi 环境中的 `dot` 渲染 S7_term_graph.png。
+为 Graphviz）输出同一张图，加 --pdf 时用项目本地 pixi 环境中的 `dot` 渲染 S7_term_graph.pdf（--png 亦可）。
 节点是存活术语，按 phase 分组为子图；回调术语加粗，参数为六边形，约束为菱形，辅助说明为
 普通方框。边是 formal.json 中带类型的关系。看图即可回答"回调 X 依赖哪些辅助说明和约束"。
 """
@@ -144,25 +144,27 @@ def to_dot(terms: list[dict], relations: list[dict]) -> str:
     return "\n".join(lines)
 
 
-def render_png(dot_path: Path, png_path: Path) -> bool:
+def render_bitmap(dot_path: Path, out_path: Path, fmt: str = "pdf") -> bool:
     """
-    Run Graphviz `dot -Tpng` via `pixi run dot` from the repo root (falls
-    back to a `dot` on PATH). Returns True on success; never raises, because
-    the png is optional.
+    Run Graphviz `dot -T<fmt>` (pdf by default, png also supported) via
+    `pixi run dot` from the repo root, falling back to a `dot` on PATH.
+    Returns True on success; never raises, because the rendered file is
+    optional.
 
-    从仓库根目录用 `pixi run dot` 调用 Graphviz `dot -Tpng`（找不到时退回 PATH 中的 dot）。
-    成功返回 True；因为 png 是可选产物，此函数不会抛异常。
+    从仓库根目录用 `pixi run dot` 调用 Graphviz `dot -T<fmt>`（默认 pdf，也支持 png；找不到
+    时退回 PATH 中的 dot）。成功返回 True；渲染文件是可选产物，此函数不会抛异常。
     """
+    png_path = out_path
     cmds = []
     if shutil.which("pixi"):
         # conda-forge graphviz needs its plugin registry generated once; `dot -c` is idempotent and
         # writes only inside .pixi/. 首次使用需注册插件，写入 .pixi/ 内部，幂等。
         subprocess.run(["pixi", "run", "--manifest-path", str(REPO_ROOT / "pixi.toml"), "dot", "-c"],
                        cwd=REPO_ROOT, capture_output=True, text=True, timeout=120)
-        cmds.append(["pixi", "run", "--manifest-path", str(REPO_ROOT / "pixi.toml"), "dot", "-Tpng",
+        cmds.append(["pixi", "run", "--manifest-path", str(REPO_ROOT / "pixi.toml"), "dot", f"-T{fmt}",
                      str(dot_path), "-o", str(png_path)])
     if shutil.which("dot"):
-        cmds.append(["dot", "-Tpng", str(dot_path), "-o", str(png_path)])
+        cmds.append(["dot", f"-T{fmt}", str(dot_path), "-o", str(png_path)])
     for cmd in cmds:
         try:
             res = subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True, text=True, timeout=120)
@@ -177,9 +179,11 @@ def render_png(dot_path: Path, png_path: Path) -> bool:
 
 def cmd_render(args: argparse.Namespace) -> None:
     """
-    Write <prefix>.mmd, <prefix>.dot and optionally <prefix>.png.
+    Write <prefix>.mmd, <prefix>.dot and optionally <prefix>.pdf (--pdf,
+    the documented S7 output) and/or <prefix>.png (--png).
 
-    写出 <prefix>.mmd、<prefix>.dot，可选 <prefix>.png。
+    写出 <prefix>.mmd、<prefix>.dot，可选 <prefix>.pdf（--pdf，S7 的正式产出）和/或
+    <prefix>.png（--png）。
     """
     formal = load_json(ws_path(args.workspace, args.path))
     terms = load_terms(ws_path(args.workspace, args.terms))
@@ -200,13 +204,15 @@ def cmd_render(args: argparse.Namespace) -> None:
     write_text(mmd, to_mermaid(live, rels))
     write_text(dot, to_dot(live, rels))
     say(f"wrote {relpath(mmd)} and {relpath(dot)} ({len(live)} nodes, {len(rels)} edges)", "已写出图文件")
-    if args.png:
-        png = prefix.with_suffix(".png")
-        if render_png(dot, png):
-            say(f"wrote {relpath(png)}", "已渲染 png")
+    for flag, fmt in ((args.pdf, "pdf"), (args.png, "png")):
+        if not flag:
+            continue
+        out = prefix.with_suffix(f".{fmt}")
+        if render_bitmap(dot, out, fmt):
+            say(f"wrote {relpath(out)}", f"已渲染 {fmt}")
         else:
-            say("png not rendered (run `pixi install` to get graphviz); mmd/dot are still valid",
-                "png 未渲染（运行 pixi install 安装 graphviz）；mmd/dot 仍可用")
+            say(f"{fmt} not rendered (run `pixi install` to get graphviz); mmd/dot are still valid",
+                f"{fmt} 未渲染（运行 pixi install 安装 graphviz）；mmd/dot 仍可用")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -222,7 +228,8 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("path")
     s.add_argument("--terms", required=True)
     s.add_argument("--out-prefix", default="S7_term_graph")
-    s.add_argument("--png", action="store_true")
+    s.add_argument("--pdf", action="store_true", help="also render <prefix>.pdf via graphviz (S7 output)")
+    s.add_argument("--png", action="store_true", help="also render <prefix>.png")
     s.set_defaults(func=cmd_render)
     return p
 

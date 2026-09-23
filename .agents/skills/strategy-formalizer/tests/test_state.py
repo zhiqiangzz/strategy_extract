@@ -88,3 +88,44 @@ def test_reopen_resets_downstream(tmp_path, monkeypatch):
     sf_state.main(["--workspace", str(ws), "reopen", "S1", "--yes"])
     st = load(ws / "state.json")
     assert st["stages"]["S1"]["status"] == "in_progress" and st["stages"]["S2"]["status"] == "pending"
+
+
+def test_xlsx_resave_not_flagged(tmp_path, monkeypatch):
+    """
+    Re-saving an xlsx with identical cells (what Excel does on open+save)
+    does not count as a user edit; changing a cell does.
+
+    以相同单元格重新保存 xlsx（Excel 打开再保存的效果）不算用户修改；改动单元格才算。
+    """
+    import json
+    from openpyxl import Workbook, load_workbook
+    ws = _init(tmp_path, monkeypatch)
+    wb = Workbook(); wb.active.append(["a", None, 1]); wb.save(ws / "S1_extra.xlsx")
+    st = load(ws / "state.json")
+    st["stages"]["S1"]["checkpoint_hashes"]["S1_extra.xlsx"] = sf_state.content_hash(ws / "S1_extra.xlsx")
+    (ws / "state.json").write_text(json.dumps(st), encoding="utf-8")
+    load_workbook(ws / "S1_extra.xlsx").save(ws / "S1_extra.xlsx")
+    assert "S1_extra.xlsx" not in sf_state.modified_since_checkpoint(ws, load(ws / "state.json"), "S1")
+    wb2 = load_workbook(ws / "S1_extra.xlsx"); wb2.active["A1"] = "b"; wb2.save(ws / "S1_extra.xlsx")
+    assert "S1_extra.xlsx" in sf_state.modified_since_checkpoint(ws, load(ws / "state.json"), "S1")
+
+
+def test_complete_last_stage_is_done(tmp_path, monkeypatch):
+    """
+    complete S8 marks the stage done directly (no accept), because
+    freezing final/ ends the run.
+
+    complete S8 直接标记为 done（不需要 accept），因为冻结 final/ 即结束。
+    """
+    ws = _init(tmp_path, monkeypatch)
+    st = load(ws / "state.json")
+    for s_ in sf_state.STAGES[:-1]:
+        st["stages"][s_]["status"] = "done"
+    st["current_stage"] = "S8"
+    (ws / "state.json").write_text(__import__("json").dumps(st), encoding="utf-8")
+    sf_state.main(["--workspace", str(ws), "start", "S8"])
+    (ws / "final").mkdir()
+    for f in ("S8_check_report.md", "final/strategy.md", "final/terms.json", "final/formal.json", "final/callbacks_stub.py"):
+        (ws / f).write_text("x", encoding="utf-8")
+    sf_state.main(["--workspace", str(ws), "complete", "S8"])
+    assert load(ws / "state.json")["stages"]["S8"]["status"] == "done"

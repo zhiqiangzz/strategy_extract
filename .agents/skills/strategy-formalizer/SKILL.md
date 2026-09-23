@@ -104,7 +104,7 @@ Each row names the stage doc to read (`stages/`), the main inputs, and the outpu
 | S4 | `stages/S4_term_filter.md` | `S2_terms_init.json`, S3 outputs | `S4_terms_filtered.json/.xlsx` | no |
 | S5 | `stages/S5_term_classify.md` | `S4_terms_filtered.json`, `S3_summary_corrected.md` | `S5_categories.json`, `S5_terms_classified.json/.xlsx`, `S5_summary_marked.md` | short (scheme choice) |
 | S6 | `stages/S6_term_define_dialog.md` | S5 outputs | `S6_dialog.json/.md`, `S6_terms_defined.json/.xlsx`, `S6_conflict_log.md` | ⟲ yes |
-| S7 | `stages/S7_formalize.md` | `S6_terms_defined.json` | `S7_formal.json/.xlsx`, `S7_term_graph.mmd/.dot(/.png)`, `S7_callbacks_stub.py` | no |
+| S7 | `stages/S7_formalize.md` | `S6_terms_defined.json` | `S7_formal.json/.xlsx`, `S7_term_graph.mmd/.dot(/.pdf)`, `S7_callbacks_stub.py` | no |
 | S8 | `stages/S8_double_check.md` | S5 summary, S6 terms, S7 formal | `S8_check_report.md`, `final/*` | no |
 
 ## 4. How to invoke and route
@@ -118,7 +118,7 @@ The skill is invoked as `/strategy-formalizer <args>`. Route on the first word o
 
 ## 5. The STOP protocol (after every stage)
 
-A stage is done when its stage doc's "done criteria" hold and all required outputs exist. Then, in this order: (1) run the validators named in the stage doc; (2) run `SF/sf_state.py complete S<n>`, which records checkpoint hashes and puts the stage in `awaiting_review`; (3) print the completion message below; (4) **end your turn**. Do not start the next stage in the same turn, even if the user seems to want it, because the stop exists so the user can edit the files. The only exception is S2, whose two subagents run in one stage.
+A stage is done when its stage doc's "done criteria" hold and all required outputs exist. Then, in this order: (1) run the validators named in the stage doc; (2) run `SF/sf_state.py complete S<n>`, which records checkpoint hashes and puts the stage in `awaiting_review`; (3) print the completion message below; (4) **end your turn**. Do not start the next stage in the same turn, even if the user seems to want it, because the stop exists so the user can edit the files. Two exceptions: S2's two subagents run in one stage, and `complete S8` marks the run done directly (freezing `final/` is the end; no `accept` follows).
 
 Completion message template (fill the brackets; keep it short; write it in the user's language):
 
@@ -133,7 +133,7 @@ To continue / 继续: say "继续" or run /strategy-formalizer continue.
 
 ## 6. The RESUME protocol (on every invocation)
 
-Always start with `SF/sf_state.py status`. It prints the current stage and its status, the files the user modified since the last checkpoint, any open dialog questions, and whether an `.xlsx` is newer than its `.json`. Then:
+Always start with `SF/sf_state.py status`. It prints the current stage and its status, the files the user modified since the last checkpoint (content-level: re-saving an `.xlsx` in Excel without changing cells does not count), any open dialog questions, and whether an `.xlsx` was edited after its `.json`. Then:
 
 1. If the current stage is `awaiting_review`: re-read every file listed as modified (the user edited them during the stop); if an xlsx is newer, run `SF/sf_terms.py from-xlsx <file>.xlsx` (or `sf_formal.py from-xlsx`) first. Then run `SF/sf_state.py accept S<n>`, which advances to the next stage. Continue with step 3.
 2. If the current stage is `in_progress`: the previous session died mid-stage. Read the stage doc, read the outputs that already exist, and for dialog stages read the dialog json; any `open` entries are questions already asked but never answered, so ask them again verbatim. Resume the stage from where the files show it stopped.
@@ -164,8 +164,8 @@ All paths are under `workspace/<strategy_name>/`. json files are the source of t
 | `S6_terms_defined.json` `.xlsx` | S6 | All terms `defined` with `definition_zh` and `definition_en`, including terms added during the dialog (`origin: S6_dialog`). |
 | `S6_conflict_log.md` | S6 | Contradictions found between term definitions and the summary (or between terms), and how each was resolved. |
 | `S7_formal.json` `.xlsx` | S7 | Callbacks (name, invocation point, inputs, output enum, aux/constraint/parameter term ids), parameters, typed relations. |
-| `S7_term_graph.mmd` `.dot` `.png` | S7 | Term relationship graph (Mermaid, Graphviz, bitmap). |
-| `S7_callbacks_stub.py` | S7 | Abstract Python class: one method per callback, docstring = definition + all auxiliary notes. The downstream agent subclasses it. |
+| `S7_term_graph.mmd` `.dot` `.pdf` | S7 | Term relationship graph (Mermaid, Graphviz source, PDF rendering). |
+| `S7_callbacks_stub.py` | S7 | Standard interface dataclasses (Bar, MarketData, Instrument, Position, EntryDecision, StopDistance) plus an abstract class with one typed method per callback, docstring = definition + all auxiliary notes. The downstream agent subclasses it. |
 | `S8_check_report.md` | S8 | Script findings (bold ↔ terms ↔ formal consistency) plus the agent's semantic review. |
 | `final/strategy.md` `terms.json` `formal.json` `callbacks_stub.py` | S8 | Frozen deliverables for the downstream trading agent. |
 
@@ -189,7 +189,7 @@ All paths are under `workspace/<strategy_name>/`. json files are the source of t
 | `sf_dialog.py` | Q/A audit trail | `--stage S3 add -q "..." --affects-terms T001`, `answer D001 -a "..."`, `close D001 -r "..."`, `to-md`, `from-md`, `list --open` |
 | `sf_terms.py` | term files | `new`, `add`, `carry <src> <dst> --stage S4`, `to-xlsx <json> --categories S5_categories.json`, `from-xlsx <xlsx>`, `validate <json> [--require-classified] [--require-defined]`, `diff a b` |
 | `sf_formal.py` | S7 interface | `scaffold S6_terms_defined.json S7_formal.json`, `validate S7_formal.json --terms ...`, `to-xlsx`, `from-xlsx`, `gen-stub S7_formal.json --terms ... --out S7_callbacks_stub.py` |
-| `sf_graph.py` | S7 graph | `render S7_formal.json --terms S6_terms_defined.json --png` |
+| `sf_graph.py` | S7 graph | `render S7_formal.json --terms S6_terms_defined.json --pdf` |
 | `sf_check.py` | S1 coverage, S8 checks & freeze | `s1-coverage`, `run [--lenient]`, `freeze` |
 
 Every script prints lines prefixed `[sf]`; a non-zero exit means a validation error that must be fixed before `complete`.
@@ -234,7 +234,7 @@ tests/                        pytest suite (`uv run pytest` from the repo root)
 | S4 | `stages/S4_term_filter.md` | `S2_terms_init.json`、S3 产出 | `S4_terms_filtered.json/.xlsx` | 无 |
 | S5 | `stages/S5_term_classify.md` | `S4_terms_filtered.json`、`S3_summary_corrected.md` | `S5_categories.json`、`S5_terms_classified.json/.xlsx`、`S5_summary_marked.md` | 简短（选分类方案） |
 | S6 | `stages/S6_term_define_dialog.md` | S5 产出 | `S6_dialog.json/.md`、`S6_terms_defined.json/.xlsx`、`S6_conflict_log.md` | ⟲ 有 |
-| S7 | `stages/S7_formalize.md` | `S6_terms_defined.json` | `S7_formal.json/.xlsx`、`S7_term_graph.mmd/.dot(/.png)`、`S7_callbacks_stub.py` | 无 |
+| S7 | `stages/S7_formalize.md` | `S6_terms_defined.json` | `S7_formal.json/.xlsx`、`S7_term_graph.mmd/.dot(/.pdf)`、`S7_callbacks_stub.py` | 无 |
 | S8 | `stages/S8_double_check.md` | S5 总结、S6 术语、S7 形式化 | `S8_check_report.md`、`final/*` | 无 |
 
 ## 4. 调用方式与分派
@@ -248,13 +248,13 @@ tests/                        pytest suite (`uv run pytest` from the repo root)
 
 ## 5. 每个阶段后的停止协议
 
-一个阶段完成的标准是：阶段文档的"完成标准"成立且必需产出齐全。然后依次：(1) 运行阶段文档指定的校验脚本；(2) 运行 `SF/sf_state.py complete S<n>`，记录检查点哈希并置为 `awaiting_review`；(3) 打印完成消息（模板见英文部分）；(4) **结束本轮**。即使用户看起来想继续，也不要在同一轮开始下一阶段，停止就是为了让用户编辑文件。唯一例外是 S2 的两个子代理在同一阶段内运行。
+一个阶段完成的标准是：阶段文档的"完成标准"成立且必需产出齐全。然后依次：(1) 运行阶段文档指定的校验脚本；(2) 运行 `SF/sf_state.py complete S<n>`，记录检查点哈希并置为 `awaiting_review`；(3) 打印完成消息（模板见英文部分）；(4) **结束本轮**。即使用户看起来想继续，也不要在同一轮开始下一阶段，停止就是为了让用户编辑文件。两个例外：S2 的两个子代理在同一阶段内运行；`complete S8` 直接标记本次运行 done（冻结 `final/` 即结束，之后没有 `accept`）。
 
 完成消息内容：阶段名与标题、每个产出文件及其一行说明、2~4 条"请审阅"要点（看什么、改哪些单元格或章节）、以及如何继续（说"继续"或运行 `/strategy-formalizer continue`）。
 
 ## 6. 每次调用时的恢复协议
 
-每次调用都先运行 `SF/sf_state.py status`。它会打印当前阶段及状态、上次检查点之后用户改动的文件、未回答的对话问题、以及 xlsx 是否比 json 新。然后：
+每次调用都先运行 `SF/sf_state.py status`。它会打印当前阶段及状态、上次检查点之后用户改动的文件（按内容比较：用 Excel 打开保存但未改单元格不算）、未回答的对话问题、以及 xlsx 是否在 json 之后被编辑。然后：
 
 1. 当前阶段为 `awaiting_review`：重新阅读所有被列为已修改的文件（用户在停顿期间改的）；若 xlsx 更新，先运行 `SF/sf_terms.py from-xlsx <文件>.xlsx`（或 `sf_formal.py from-xlsx`）。然后运行 `SF/sf_state.py accept S<n>` 推进到下一阶段，转第 3 步。
 2. 当前阶段为 `in_progress`：上一个会话在阶段中途中断。阅读阶段文档和已存在的产出；对话阶段还要读对话 json，其中 `open` 条目是问过但没得到回答的问题，原样再问一次。从文件显示的中断处继续。
@@ -285,8 +285,8 @@ tests/                        pytest suite (`uv run pytest` from the repo root)
 | `S6_terms_defined.json` `.xlsx` | S6 | 全部术语 `defined`，含 `definition_zh` 与 `definition_en`，包括对话中新增的术语（`origin: S6_dialog`）。 |
 | `S6_conflict_log.md` | S6 | 术语定义与总结之间（或术语之间）发现的矛盾及其解决方式。 |
 | `S7_formal.json` `.xlsx` | S7 | 回调（名称、调用位置、输入、输出枚举、辅助/约束/参数术语 id）、参数、带类型的关系。 |
-| `S7_term_graph.mmd` `.dot` `.png` | S7 | 术语关系图（Mermaid、Graphviz、位图）。 |
-| `S7_callbacks_stub.py` | S7 | 抽象 Python 类：每个回调一个方法，docstring = 定义 + 全部辅助说明。下游 agent 继承它实现。 |
+| `S7_term_graph.mmd` `.dot` `.pdf` | S7 | 术语关系图（Mermaid、Graphviz 源文件、PDF 渲染）。 |
+| `S7_callbacks_stub.py` | S7 | 标准接口 dataclass（Bar、MarketData、Instrument、Position、EntryDecision、StopDistance）加抽象类：每个回调一个带类型的方法，docstring = 定义 + 全部辅助说明。下游 agent 继承它实现。 |
 | `S8_check_report.md` | S8 | 脚本发现（加粗 ↔ 术语 ↔ 形式化的一致性）加上 agent 的语义审查。 |
 | `final/strategy.md` `terms.json` `formal.json` `callbacks_stub.py` | S8 | 冻结后交付给下游交易 agent 的文件。 |
 
@@ -310,7 +310,7 @@ tests/                        pytest suite (`uv run pytest` from the repo root)
 | `sf_dialog.py` | 问答留痕 | `--stage S3 add -q "..." --affects-terms T001`、`answer D001 -a "..."`、`close D001 -r "..."`、`to-md`、`from-md`、`list --open` |
 | `sf_terms.py` | 术语文件 | `new`、`add`、`carry <源> <目标> --stage S4`、`to-xlsx <json> --categories S5_categories.json`、`from-xlsx <xlsx>`、`validate <json> [--require-classified] [--require-defined]`、`diff a b` |
 | `sf_formal.py` | S7 接口 | `scaffold S6_terms_defined.json S7_formal.json`、`validate S7_formal.json --terms ...`、`to-xlsx`、`from-xlsx`、`gen-stub S7_formal.json --terms ... --out S7_callbacks_stub.py` |
-| `sf_graph.py` | S7 关系图 | `render S7_formal.json --terms S6_terms_defined.json --png` |
+| `sf_graph.py` | S7 关系图 | `render S7_formal.json --terms S6_terms_defined.json --pdf` |
 | `sf_check.py` | S1 覆盖检查、S8 检查与冻结 | `s1-coverage`、`run [--lenient]`、`freeze` |
 
 每个脚本输出以 `[sf]` 开头的信息；非零退出码表示必须在 `complete` 前修复的校验错误。

@@ -83,7 +83,7 @@ STAGE_OUTPUTS: dict[str, list[tuple[str, bool]]] = {
     "S6": [("S6_dialog.json", True), ("S6_dialog.md", True), ("S6_terms_defined.json", True),
            ("S6_terms_defined.xlsx", True), ("S6_conflict_log.md", True)],
     "S7": [("S7_formal.json", True), ("S7_formal.xlsx", True), ("S7_term_graph.mmd", True),
-           ("S7_term_graph.dot", True), ("S7_term_graph.png", False), ("S7_callbacks_stub.py", True)],
+           ("S7_term_graph.dot", True), ("S7_term_graph.pdf", False), ("S7_callbacks_stub.py", True)],
     "S8": [("S8_check_report.md", True), ("final/strategy.md", True), ("final/terms.json", True),
            ("final/formal.json", True), ("final/callbacks_stub.py", True)],
 }
@@ -225,6 +225,33 @@ def sha256_of(path: Path | str) -> str | None:
     with p.open("rb") as fh:
         for chunk in iter(lambda: fh.read(1 << 16), b""):
             h.update(chunk)
+    return h.hexdigest()
+
+
+def content_hash(path: Path | str) -> str | None:
+    """
+    Return a hash of a file's *content* for checkpoints: for .xlsx files the
+    SHA-256 of every sheet's cell values (None normalised to ""), for every
+    other file the byte SHA-256. Re-saving a workbook in Excel changes its
+    bytes but not its cells, so checkpoints based on this hash only flag real
+    edits.
+
+    返回用于检查点的文件*内容*哈希：.xlsx 取各表全部单元格值（None 归一为 ""）的 SHA-256，
+    其他文件取字节 SHA-256。用 Excel 打开再保存会改变字节但不改变单元格，因此基于该哈希的
+    检查点只会提示真正的修改。
+    """
+    p = Path(path)
+    if not p.exists():
+        return None
+    if p.suffix.lower() != ".xlsx":
+        return sha256_of(p)
+    from openpyxl import load_workbook  # local import: keep sf_common light for non-xlsx use
+    h = hashlib.sha256()
+    wb = load_workbook(p, data_only=True, read_only=True)
+    for name in wb.sheetnames:
+        h.update(name.encode("utf-8"))
+        for row in wb[name].iter_rows(values_only=True):
+            h.update(json.dumps(["" if v is None else v for v in row], ensure_ascii=False, default=str).encode("utf-8"))
     return h.hexdigest()
 
 
