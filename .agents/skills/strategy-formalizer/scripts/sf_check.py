@@ -3,7 +3,9 @@
 Agents: read the English part of every docstring only. 中文段落仅供人类阅读。
 
 sf_check.py — S8 cross-check of summary markdown vs term file vs formal
-interface, and the `freeze` step that copies the deliverables into final/.
+interface, the `freeze` step that copies the deliverables into final/, and
+the S1 `s1-coverage` check that the organised clean text keeps every
+sentence of the timestamped raw text.
 
 `run` performs the mechanical checks and writes the "Script findings" part
 of S8_check_report.md (the agent appends its own semantic review below it):
@@ -23,6 +25,7 @@ errors remain and otherwise copies summary/terms/formal/stub into final/.
 
     sf_check.py run    [--summary S5_summary_marked.md] [--terms S6_terms_defined.json] [--formal S7_formal.json] [--lenient]
     sf_check.py freeze [same options] [--stub S7_callbacks_stub.py]
+    sf_check.py s1-coverage [--raw S1_strategy_raw.md] [--clean S1_strategy_clean.md]
 
 sf_check.py 负责 S8 的交叉核对（总结 markdown、术语文件、形式化接口三者对照）以及把交付物
 复制到 final/ 的 `freeze` 步骤。`run` 执行机械检查并写出 S8_check_report.md 的"脚本发现"
@@ -214,6 +217,64 @@ def cmd_freeze(args: argparse.Namespace) -> None:
     say("final/ frozen", "final/ 已冻结")
 
 
+def normalise_for_coverage(text: str) -> str:
+    """
+    Strip timestamps, whitespace and all punctuation so that two renderings of
+    the same sentences compare equal regardless of line breaks or the
+    punctuation added when lines were merged into paragraphs.
+
+    去掉时间戳、空白和全部标点，使同一批句子的两种排版（按行 / 合并成段）可以直接比较。
+    """
+    text = re.sub(r"\[\d+s\]", "", text)
+    return re.sub(r"[\s\W_]+", "", text, flags=re.UNICODE)
+
+
+def s1_coverage(raw: str, clean: str, min_len: int = 6) -> list[str]:
+    """
+    Return the timestamped segments of S1_strategy_raw.md whose text does not
+    appear verbatim (after normalisation) in S1_strategy_clean.md. Segments
+    shorter than min_len characters and parenthetical editor notes such as
+    "(与上一句重复...)" are skipped. An empty list means the clean file is a
+    complete re-organisation of the raw text, not a summary.
+
+    返回 S1_strategy_raw.md 中（归一化后）没有原样出现在 S1_strategy_clean.md 里的时间戳
+    片段。短于 min_len 的片段和 "(与上一句重复...)" 之类的编者括注跳过。返回空列表表示
+    clean 文件是原文的完整重组，而不是摘要。
+    """
+    clean_norm = normalise_for_coverage(clean)
+    missing = []
+    for m in re.finditer(r"\[(\d+s)\]\s*([^\n\[]*)", raw):
+        ts, seg = m.group(1), m.group(2).strip()
+        if seg.startswith(("(", "（")):
+            continue
+        norm = normalise_for_coverage(seg)
+        if len(norm) < min_len:
+            continue
+        if norm not in clean_norm:
+            missing.append(f"[{ts}] {seg[:60]}")
+    return missing
+
+
+def cmd_s1_coverage(args: argparse.Namespace) -> None:
+    """
+    S1 check: every sentence of the timestamped raw text must be present in
+    the organised clean text. Prints the missing segments and exits 1 if any.
+
+    S1 检查：时间戳原文的每个句子都必须出现在整理后的 clean 文本中。打印缺失片段，有缺失
+    则以 1 退出。
+    """
+    ws = resolve_workspace(args.workspace)
+    raw = read_text(ws / args.raw)
+    clean = read_text(ws / args.clean)
+    missing = s1_coverage(raw, clean)
+    for m in missing:
+        say(f"MISSING in clean: {m}")
+    say(f"{len(missing)} raw segments missing from {args.clean}", "缺失片段数")
+    if missing:
+        raise SystemExit(1)
+    say("clean text covers the raw text completely", "clean 文本完整覆盖原文")
+
+
 def build_parser() -> argparse.ArgumentParser:
     """
     Build the CLI.
@@ -234,6 +295,10 @@ def build_parser() -> argparse.ArgumentParser:
         s.add_argument("--lenient", action="store_true",
                        help="S5/S6 mode: only sections, bold and classification are checked")
         s.set_defaults(func=fn)
+    s = sub.add_parser("s1-coverage", help="S1: verify S1_strategy_clean.md keeps every raw sentence")
+    s.add_argument("--raw", default="S1_strategy_raw.md")
+    s.add_argument("--clean", default="S1_strategy_clean.md")
+    s.set_defaults(func=cmd_s1_coverage)
     return p
 
 

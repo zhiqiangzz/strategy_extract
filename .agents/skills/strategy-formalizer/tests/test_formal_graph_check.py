@@ -116,3 +116,17 @@ def test_check_and_freeze(ws):
     sf_check.main(["--workspace", str(ws), "freeze"])
     assert (ws / "final" / "strategy.md").exists() and (ws / "final" / "callbacks_stub.py").exists()
     assert "Script findings" in (ws / "S8_check_report.md").read_text(encoding="utf-8")
+
+
+def test_s1_coverage():
+    """
+    A clean text that merges timestamped lines into paragraphs (with new
+    punctuation and headings) covers the raw text; dropping a sentence is
+    reported.
+
+    把时间戳行合并成段落（带新标点和标题）的 clean 文本能覆盖原文；漏掉一句会被报告。
+    """
+    raw = "[0s] 大周期判断趋势方向,\n[5s] 小周期入场。\n[9s] 然后尽快把止损移到成本价。\n[12s] (与上一句重复,已并入上一句)\n"
+    clean = "## 框架\n\n大周期判断趋势方向，小周期入场。然后尽快把止损移到成本价。\n"
+    assert sf_check.s1_coverage(raw, clean) == []
+    assert sf_check.s1_coverage(raw, "## 框架\n\n大周期判断趋势方向，小周期入场。\n") == ["[9s] 然后尽快把止损移到成本价。"]

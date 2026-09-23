@@ -24,6 +24,7 @@ strategy_zoo/<name>/ (input folder: transcript .md, analysis .md, references/)
         ▼
 ┌──────────────────────────────────────────────────────────────────┐
 │ S1  Correct typos / speech slips        → S1_strategy_raw.md      │ STOP
+│     + organise into sectioned markdown  → S1_strategy_clean.md    │
 └──────────────────────────────────────────────────────────────────┘
         │
         ├───────────────────────────┐   (two subagents, in parallel)
@@ -97,8 +98,8 @@ Each row names the stage doc to read (`stages/`), the main inputs, and the outpu
 
 | Stage | Doc | Reads | Writes (required) | Dialog |
 |---|---|---|---|---|
-| S1 | `stages/S1_correct.md` | input folder | `S1_sources.json`, `S1_strategy_raw.md`, `S1_corrections.md` | no |
-| S2 | `stages/S2_summarize_and_extract.md` | `S1_strategy_raw.md` | `S2_summary_init.md`, `S2_terms_init.json/.xlsx` | no (2 subagents) |
+| S1 | `stages/S1_correct.md` | input folder | `S1_sources.json`, `S1_strategy_raw.md`, `S1_corrections.md`, `S1_strategy_clean.md` | no |
+| S2 | `stages/S2_summarize_and_extract.md` | `S1_strategy_clean.md` (+ `S1_strategy_raw.md` for timestamps) | `S2_summary_init.md`, `S2_terms_init.json/.xlsx` | no (2 subagents) |
 | S3 | `stages/S3_summary_dialog.md` | `S2_summary_init.md` | `S3_dialog.json/.md`, `S3_summary_corrected.md` | ⟲ yes |
 | S4 | `stages/S4_term_filter.md` | `S2_terms_init.json`, S3 outputs | `S4_terms_filtered.json/.xlsx` | no |
 | S5 | `stages/S5_term_classify.md` | `S4_terms_filtered.json`, `S3_summary_corrected.md` | `S5_categories.json`, `S5_terms_classified.json/.xlsx`, `S5_summary_marked.md` | short (scheme choice) |
@@ -148,8 +149,9 @@ All paths are under `workspace/<strategy_name>/`. json files are the source of t
 |---|---|---|
 | `state.json` | all | Stage statuses, timestamps, checkpoint hashes, scheme id, input dir. Written by `sf_state.py`. |
 | `S1_sources.json` | S1 | Every text file in the input folder with role `primary` (corrected and merged) / `secondary` (context only) / `ignored`. |
-| `S1_strategy_raw.md` | S1 | The corrected raw strategy text: primary sources merged under one heading per source, content otherwise unchanged. This is "the strategy" for all later stages. |
+| `S1_strategy_raw.md` | S1 | The corrected raw text with its original line/timestamp structure: primary sources merged under one heading per source, content otherwise unchanged. The traceability reference for quotes. |
 | `S1_corrections.md` | S1 | Table of every edit: original → corrected, reason, confidence. Lets the user reject hallucinated corrections. |
+| `S1_strategy_clean.md` | S1 | The same corrected text reorganised into a readable Markdown document: topic headings (each with its timestamp range), paragraphs instead of timestamp lines, lists where the text enumerates steps. Complete, not summarised (`sf_check.py s1-coverage` verifies). This is "the strategy" that S2 reads. |
 | `S2_summary_init.md` | S2 | First structured summary in the 6-section template (summary / one-liner / premise / execution steps / exit & risk / scope & params). |
 | `S2_terms_init.json` `.xlsx` | S2 | Candidate key terms with source quotes (`status: candidate`). |
 | `S3_dialog.json` `.md` | S3 | Every question asked and answer given while clarifying and revising the summary. |
@@ -186,7 +188,7 @@ All paths are under `workspace/<strategy_name>/`. json files are the source of t
 | `sf_terms.py` | term files | `new`, `add`, `carry <src> <dst> --stage S4`, `to-xlsx <json> --categories S5_categories.json`, `from-xlsx <xlsx>`, `validate <json> [--require-classified] [--require-defined]`, `diff a b` |
 | `sf_formal.py` | S7 interface | `scaffold S6_terms_defined.json S7_formal.json`, `validate S7_formal.json --terms ...`, `to-xlsx`, `from-xlsx`, `gen-stub S7_formal.json --terms ... --out S7_callbacks_stub.py` |
 | `sf_graph.py` | S7 graph | `render S7_formal.json --terms S6_terms_defined.json --png` |
-| `sf_check.py` | S8 checks & freeze | `run [--lenient]`, `freeze` |
+| `sf_check.py` | S1 coverage, S8 checks & freeze | `s1-coverage`, `run [--lenient]`, `freeze` |
 
 Every script prints lines prefixed `[sf]`; a non-zero exit means a validation error that must be fixed before `complete`.
 
@@ -224,8 +226,8 @@ tests/                        pytest suite (`uv run pytest` from the repo root)
 
 | 阶段 | 文档 | 读取 | 写入（必需） | 对话 |
 |---|---|---|---|---|
-| S1 | `stages/S1_correct.md` | 输入目录 | `S1_sources.json`、`S1_strategy_raw.md`、`S1_corrections.md` | 无 |
-| S2 | `stages/S2_summarize_and_extract.md` | `S1_strategy_raw.md` | `S2_summary_init.md`、`S2_terms_init.json/.xlsx` | 无（两个子代理） |
+| S1 | `stages/S1_correct.md` | 输入目录 | `S1_sources.json`、`S1_strategy_raw.md`、`S1_corrections.md`、`S1_strategy_clean.md` | 无 |
+| S2 | `stages/S2_summarize_and_extract.md` | `S1_strategy_clean.md`（另以 `S1_strategy_raw.md` 查时间戳） | `S2_summary_init.md`、`S2_terms_init.json/.xlsx` | 无（两个子代理） |
 | S3 | `stages/S3_summary_dialog.md` | `S2_summary_init.md` | `S3_dialog.json/.md`、`S3_summary_corrected.md` | ⟲ 有 |
 | S4 | `stages/S4_term_filter.md` | `S2_terms_init.json`、S3 产出 | `S4_terms_filtered.json/.xlsx` | 无 |
 | S5 | `stages/S5_term_classify.md` | `S4_terms_filtered.json`、`S3_summary_corrected.md` | `S5_categories.json`、`S5_terms_classified.json/.xlsx`、`S5_summary_marked.md` | 简短（选分类方案） |
@@ -266,8 +268,9 @@ tests/                        pytest suite (`uv run pytest` from the repo root)
 |---|---|---|
 | `state.json` | 全部 | 阶段状态、时间戳、检查点哈希、分类方案 id、输入目录。由 `sf_state.py` 写入。 |
 | `S1_sources.json` | S1 | 输入目录中每个文本文件及其角色：`primary`（矫正并合并）/ `secondary`（仅作背景）/ `ignored`。 |
-| `S1_strategy_raw.md` | S1 | 矫正后的原始策略全文：primary 来源按文件各自一个标题合并，内容不作其他改动。之后所有阶段所说的"策略"就是它。 |
+| `S1_strategy_raw.md` | S1 | 矫正后、保留原有行/时间戳结构的原文：primary 来源按文件各自一个标题合并，内容不作其他改动。引用溯源的依据。 |
 | `S1_corrections.md` | S1 | 每处修改的对照表：原文 → 修改后、原因、置信度。让用户能否决臆造的修改。 |
+| `S1_strategy_clean.md` | S1 | 同一份矫正后文本重新组织成可读的 Markdown 文档：按主题分节（标题带时间戳范围）、段落代替时间戳行、原文列举步骤处用列表。完整而非摘要（`sf_check.py s1-coverage` 校验）。S2 阅读的"策略"就是它。 |
 | `S2_summary_init.md` | S2 | 六节模板（策略总结 / 一句话概述 / 前提与理念 / 执行步骤 / 出场与风控 / 适用范围与参数）的初版结构化总结。 |
 | `S2_terms_init.json` `.xlsx` | S2 | 带原文引用的候选关键术语（`status: candidate`）。 |
 | `S3_dialog.json` `.md` | S3 | 澄清与修订总结过程中的每个问题与回答。 |
@@ -304,7 +307,7 @@ tests/                        pytest suite (`uv run pytest` from the repo root)
 | `sf_terms.py` | 术语文件 | `new`、`add`、`carry <源> <目标> --stage S4`、`to-xlsx <json> --categories S5_categories.json`、`from-xlsx <xlsx>`、`validate <json> [--require-classified] [--require-defined]`、`diff a b` |
 | `sf_formal.py` | S7 接口 | `scaffold S6_terms_defined.json S7_formal.json`、`validate S7_formal.json --terms ...`、`to-xlsx`、`from-xlsx`、`gen-stub S7_formal.json --terms ... --out S7_callbacks_stub.py` |
 | `sf_graph.py` | S7 关系图 | `render S7_formal.json --terms S6_terms_defined.json --png` |
-| `sf_check.py` | S8 检查与冻结 | `run [--lenient]`、`freeze` |
+| `sf_check.py` | S1 覆盖检查、S8 检查与冻结 | `s1-coverage`、`run [--lenient]`、`freeze` |
 
 每个脚本输出以 `[sf]` 开头的信息；非零退出码表示必须在 `complete` 前修复的校验错误。
 

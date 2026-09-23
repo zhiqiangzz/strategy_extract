@@ -23,7 +23,8 @@ Do not bold anything. Do not add a "my suggestions" section. Keep the total unde
 
 ## Handoff (main agent fills in)
 
-- Primary text: `<abs path>/S1_strategy_raw.md`
+- Primary text: `<abs path>/S1_strategy_clean.md` (organised, corrected; read this)
+- Timestamped twin: `<abs path>/S1_strategy_raw.md` (same content with `[123s]` markers; use only to cite positions)
 - Sources manifest: `<abs path>/S1_sources.json` (files with `role: secondary` are context only)
 - Template: `<abs path>/templates/strategy_summary.template.md` (copy the skeleton between the SKELETON-START and SKELETON-END markers)
 - Write to: `<abs path>/S2_summary_init.md`
@@ -52,7 +53,8 @@ Do not bold anything. Do not add a "my suggestions" section. Keep the total unde
 
 ## 交接信息（主代理填写）
 
-- 主文本：`<绝对路径>/S1_strategy_raw.md`
+- 主文本：`<绝对路径>/S1_strategy_clean.md`（整理并矫正后的文本，读这个）
+- 带时间戳的副本：`<绝对路径>/S1_strategy_raw.md`（内容相同，带 `[123s]` 标记；仅用于引用位置）
 - 来源清单：`<绝对路径>/S1_sources.json`（`role: secondary` 的文件仅作背景）
 - 模板：`<绝对路径>/templates/strategy_summary.template.md`（复制 SKELETON-START 与 SKELETON-END 标记之间的骨架）
 - 写入：`<绝对路径>/S2_summary_init.md`

@@ -10,7 +10,7 @@ Fork the corrected text into two independent views: a human-readable structured 
 
 ## Inputs
 
-- `S1_strategy_raw.md` (primary), `S1_sources.json` (to find secondary files for context).
+- `S1_strategy_clean.md` (the organised corrected text; primary input), `S1_strategy_raw.md` (timestamped twin, for locating quotes), `S1_sources.json` (to find secondary files for context).
 - `templates/strategy_summary.template.md`, `schemas/term.schema.json`.
 
 ## Outputs
@@ -24,7 +24,7 @@ Fork the corrected text into two independent views: a human-readable structured 
 ## Procedure
 
 1. `SF/sf_state.py start S2`.
-2. Launch two Agent-tool subagents in one message. Give each the full text of its prompt file (`agents/sub1_summarizer.md`, `agents/sub2_term_extractor.md`) followed by the absolute paths of `S1_strategy_raw.md`, `S1_sources.json`, the output file, and the template/schema it needs. Tell each to write its file and reply with a 5-line report.
+2. Launch two Agent-tool subagents in one message. Give each the full text of its prompt file (`agents/sub1_summarizer.md`, `agents/sub2_term_extractor.md`) followed by the absolute paths of `S1_strategy_clean.md`, `S1_strategy_raw.md`, `S1_sources.json`, the output file, and the template/schema it needs. Tell each to write its file and reply with a 5-line report.
 3. When both return: read both outputs. Run `SF/sf_terms.py validate S2_terms_init.json --fix` and fix any error (malformed ids, duplicate names, more than 50 terms → merge the most similar ones yourself and note it). Check the summary has all six `<!-- section: -->` markers.
 4. `SF/sf_terms.py to-xlsx S2_terms_init.json`.
 5. `SF/sf_state.py complete S2`, print the stop message, end the turn.
@@ -48,7 +48,7 @@ Ask the user to read `S2_summary_init.md` and mark disagreements (they will be d
 
 ## 输入
 
-- `S1_strategy_raw.md`（主要输入）、`S1_sources.json`（用于找到作为背景的 secondary 文件）。
+- `S1_strategy_clean.md`（整理后的矫正文本，主要输入）、`S1_strategy_raw.md`（带时间戳的副本，用于定位引用）、`S1_sources.json`（用于找到作为背景的 secondary 文件）。
 - `templates/strategy_summary.template.md`、`schemas/term.schema.json`。
 
 ## 产出
@@ -62,7 +62,7 @@ Ask the user to read `S2_summary_init.md` and mark disagreements (they will be d
 ## 步骤
 
 1. `SF/sf_state.py start S2`。
-2. 在一条消息里启动两个子代理。各自提供提示词文件全文（`agents/sub1_summarizer.md`、`agents/sub2_term_extractor.md`），以及 `S1_strategy_raw.md`、`S1_sources.json`、输出文件、所需模板/schema 的绝对路径。要求写文件并回复 5 行报告。
+2. 在一条消息里启动两个子代理。各自提供提示词文件全文（`agents/sub1_summarizer.md`、`agents/sub2_term_extractor.md`），以及 `S1_strategy_clean.md`、`S1_strategy_raw.md`、`S1_sources.json`、输出文件、所需模板/schema 的绝对路径。要求写文件并回复 5 行报告。
 3. 两者返回后阅读产出。运行 `SF/sf_terms.py validate S2_terms_init.json --fix` 修复错误（id 格式、重名、超过 50 个则自行合并最相近者并说明）。确认总结含六个 `<!-- section: -->` 标记。
 4. `SF/sf_terms.py to-xlsx S2_terms_init.json`。
 5. `SF/sf_state.py complete S2`，打印停止消息，结束本轮。

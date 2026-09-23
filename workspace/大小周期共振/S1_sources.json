@@ -1,0 +1,49 @@
+{
+  "_comment_en": "S1 sources manifest. primary files are corrected and merged into S1_strategy_raw.md; secondary files are context only; ignored files are media. The user pointed the run at the transcript, so the analysis file is secondary; flip its role to primary if you want it merged.",
+  "_comment_zh": "S1 来源清单。primary 文件经矫正后合并进 S1_strategy_raw.md；secondary 仅作背景；ignored 为媒体文件。用户指定以文字稿为输入，故视频分析文件设为 secondary；若希望合并可改为 primary。",
+  "input_dir": "strategy_zoo/大小周期共振",
+  "sources": [
+    {
+      "path": "视频文字稿_零成本持仓法.md",
+      "role": "primary",
+      "kind": "transcript",
+      "note_en": "faster-whisper transcript of the 15:13 video, timestamps in seconds; the strategy text.",
+      "note_zh": "视频 15:13 的 whisper 转写稿，秒级时间戳；策略正文。"
+    },
+    {
+      "path": "视频分析_大小周期与动态止损.md",
+      "role": "secondary",
+      "kind": "analysis",
+      "note_en": "Interpretation of the video with external ideas (ATR / chandelier stops) not in the transcript; context only.",
+      "note_zh": "对视频的解读，含转写稿没有的外部观点（ATR/吊灯止损）；仅作背景。"
+    },
+    {
+      "path": "references/01_大周期小周期_多周期分析.md",
+      "role": "secondary",
+      "kind": "reference",
+      "note_en": "Collected external material on multi-timeframe analysis.",
+      "note_zh": "多周期分析的外部资料汇编。"
+    },
+    {
+      "path": "references/02_动态止损_ATR移动止损.md",
+      "role": "secondary",
+      "kind": "reference",
+      "note_en": "Collected external material on trailing stops.",
+      "note_zh": "移动止损的外部资料汇编。"
+    },
+    {
+      "path": "#职业交易员#期货#交易#技术.mp4",
+      "role": "ignored",
+      "kind": "other",
+      "note_en": "Video file.",
+      "note_zh": "视频文件。"
+    },
+    {
+      "path": "sources/#职业交易员#期货#交易#技术.mp4",
+      "role": "ignored",
+      "kind": "other",
+      "note_en": "Duplicate video file.",
+      "note_zh": "视频文件副本。"
+    }
+  ]
+}

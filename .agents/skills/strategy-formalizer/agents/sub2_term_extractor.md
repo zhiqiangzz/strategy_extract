@@ -46,11 +46,12 @@ Write a JSON file with exactly this shape (UTF-8, Chinese unescaped):
 }
 ```
 
-Rules: ids `T001`, `T002`, … in order of first appearance; `name_zh` is a short noun phrase (2–10 characters) that could be bolded in a sentence; `source_quote` is a verbatim quote (with timestamp if the text has them) of the sentence that best shows the term's use; `appears_in` is your guess among `summary, one_liner, premise, execution_steps, exit_and_risk, scope_and_params`; `notes` records why the term is ambiguous or what the text says around it. Leave `name_en`, `definition_*`, `role`, `phase`, `supports` empty.
+Rules: ids `T001`, `T002`, … in order of first appearance; `name_zh` is a short noun phrase (2–10 characters) that could be bolded in a sentence; `source_quote` is a verbatim quote of the sentence that best shows the term's use, taken from the clean text and prefixed with the `[123s]` timestamp of that sentence in the raw twin when available; `appears_in` is your guess among `summary, one_liner, premise, execution_steps, exit_and_risk, scope_and_params`; `notes` records why the term is ambiguous or what the text says around it. Leave `name_en`, `definition_*`, `role`, `phase`, `supports` empty.
 
 ## Handoff (main agent fills in)
 
-- Primary text: `<abs path>/S1_strategy_raw.md`
+- Primary text: `<abs path>/S1_strategy_clean.md` (organised, corrected; read this)
+- Timestamped twin: `<abs path>/S1_strategy_raw.md` (same content with `[123s]` markers; use to prefix quotes)
 - Sources manifest: `<abs path>/S1_sources.json`
 - Schema for reference: `<abs path>/schemas/term.schema.json`
 - Write to: `<abs path>/S2_terms_init.json`
@@ -70,11 +71,12 @@ Rules: ids `T001`, `T002`, … in order of first appearance; `name_zh` is a shor
 
 ## 输出格式
 
-写一个 JSON 文件，形状与上方英文部分的示例完全一致（UTF-8，中文不转义）。规则：id 按首次出现顺序为 `T001`、`T002`…；`name_zh` 为 2~10 字、能在句中加粗的名词短语；`source_quote` 为最能体现用法的原文原句（有时间戳则带上）；`appears_in` 从 `summary, one_liner, premise, execution_steps, exit_and_risk, scope_and_params` 中猜测；`notes` 记录该术语为何含糊或上下文说了什么。`name_en`、`definition_*`、`role`、`phase`、`supports` 留空。
+写一个 JSON 文件，形状与上方英文部分的示例完全一致（UTF-8，中文不转义）。规则：id 按首次出现顺序为 `T001`、`T002`…；`name_zh` 为 2~10 字、能在句中加粗的名词短语；`source_quote` 为最能体现用法的原文原句，取自 clean 文本，可用的话前缀该句在 raw 副本中的 `[123s]` 时间戳；`appears_in` 从 `summary, one_liner, premise, execution_steps, exit_and_risk, scope_and_params` 中猜测；`notes` 记录该术语为何含糊或上下文说了什么。`name_en`、`definition_*`、`role`、`phase`、`supports` 留空。
 
 ## 交接信息（主代理填写）
 
-- 主文本：`<绝对路径>/S1_strategy_raw.md`
+- 主文本：`<绝对路径>/S1_strategy_clean.md`（整理并矫正后的文本，读这个）
+- 带时间戳的副本：`<绝对路径>/S1_strategy_raw.md`（内容相同，带 `[123s]` 标记；用于给引用加时间戳前缀）
 - 来源清单：`<绝对路径>/S1_sources.json`
 - 参考 schema：`<绝对路径>/schemas/term.schema.json`
 - 写入：`<绝对路径>/S2_terms_init.json`

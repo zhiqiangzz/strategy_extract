@@ -58,7 +58,7 @@ def test_complete_accept_detects_edits(tmp_path, monkeypatch, capsys):
     """
     ws = _init(tmp_path, monkeypatch)
     sf_state.main(["--workspace", str(ws), "start", "S1"])
-    for f in ("S1_sources.json", "S1_strategy_raw.md", "S1_corrections.md"):
+    for f in ("S1_sources.json", "S1_strategy_raw.md", "S1_corrections.md", "S1_strategy_clean.md"):
         (ws / f).write_text("{}" if f.endswith("json") else "x", encoding="utf-8")
     sf_state.main(["--workspace", str(ws), "complete", "S1"])
     assert load(ws / "state.json")["stages"]["S1"]["status"] == "awaiting_review"
@@ -79,7 +79,7 @@ def test_reopen_resets_downstream(tmp_path, monkeypatch):
     """
     ws = _init(tmp_path, monkeypatch)
     sf_state.main(["--workspace", str(ws), "start", "S1"])
-    for f in ("S1_sources.json", "S1_strategy_raw.md", "S1_corrections.md"):
+    for f in ("S1_sources.json", "S1_strategy_raw.md", "S1_corrections.md", "S1_strategy_clean.md"):
         (ws / f).write_text("x", encoding="utf-8")
     sf_state.main(["--workspace", str(ws), "complete", "S1"])
     sf_state.main(["--workspace", str(ws), "accept", "S1"])

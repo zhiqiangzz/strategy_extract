@@ -73,7 +73,8 @@ STAGE_DOCS: dict[str, str] = {
 
 # (filename, required) pairs. Optional files are hashed if present.
 STAGE_OUTPUTS: dict[str, list[tuple[str, bool]]] = {
-    "S1": [("S1_sources.json", True), ("S1_strategy_raw.md", True), ("S1_corrections.md", True)],
+    "S1": [("S1_sources.json", True), ("S1_strategy_raw.md", True), ("S1_corrections.md", True),
+           ("S1_strategy_clean.md", True)],
     "S2": [("S2_summary_init.md", True), ("S2_terms_init.json", True), ("S2_terms_init.xlsx", True)],
     "S3": [("S3_dialog.json", True), ("S3_dialog.md", True), ("S3_summary_corrected.md", True)],
     "S4": [("S4_terms_filtered.json", True), ("S4_terms_filtered.xlsx", True)],
