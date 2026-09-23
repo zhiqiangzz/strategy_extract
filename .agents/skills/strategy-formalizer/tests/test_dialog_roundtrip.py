@@ -9,23 +9,27 @@ md 中填写的回答。
 """
 from __future__ import annotations
 
+import pytest
+
 import sf_dialog
 from conftest import load
 
 
 def test_add_answer_roundtrip(ws, capsys):
     """
-    Full S6 dialog lifecycle: add two open questions in one round, answer one via CLI, answer the other by editing the markdown and merging it back, close, then confirm a new question opens round 2.
+    Full S6 dialog lifecycle under the one-question-at-a-time rule: adding a second question while one is open is refused; after answering, a second question joins round 1; answering it by editing the markdown and merging back works; close; --new-round opens round 2.
 
-    完整的 S6 对话生命周期：同一轮添加两个 open 问题，一个用命令行回答，另一个在 markdown 中作答后合并回来，关闭，再确认新问题会开启第 2 轮。
+    一次只问一个规则下的完整 S6 对话生命周期：有 open 问题时再添加会被拒绝；回答后第二个问题并入第 1 轮；在 markdown 中作答并合并回来可行；关闭；--new-round 开启第 2 轮。
     """
     w = str(ws)
     sf_dialog.main(["--workspace", w, "--stage", "S6", "add", "-q", "大周期具体指哪个级别？", "--affects-terms", "T001"])
+    with pytest.raises(SystemExit):  # one question at a time
+        sf_dialog.main(["--workspace", w, "--stage", "S6", "add", "-q", "有利运动如何量化？"])
+    sf_dialog.main(["--workspace", w, "--stage", "S6", "answer", "D001", "-a", "日线。"])
     sf_dialog.main(["--workspace", w, "--stage", "S6", "add", "-q", "有利运动如何量化？", "--affects-terms", "T003"])
     d = load(ws / "S6_dialog.json")
-    assert [e["status"] for e in d["entries"]] == ["open", "open"]
+    assert [e["status"] for e in d["entries"]] == ["answered", "open"]
     assert d["entries"][0]["round"] == d["entries"][1]["round"] == 1
-    sf_dialog.main(["--workspace", w, "--stage", "S6", "answer", "D001", "-a", "日线。"])
     md = (ws / "S6_dialog.md").read_text(encoding="utf-8")
     assert "### D001 [answered]" in md and "### D002 [open]" in md
     # user answers D002 by editing the markdown
@@ -36,8 +40,8 @@ def test_add_answer_roundtrip(ws, capsys):
     assert d["entries"][1]["status"] == "answered" and d["entries"][1]["answer_zh"] == "浮盈达到 1R。"
     sf_dialog.main(["--workspace", w, "--stage", "S6", "close", "D002", "-r", "T003 定义更新"])
     assert load(ws / "S6_dialog.json")["entries"][1]["status"] == "closed"
-    # a fresh question after all are answered/closed starts round 2
-    sf_dialog.main(["--workspace", w, "--stage", "S6", "add", "-q", "第二轮问题"])
+    # --new-round starts round 2 (a new topic / term)
+    sf_dialog.main(["--workspace", w, "--stage", "S6", "add", "-q", "第二轮问题", "--new-round"])
     assert load(ws / "S6_dialog.json")["entries"][2]["round"] == 2
 
 

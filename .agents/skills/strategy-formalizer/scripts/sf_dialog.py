@@ -7,16 +7,17 @@ answer the user gave in the dialog stages S3 (summary) and S6 (terms).
 
 <workspace>/<stage>_dialog.json is the source of truth; <stage>_dialog.md is
 a human-friendly rendering regenerated after every write. The protocol that
-makes runs resumable is: the agent calls `add` for each question BEFORE it
-asks the user (status "open"), then `answer` IMMEDIATELY after the user
-replies (status "answered"), then `close` once the answer has been applied to
-the summary or the term file (status "closed", with a `resolution` describing
-what changed). A killed session therefore always leaves the open questions on
+makes runs resumable is: the agent calls `add` for ONE question BEFORE it
+asks the user (status "open"; adding is refused while another question is
+open, because questions are asked one at a time), then `answer` IMMEDIATELY
+after the user replies (status "answered"), then `close` once the answer has
+been applied to the summary or the term file (status "closed", with a
+`resolution` describing what changed). A `round` groups the questions of one
+topic (S3) or one term (S6). A killed session therefore always leaves the open questions on
 disk, and `sf_state.py status` lists them. `from-md` parses the markdown back
 into json so the user may also answer questions by editing the .md file.
 
-    sf_dialog.py add    --stage S3 --question "..." [--affects-terms T001,T002] [--affects-sections execution_steps] [--round 2]
-    sf_dialog.py add    --stage S3 --batch questions.json      # [{"question": "...", "affects_terms": [...]}, ...]
+    sf_dialog.py add    --stage S3 --question "..." [--affects-terms T001,T002] [--affects-sections execution_steps] [--new-round | --round 2]
     sf_dialog.py answer --stage S3 D001 --answer "..." [--resolution "..."]
     sf_dialog.py close  --stage S3 D001 [--resolution "..."]
     sf_dialog.py to-md  --stage S3
@@ -25,9 +26,10 @@ into json so the user may also answer questions by editing the .md file.
 
 sf_dialog.py 负责记录对话阶段 S3（策略总结）和 S6（术语定义）中 agent 提出的每个问题和
 用户的每个回答。<workspace>/<stage>_dialog.json 为唯一真值，<stage>_dialog.md 是每次写入
-后重新生成的人类可读版本。可恢复性的关键协议是：agent 在向用户提问之前先 `add`（状态
-open），用户回答后立即 `answer`（状态 answered），把回答落实到总结或术语文件后再 `close`
-（状态 closed，并用 resolution 记录改动）。因此会话中断时未回答的问题一定在磁盘上，
+后重新生成的人类可读版本。可恢复性的关键协议是：agent 在向用户提问之前先 `add` 一个问题（状态
+open；已有 open 问题时拒绝添加，因为一次只问一个），用户回答后立即 `answer`（状态 answered），
+把回答落实到总结或术语文件后再 `close`（状态 closed，并用 resolution 记录改动）。`round`
+用于把同一主题（S3）或同一术语（S6）的问题分组。因此会话中断时未回答的问题一定在磁盘上，
 `sf_state.py status` 会列出它们。`from-md` 能把 markdown 解析回 json，用户也可以直接在
 .md 文件里作答。
 """
@@ -96,20 +98,27 @@ def current_round(data: dict) -> int:
 
 
 def add_question(data: dict, question: str, affects_terms: list[str], affects_sections: list[str],
-                 rnd: int | None) -> dict:
+                 rnd: int | None, new_round: bool = False) -> dict:
     """
-    Append one open question with a fresh D### id. When no round is given the
-    question joins the current round if it still has open questions, else a
-    new round starts. Returns the new entry.
+    Append one open question with a fresh D### id. A `round` groups the
+    questions of one topic (S3) or one term (S6): with no explicit round the
+    question joins the current round, or opens the next one when new_round
+    is set or no round exists yet. Questions are asked one at a time, so the
+    caller must not add a question while another is still open (refused).
+    Returns the new entry.
 
-    追加一个状态为 open 的问题并分配新的 D### id。未指定轮次时，若当前轮仍有未回答问题则
-    并入当前轮，否则开启新一轮。返回新条目。
+    追加一个状态为 open 的问题并分配新的 D### id。`round` 用来把同一主题（S3）或同一术语
+    （S6）的问题分组：未指定轮次时并入当前轮，设置 new_round 或尚无轮次时开启下一轮。
+    问题一次只问一个，因此已有 open 问题时拒绝再添加。返回新条目。
     """
     entries = data["entries"]
+    open_ids = [e["id"] for e in entries if e["status"] == "open"]
+    if open_ids:
+        fail(f"question {open_ids} is still open; answer or close it before adding another (one question at a time)",
+             f"问题 {open_ids} 尚未回答；一次只问一个，请先 answer 或 close")
     if rnd is None:
         cur = current_round(data)
-        has_open = any(e["status"] == "open" and e.get("round") == cur for e in entries)
-        rnd = cur if (cur and has_open) else cur + 1
+        rnd = cur + 1 if (new_round or cur == 0) else cur
     entry = {
         "id": next_id((e["id"] for e in entries), "D"),
         "stage": data["stage"],
@@ -257,12 +266,15 @@ def parse_md(text: str) -> list[dict]:
 
 def cmd_add(args: argparse.Namespace) -> None:
     """
-    Add one question (--question) or many (--batch file with a JSON list of
-    {question, affects_terms?, affects_sections?}) as open entries, then
-    print the new ids. Run this BEFORE asking the user.
+    Add one question (--question) as an open entry and print its id. Run
+    this BEFORE asking the user; it is refused while another question is
+    open, because the protocol is one question at a time. --batch (a JSON
+    list of {question, affects_terms?, affects_sections?}) is kept for
+    re-importing an archived log and is subject to the same rule.
 
-    以 open 状态添加一个问题（--question）或多个问题（--batch 指向 JSON 列表文件，元素形如
-    {question, affects_terms?, affects_sections?}），并打印新 id。请在向用户提问之前运行。
+    以 open 状态添加一个问题（--question）并打印其 id。请在向用户提问之前运行；已有未回答
+    的问题时会被拒绝，因为协议是一次只问一个。--batch（JSON 列表文件）保留用于导入归档记录，
+    同样受此规则约束。
     """
     ws = resolve_workspace(args.workspace)
     data = load_dialog(ws, args.stage)
@@ -277,7 +289,7 @@ def cmd_add(args: argparse.Namespace) -> None:
         fail("nothing to add: give --question or --batch", "缺少 --question 或 --batch")
     for it in items:
         e = add_question(data, it["question"], it.get("affects_terms") or [], it.get("affects_sections") or [],
-                         args.round)
+                         args.round, args.new_round)
         say(f"added {e['id']} (round {e['round']})", "已添加问题")
     save_dialog(ws, args.stage, data)
 
@@ -402,7 +414,8 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--batch", help="json file with a list of {question, affects_terms, affects_sections}")
     s.add_argument("--affects-terms", help="comma separated term ids")
     s.add_argument("--affects-sections", help="comma separated summary section keys")
-    s.add_argument("--round", type=int)
+    s.add_argument("--round", type=int, help="explicit round (topic/term group) number")
+    s.add_argument("--new-round", action="store_true", help="start the next round (new topic or term)")
     s.set_defaults(func=cmd_add)
 
     s = sub.add_parser("answer")

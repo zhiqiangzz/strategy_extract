@@ -244,7 +244,15 @@ def cmd_status(args: argparse.Namespace) -> None:
             break
     if latest_terms is not None:
         xlsx = latest_terms.with_suffix(".xlsx")
-        if xlsx.exists() and xlsx.stat().st_mtime > latest_terms.stat().st_mtime + 1:
+        # The xlsx is generated right after the json, so mtime alone is meaningless; flag it only when
+        # its content differs from the checkpoint taken at complete/accept (i.e. the user edited it).
+        # xlsx 总是在 json 之后生成，单看 mtime 无意义；只有内容与检查点不同（用户改过）时才提示。
+        rel = str(xlsx.relative_to(ws))
+        stored = None
+        for st_ in state["stages"].values():
+            if rel in (st_.get("checkpoint_hashes") or {}):
+                stored = st_["checkpoint_hashes"][rel]
+        if xlsx.exists() and stored is not None and sha256_of(xlsx) != stored:
             say(f"{relpath(xlsx)} is NEWER than its json; run `sf_terms.py from-xlsx` to merge it",
                 f"{relpath(xlsx)} 比 json 新；请先运行 sf_terms.py from-xlsx 合并")
         else:

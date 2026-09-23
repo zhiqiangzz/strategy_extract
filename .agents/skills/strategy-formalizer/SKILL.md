@@ -139,7 +139,7 @@ Always start with `SF/sf_state.py status`. It prints the current stage and its s
 2. If the current stage is `in_progress`: the previous session died mid-stage. Read the stage doc, read the outputs that already exist, and for dialog stages read the dialog json; any `open` entries are questions already asked but never answered, so ask them again verbatim. Resume the stage from where the files show it stopped.
 3. If the current stage is `pending`: run `SF/sf_state.py start S<n>`, read `stages/<doc>`, and execute it. Never skip a stage and never run two stages in one turn.
 
-Nothing about the run may live only in chat. Before asking the user anything in S3/S6, write the question to the dialog json (`SF/sf_dialog.py add`), and write the answer (`answer`) before acting on it.
+Nothing about the run may live only in chat. Before asking the user anything in S3/S6, write the question to the dialog json (`SF/sf_dialog.py add`), ask that one question, end the turn, and write the answer (`answer`) before acting on it. At most one dialog entry is `open` at any time.
 
 ## 7. Output file manifest
 
@@ -177,6 +177,7 @@ All paths are under `workspace/<strategy_name>/`. json files are the source of t
 - **Term budget.** ≤30 live terms is the target, 50 is the hard limit (validator error). Merge or drop before adding.
 - **json is truth.** Edit json or the xlsx/md twin, then run the converter; never let the twins diverge across a stop.
 - **Ask on disk first.** Dialog questions go through `sf_dialog.py add` before they are asked.
+- **One atomic question per turn.** In S3 and S6 ask exactly one question, about exactly one thing, then end the turn and wait. Never bundle sub-questions ("which instruments, which contract, which session?" is three questions). Offer lettered options when they help, always allowing a free answer. Log the answer and apply it before asking the next question.
 - **Scope of the output.** The result describes a strategy and lists the decisions delegated to the downstream agent. Do not invent indicator formulas or data sources the text does not contain; put such suggestions in `notes` or in `aux_note` terms marked as suggestions.
 
 ## 9. Script quick reference
@@ -258,7 +259,7 @@ tests/                        pytest suite (`uv run pytest` from the repo root)
 2. 当前阶段为 `in_progress`：上一个会话在阶段中途中断。阅读阶段文档和已存在的产出；对话阶段还要读对话 json，其中 `open` 条目是问过但没得到回答的问题，原样再问一次。从文件显示的中断处继续。
 3. 当前阶段为 `pending`：运行 `SF/sf_state.py start S<n>`，阅读 `stages/<文档>` 并执行。绝不跳过阶段，绝不在一轮里跑两个阶段。
 
-关于本次运行的任何信息都不能只存在于聊天中。S3/S6 向用户提问前先用 `SF/sf_dialog.py add` 落盘，收到回答后先 `answer` 再落实。
+关于本次运行的任何信息都不能只存在于聊天中。S3/S6 向用户提问前先用 `SF/sf_dialog.py add` 落盘，只问这一个问题，结束本轮；收到回答后先 `answer` 再落实。任何时刻最多只有一个 `open` 的对话条目。
 
 ## 7. 产出文件清单
 
@@ -296,6 +297,7 @@ tests/                        pytest suite (`uv run pytest` from the repo root)
 - **术语预算**：目标 ≤30 个存活术语，硬上限 50（校验报错）。先合并或丢弃再新增。
 - **json 为准**：改 json 或改 xlsx/md 副本后必须跑转换脚本，不允许跨停顿不一致。
 - **先落盘再提问**：对话问题先 `sf_dialog.py add` 再问。
+- **每轮只问一个原子问题**：S3、S6 每次只提一个问题、只问一件事，然后结束本轮等待回答。绝不打包子问题（"做什么品种、哪个合约、哪个时段？"是三个问题）。有帮助时给出字母选项，但始终允许自由回答。记录并落实回答之后再问下一个。
 - **产出边界**：结果只描述策略并列出交给下游判断的决策；不要杜撰原文没有的指标公式或数据源，此类建议放在 `notes` 或标注为建议的 `aux_note` 术语里。
 
 ## 9. 脚本速查
