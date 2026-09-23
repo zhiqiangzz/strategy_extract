@@ -1,0 +1,2441 @@
+{
+  "_comment_en": "Candidate key terms extracted in S2 by sub2. status=candidate; role/phase are assigned in S5.",
+  "_comment_zh": "S2 由 sub2 提取的候选关键术语。status=candidate；role/phase 在 S5 赋值。",
+  "stage": "S5",
+  "scheme_id": "role_x_phase",
+  "terms": [
+    {
+      "id": "T001",
+      "name_zh": "追涨杀跌",
+      "name_en": "trend_chasing_method",
+      "aliases": [
+        "趋势跟踪系统",
+        "趋势跟踪",
+        "顺着做"
+      ],
+      "status": "kept",
+      "role": "aux_note",
+      "phase": "philosophy",
+      "is_key": false,
+      "source_quote": "[302s] 他想了很久,最终选择了追涨杀跌,原因有两个。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T013"
+      ],
+      "appears_in": [
+        "premise",
+        "summary"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "原文把均线、通道突破等都归为'追涨杀跌类'趋势跟踪方法，并明确放弃'高卖低买'手法，全程只用追涨杀跌；但未指明具体用哪种突破/入场形式。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "trend_chasing_method"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "aux_note"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "philosophy"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T013"
+          ]
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "appears_in",
+          "from": [
+            "summary",
+            "premise",
+            "scope_and_params"
+          ],
+          "to": [
+            "premise",
+            "summary"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T002",
+      "name_zh": "震荡与趋势两种状态",
+      "name_en": "range_vs_trend_states",
+      "aliases": [
+        "震荡",
+        "震荡市",
+        "没趋势",
+        "无序的震荡",
+        "70%的震荡期",
+        "震荡期",
+        "单边",
+        "有趋势",
+        "趋势行情",
+        "大趋势",
+        "大行情",
+        "趋势市",
+        "活过震荡期",
+        "活着",
+        "没有大行情的时候还能活着",
+        "震荡扛得住"
+      ],
+      "status": "kept",
+      "role": "aux_note",
+      "phase": "philosophy",
+      "is_key": false,
+      "source_quote": "[33s] 大部分时间,市场根本没有趋势,有统计说这个比例是70%,也就是说你用来捕捉趋势的系统,有70%的时间是在亏钱或者白忙。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T011",
+        "T013"
+      ],
+      "appears_in": [
+        "premise"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "原文称市场约 70% 时间处于震荡，但策略明确不去识别震荡，只要求'活过'震荡期；震荡的边界从未定义，只用于前提与风险论述。 S4：与 T006 单边行情、T029 震荡扛得住 合并为一个前提类术语：市场只有两种状态，策略不判定之，只要求在震荡中靠低止损成本活下来。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "name_zh",
+          "from": "震荡期",
+          "to": "震荡与趋势两种状态"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "aliases",
+          "from": [
+            "震荡",
+            "震荡市",
+            "没趋势",
+            "无序的震荡",
+            "70%的震荡期"
+          ],
+          "to": [
+            "震荡",
+            "震荡市",
+            "没趋势",
+            "无序的震荡",
+            "70%的震荡期",
+            "震荡期",
+            "单边",
+            "有趋势",
+            "趋势行情",
+            "大趋势",
+            "大行情",
+            "趋势市",
+            "活过震荡期",
+            "活着",
+            "没有大行情的时候还能活着",
+            "震荡扛得住"
+          ]
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "notes",
+          "from": "原文称市场约 70% 时间处于震荡，但策略明确不去识别震荡，只要求'活过'震荡期；震荡的边界从未定义，只用于前提与风险论述。",
+          "to": "原文称市场约 70% 时间处于震荡，但策略明确不去识别震荡，只要求'活过'震荡期；震荡的边界从未定义，只用于前提与风险论述。 S4：与 T006 单边行情、T029 震荡扛得住 合并为一个前提类术语：市场只有两种状态，策略不判定之，只要求在震荡中靠低止损成本活下来。"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "range_vs_trend_states"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "aux_note"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "philosophy"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T011",
+            "T013"
+          ]
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "appears_in",
+          "from": [
+            "premise",
+            "exit_and_risk"
+          ],
+          "to": [
+            "premise"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T003",
+      "name_zh": "顺势",
+      "name_en": "",
+      "aliases": [
+        "顺当下的趋势",
+        "跟着当下的方向走"
+      ],
+      "status": "dropped",
+      "role": null,
+      "phase": null,
+      "is_key": false,
+      "source_quote": "[170s] 什么叫顺势?顺当下的趋势吗?问题是,当下的趋势是什么?你怎么知道现在是趋势还是震荡?",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [],
+      "appears_in": [
+        "premise",
+        "execution_steps"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "merged into T011：顺势原则在策略中即“跟随大周期当下方向”。",
+      "notes": "原文承认'顺势'事后才清楚，当下无法判断；最终把它落实为'跟随大周期当下方向'，不预测起点终点。是六字原则之一。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "dropped"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        }
+      ]
+    },
+    {
+      "id": "T004",
+      "name_zh": "轻仓",
+      "name_en": "light_position",
+      "aliases": [
+        "不要赌身家"
+      ],
+      "status": "kept",
+      "role": "constraint",
+      "phase": "risk",
+      "is_key": false,
+      "source_quote": "[159s] 轻仓和止损,这两条相对好理解,也相对好执行,轻仓就是不要赌身家,止损就是错了要认,但顺势这两个字,他越想越糊涂。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T013"
+      ],
+      "appears_in": [
+        "exit_and_risk"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "六字原则之一；原文只说'不要赌身家'，未给出仓位比例或计算方法。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "light_position"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "constraint"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "risk"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T013"
+          ]
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "appears_in",
+          "from": [
+            "scope_and_params",
+            "exit_and_risk"
+          ],
+          "to": [
+            "exit_and_risk"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T005",
+      "name_zh": "放弃判断行情性质",
+      "name_en": "no_regime_judgement",
+      "aliases": [
+        "不判断震荡还是趋势",
+        "把所有行情都当单边来做",
+        "只用一种操作方法应对所有情况"
+      ],
+      "status": "kept",
+      "role": "constraint",
+      "phase": "market_context",
+      "is_key": false,
+      "source_quote": "[218s] 想通这一点之后,他做了一个重要的决定,放弃判断,不再试图判断现在是震荡还是趋势,不再试图找到一个指标来告诉他行情的性质。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T011",
+        "T013"
+      ],
+      "appears_in": [
+        "premise",
+        "summary"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "策略的核心前提：不做行情状态分类，所有行情都按单边处理，靠系统控制震荡期亏损。下游 agent 不应引入趋势/震荡过滤器。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "no_regime_judgement"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "constraint"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "market_context"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T011",
+            "T013"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T006",
+      "name_zh": "单边行情",
+      "name_en": "",
+      "aliases": [
+        "单边",
+        "有趋势",
+        "趋势行情",
+        "大趋势",
+        "大行情",
+        "趋势市"
+      ],
+      "status": "dropped",
+      "role": null,
+      "phase": null,
+      "is_key": false,
+      "source_quote": "[233s] 市场只有两种状态,有趋势和没趋势。震荡是没趋势,单边是有趋势,震荡的上涨本质上还是趋势。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [],
+      "appears_in": [
+        "premise"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "merged into T002：与震荡相对的状态，同一前提术语。",
+      "notes": "与'震荡期'相对的状态；原文说'震荡的上涨本质上还是趋势'，即缓慢趋势也算单边，但未给判定标准，且策略声明不判定它。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "dropped"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        }
+      ]
+    },
+    {
+      "id": "T007",
+      "name_zh": "正期望条件",
+      "name_en": "positive_expectancy_condition",
+      "aliases": [
+        "30%的成功率",
+        "盈亏比",
+        "赢是输的三倍以上",
+        "正期望"
+      ],
+      "status": "kept",
+      "role": "parameter",
+      "phase": "risk",
+      "is_key": false,
+      "source_quote": "[323s] 他算过账,30%的成功率,只要平均每次赢是输的三倍以上。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T014",
+        "T020"
+      ],
+      "appears_in": [
+        "premise",
+        "scope_and_params"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "原文给出的定量预期：成功率约 30%，平均盈亏比 ≥ 3 即正期望；是系统的验收/预期参数而非执行规则。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "positive_expectancy_condition"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "parameter"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "risk"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T014",
+            "T020"
+          ]
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "appears_in",
+          "from": [
+            "scope_and_params",
+            "premise"
+          ],
+          "to": [
+            "premise",
+            "scope_and_params"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T008",
+      "name_zh": "止损成本",
+      "name_en": "stop_loss_as_cost",
+      "aliases": [
+        "试错成本",
+        "止损的成本",
+        "小周期的止损成本"
+      ],
+      "status": "kept",
+      "role": "aux_note",
+      "phase": "philosophy",
+      "is_key": false,
+      "source_quote": "[413s] 这个框架的核心思想是,用小周期的止损成本去博大周期的趋势利润。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T014",
+        "T024"
+      ],
+      "appears_in": [
+        "premise",
+        "summary"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "原文把止损重新定义为'成本'（做生意的比方：止损=成本，趋势利润=营收），入场即被打损视为正常试错成本；整套方法的目标是压低该成本。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "stop_loss_as_cost"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "aux_note"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "philosophy"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T014",
+            "T024"
+          ]
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "appears_in",
+          "from": [
+            "summary",
+            "exit_and_risk"
+          ],
+          "to": [
+            "premise",
+            "summary"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T009",
+      "name_zh": "多周期配合",
+      "name_en": "",
+      "aliases": [
+        "多周期共振",
+        "操作框架"
+      ],
+      "status": "dropped",
+      "role": null,
+      "phase": null,
+      "is_key": false,
+      "source_quote": "[384s] 答案是有的,方法是多周期配合。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [],
+      "appears_in": [
+        "summary",
+        "one_liner"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "策略总名（多周期配合/多周期共振），不是需要定义或判定的术语；含义已由总结整体表达。",
+      "notes": "框架总名；原文后段又称其本质为'多周期共振'（用大周期过滤小周期噪音）。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "dropped"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        }
+      ]
+    },
+    {
+      "id": "T010",
+      "name_zh": "大周期",
+      "name_en": "major_timeframe",
+      "aliases": [
+        "高一级周期",
+        "日线"
+      ],
+      "status": "kept",
+      "role": "scope",
+      "phase": "market_context",
+      "is_key": false,
+      "source_quote": "[440s] 因为大周期的止损太贵,一根日线的波动可能就是几十点上百点。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T011",
+        "T020",
+        "T021",
+        "T024"
+      ],
+      "appears_in": [
+        "execution_steps",
+        "scope_and_params"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "未指定具体周期，日线只是举例；唯一约束是与小周期'差一到两级'。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "major_timeframe"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "scope"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "market_context"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T011",
+            "T020",
+            "T021",
+            "T024"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T011",
+      "name_zh": "大周期方向判定",
+      "name_en": "major_timeframe_direction",
+      "aliases": [
+        "大周期判断趋势方向",
+        "大周期方向",
+        "大周期上涨途中",
+        "大周期下跌途中",
+        "顺当下的趋势",
+        "跟着当下的方向走",
+        "顺势",
+        "转向信号",
+        "高一级周期转向信号"
+      ],
+      "status": "kept",
+      "role": "callback",
+      "phase": "market_context",
+      "is_key": true,
+      "source_quote": "[387s] 他后来总结出一套操作框架,大周期判断趋势方向,小周期入场。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [],
+      "appears_in": [
+        "execution_steps",
+        "summary",
+        "one_liner"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "原文强调'判断不是预测而是跟随'，只需知道当下方向，但未给出方向的判定方法（用什么指标/结构）。 S3 D003/D004：“高一级周期出现转向信号”与本判定合并为同一件事（T028 并入）；“顺势”原则由本判定落实（T003 并入）。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "aliases",
+          "from": [
+            "大周期判断趋势方向",
+            "大周期方向",
+            "大周期上涨途中",
+            "大周期下跌途中"
+          ],
+          "to": [
+            "大周期判断趋势方向",
+            "大周期方向",
+            "大周期上涨途中",
+            "大周期下跌途中",
+            "顺当下的趋势",
+            "跟着当下的方向走",
+            "顺势",
+            "转向信号",
+            "高一级周期转向信号"
+          ]
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "notes",
+          "from": "原文强调'判断不是预测而是跟随'，只需知道当下方向，但未给出方向的判定方法（用什么指标/结构）。",
+          "to": "原文强调'判断不是预测而是跟随'，只需知道当下方向，但未给出方向的判定方法（用什么指标/结构）。 S3 D003/D004：“高一级周期出现转向信号”与本判定合并为同一件事（T028 并入）；“顺势”原则由本判定落实（T003 并入）。"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "appears_in",
+          "from": [
+            "execution_steps",
+            "summary"
+          ],
+          "to": [
+            "execution_steps",
+            "summary",
+            "one_liner"
+          ]
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "major_timeframe_direction"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "callback"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "market_context"
+        }
+      ]
+    },
+    {
+      "id": "T012",
+      "name_zh": "小周期",
+      "name_en": "minor_timeframe",
+      "aliases": [
+        "低一级周期",
+        "入场周期",
+        "分钟线",
+        "分时图"
+      ],
+      "status": "kept",
+      "role": "scope",
+      "phase": "entry",
+      "is_key": false,
+      "source_quote": "[450s] 但小周期不一样,小周期的波动幅度小,止损可以设得很近。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T013",
+        "T014"
+      ],
+      "appears_in": [
+        "execution_steps",
+        "scope_and_params"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "未指定具体周期，分钟线/分时图为举例；约束是'不能小到离谱'（秒级噪音太大）且与大周期差一到两级。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "minor_timeframe"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "scope"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "entry"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T013",
+            "T014"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T013",
+      "name_zh": "小周期入场信号",
+      "name_en": "minor_timeframe_entry_signal",
+      "aliases": [
+        "小周期入场",
+        "小周期的做多信号",
+        "同向信号",
+        "入场点"
+      ],
+      "status": "kept",
+      "role": "callback",
+      "phase": "entry",
+      "is_key": true,
+      "source_quote": "[436s] 第二步,小周期入场。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [],
+      "appears_in": [
+        "execution_steps"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "原文只说在小周期入场并只执行与大周期同向的信号，未定义入场信号本身；且明确'不要试图找完美入场点'。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "minor_timeframe_entry_signal"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "callback"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "entry"
+        }
+      ]
+    },
+    {
+      "id": "T014",
+      "name_zh": "小周期止损",
+      "name_en": "initial_stop_level",
+      "aliases": [
+        "小周期的止损",
+        "止损设得很近",
+        "止损设得小"
+      ],
+      "status": "kept",
+      "role": "callback",
+      "phase": "position_mgmt",
+      "is_key": true,
+      "source_quote": "[392s] 入场后设小周期的止损,然后尽快把止损移到成本价。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [],
+      "appears_in": [
+        "execution_steps",
+        "exit_and_risk"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "初始止损按小周期设置、'很近'，但未给出具体位置（结构位/固定点数/波动）；原文只论证为何不用大周期止损。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "initial_stop_level"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "callback"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "position_mgmt"
+        }
+      ]
+    },
+    {
+      "id": "T015",
+      "name_zh": "尽快移损至成本",
+      "name_en": "move_stop_to_cost_asap",
+      "aliases": [
+        "尽快把止损移到成本价",
+        "尽快移至成本价",
+        "移损至成本",
+        "移到成本"
+      ],
+      "status": "kept",
+      "role": "constraint",
+      "phase": "position_mgmt",
+      "is_key": false,
+      "source_quote": "[461s] 这一步非常关键,它强调尽快,但不是立刻。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T024"
+      ],
+      "appears_in": [
+        "execution_steps",
+        "exit_and_risk",
+        "one_liner"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "整套理念的'灵魂'；'尽快但不是立刻'，触发条件是小周期出现'一定的有利运动'，但'一定'的量从未给出。 S3 D002：触发条件“一定的有利运动”改在大周期上判断。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "notes",
+          "from": "整套理念的'灵魂'；'尽快但不是立刻'，触发条件是小周期出现'一定的有利运动'，但'一定'的量从未给出。",
+          "to": "整套理念的'灵魂'；'尽快但不是立刻'，触发条件是小周期出现'一定的有利运动'，但'一定'的量从未给出。 S3 D002：触发条件“一定的有利运动”改在大周期上判断。"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "move_stop_to_cost_asap"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "constraint"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "position_mgmt"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T024"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T016",
+      "name_zh": "成本价",
+      "name_en": "cost_price",
+      "aliases": [
+        "成本"
+      ],
+      "status": "kept",
+      "role": "aux_note",
+      "phase": "position_mgmt",
+      "is_key": false,
+      "source_quote": "[467s] 比如,价格朝你的方向走了一段,再把止损移到成本。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T024",
+        "T015"
+      ],
+      "appears_in": [
+        "execution_steps",
+        "exit_and_risk"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "止损移动的目标价位；原文未说明是否含手续费/滑点，是开仓价还是持仓均价。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "cost_price"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "aux_note"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "position_mgmt"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T024",
+            "T015"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T017",
+      "name_zh": "零成本头寸",
+      "name_en": "zero_cost_position",
+      "aliases": [
+        "零成本持仓",
+        "零成本的头寸",
+        "没有亏损风险"
+      ],
+      "status": "kept",
+      "role": "aux_note",
+      "phase": "philosophy",
+      "is_key": false,
+      "source_quote": "[397s] 一旦止损移到成本,这笔交易就没有亏损风险了。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T024",
+        "T020"
+      ],
+      "appears_in": [
+        "summary",
+        "premise"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "止损移到成本价后的持仓状态，用来'博大行情'；原文视其为无亏损风险，忽略了跳空/滑点。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "zero_cost_position"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "aux_note"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "philosophy"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T024",
+            "T020"
+          ]
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "appears_in",
+          "from": [
+            "summary",
+            "one_liner",
+            "exit_and_risk"
+          ],
+          "to": [
+            "summary",
+            "premise"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T018",
+      "name_zh": "关掉小周期",
+      "name_en": "close_minor_timeframe",
+      "aliases": [
+        "关掉小周期图表",
+        "只看大周期",
+        "小周期的任务就结束了"
+      ],
+      "status": "kept",
+      "role": "constraint",
+      "phase": "position_mgmt",
+      "is_key": false,
+      "source_quote": "[400s] 然后关掉小周期图表,只看大周期。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T024",
+        "T020",
+        "T021"
+      ],
+      "appears_in": [
+        "execution_steps",
+        "exit_and_risk"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "入场后不再参考小周期任何信息，持仓尺度与入场周期不同；边界问题：移损至成本前是否仍需看小周期（原文第三步依赖小周期的有利运动）。 S3 D002：用户修订为入场并设好初始止损后立即关掉小周期（不等移损至成本）；此后移损至成本与移动止损都只看大周期。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "notes",
+          "from": "入场后不再参考小周期任何信息，持仓尺度与入场周期不同；边界问题：移损至成本前是否仍需看小周期（原文第三步依赖小周期的有利运动）。",
+          "to": "入场后不再参考小周期任何信息，持仓尺度与入场周期不同；边界问题：移损至成本前是否仍需看小周期（原文第三步依赖小周期的有利运动）。 S3 D002：用户修订为入场并设好初始止损后立即关掉小周期（不等移损至成本）；此后移损至成本与移动止损都只看大周期。"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "appears_in",
+          "from": [
+            "execution_steps"
+          ],
+          "to": [
+            "execution_steps",
+            "exit_and_risk"
+          ]
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "close_minor_timeframe"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "constraint"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "position_mgmt"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T024",
+            "T020",
+            "T021"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T019",
+      "name_zh": "大周期趋势发展顺利",
+      "name_en": "major_trend_progressing",
+      "aliases": [
+        "趋势发展顺利"
+      ],
+      "status": "kept",
+      "role": "aux_note",
+      "phase": "position_mgmt",
+      "is_key": false,
+      "source_quote": "[403s] 如果大周期趋势发展顺利,就不断把止损朝有利方向移动,让利润自己跑。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T020"
+      ],
+      "appears_in": [
+        "execution_steps",
+        "exit_and_risk"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "移动止损的前置判断；'顺利'未定义。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "major_trend_progressing"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "aux_note"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "position_mgmt"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T020"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T020",
+      "name_zh": "大周期移动止损",
+      "name_en": "major_timeframe_trailing_stop",
+      "aliases": [
+        "按大周期的信号移动止损",
+        "止损朝有利方向移动",
+        "移动止损",
+        "让利润自己跑"
+      ],
+      "status": "kept",
+      "role": "callback",
+      "phase": "position_mgmt",
+      "is_key": true,
+      "source_quote": "[505s] 第五步,按大周期的信号移动止损,直到打止损出场。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [],
+      "appears_in": [
+        "execution_steps",
+        "exit_and_risk"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "持仓期间止损只按大周期信号推进，但'大周期的信号'是什么、推进到哪里未说明；原文亦未明说止损只进不退，但'朝有利方向移动'暗示如此。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "major_timeframe_trailing_stop"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "callback"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "position_mgmt"
+        }
+      ]
+    },
+    {
+      "id": "T021",
+      "name_zh": "趋势反转",
+      "name_en": "major_trend_reversal",
+      "aliases": [
+        "趋势反转出场"
+      ],
+      "status": "kept",
+      "role": "callback",
+      "phase": "exit",
+      "is_key": true,
+      "source_quote": "[409s] 最后要么打止损出场,要么趋势反转出场。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [],
+      "appears_in": [
+        "execution_steps",
+        "exit_and_risk"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "两种出场方式之一，判定方法未定义；与'不主动平仓'并列时略有张力（反转出场是否算主动平仓）。 S3 D001：趋势反转出场是独立于打止损的平仓路径，大周期出现趋势反转即主动清仓。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "notes",
+          "from": "两种出场方式之一，判定方法未定义；与'不主动平仓'并列时略有张力（反转出场是否算主动平仓）。",
+          "to": "两种出场方式之一，判定方法未定义；与'不主动平仓'并列时略有张力（反转出场是否算主动平仓）。 S3 D001：趋势反转出场是独立于打止损的平仓路径，大周期出现趋势反转即主动清仓。"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "major_trend_reversal"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "callback"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "exit"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "appears_in",
+          "from": [
+            "exit_and_risk"
+          ],
+          "to": [
+            "execution_steps",
+            "exit_and_risk"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T022",
+      "name_zh": "逆向信号过滤",
+      "name_en": "counter_trend_filter",
+      "aliases": [
+        "只做多不做空",
+        "只做空不做多",
+        "逆向的信号过滤掉",
+        "用大周期来过滤小周期的噪音"
+      ],
+      "status": "kept",
+      "role": "constraint",
+      "phase": "entry",
+      "is_key": false,
+      "source_quote": "[425s] 大周期上涨途中只做多不做空。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T013"
+      ],
+      "appears_in": [
+        "execution_steps"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "多周期共振的本质：只执行与大周期方向一致的小周期信号，反向信号一律不执行。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "counter_trend_filter"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "constraint"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "entry"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T013"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T023",
+      "name_zh": "单笔亏损本金比例",
+      "name_en": "per_trade_loss_ratio",
+      "aliases": [
+        "本金比例",
+        "单笔亏损",
+        "亏掉5%甚至10%的本金"
+      ],
+      "status": "kept",
+      "role": "parameter",
+      "phase": "risk",
+      "is_key": false,
+      "source_quote": "[445s] 如果你按日线设止损,一次止损可能亏掉你5%甚至10%的本金。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T014"
+      ],
+      "appears_in": [
+        "scope_and_params",
+        "exit_and_risk"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "原文用 5%~10% 作为'太贵'的反例，并说'同样的本金比例，小周期能试的次数更多'，暗示按本金比例控制单笔风险，但未给出目标比例。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "per_trade_loss_ratio"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "parameter"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "risk"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T014"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T024",
+      "name_zh": "有利运动",
+      "name_en": "favorable_move",
+      "aliases": [
+        "一定的有利运动",
+        "价格朝你的方向走了一段",
+        "朝有利方向运动"
+      ],
+      "status": "kept",
+      "role": "callback",
+      "phase": "position_mgmt",
+      "is_key": true,
+      "source_quote": "[465s] 你得等小周期出现一定的有利运动。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [],
+      "appears_in": [
+        "execution_steps",
+        "exit_and_risk"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "移损至成本的触发条件；'一定'/'一段'的幅度未量化。 S3 D002：有利运动在大周期上判断（原文说“小周期出现有利运动”，以用户修订为准）。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "notes",
+          "from": "移损至成本的触发条件；'一定'/'一段'的幅度未量化。",
+          "to": "移损至成本的触发条件；'一定'/'一段'的幅度未量化。 S3 D002：有利运动在大周期上判断（原文说“小周期出现有利运动”，以用户修订为准）。"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "favorable_move"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "callback"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "position_mgmt"
+        }
+      ]
+    },
+    {
+      "id": "T025",
+      "name_zh": "除趋势反转外不主动平仓",
+      "name_en": "no_discretionary_exit",
+      "aliases": [
+        "不猜顶猜底",
+        "让市场来决定你什么时候走",
+        "只按大周期平仓"
+      ],
+      "status": "kept",
+      "role": "constraint",
+      "phase": "exit",
+      "is_key": false,
+      "source_quote": "[509s] 不主动平仓,不猜顶猜底,让市场来决定你什么时候走。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T021",
+        "T020"
+      ],
+      "appears_in": [
+        "exit_and_risk",
+        "execution_steps"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "出场只由止损（或趋势反转）触发，不做主观止盈；前提是能承受盈利回吐、浮盈变浮亏。 S3 D001：主动平仓仅限大周期趋势反转清仓；其余情况只由止损触发出场。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "name_zh",
+          "from": "不主动平仓",
+          "to": "除趋势反转外不主动平仓"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "notes",
+          "from": "出场只由止损（或趋势反转）触发，不做主观止盈；前提是能承受盈利回吐、浮盈变浮亏。",
+          "to": "出场只由止损（或趋势反转）触发，不做主观止盈；前提是能承受盈利回吐、浮盈变浮亏。 S3 D001：主动平仓仅限大周期趋势反转清仓；其余情况只由止损触发出场。"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "no_discretionary_exit"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "constraint"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "exit"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T021",
+            "T020"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T026",
+      "name_zh": "连续止损",
+      "name_en": "consecutive_stops",
+      "aliases": [
+        "连续10次把你止损出去",
+        "连续把你止损出去",
+        "反复打掉"
+      ],
+      "status": "kept",
+      "role": "aux_note",
+      "phase": "risk",
+      "is_key": false,
+      "source_quote": "[541s] 市场可能连续10次把你止损出去,",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T013",
+        "T014"
+      ],
+      "appears_in": [
+        "exit_and_risk",
+        "premise"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "原文视连续止损为不可避免并要求接受，未设最大连续止损次数或暂停规则；'10 次'是比喻性数字。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "consecutive_stops"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "aux_note"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "risk"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T013",
+            "T014"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T027",
+      "name_zh": "周期级差一到两级",
+      "name_en": "timeframe_gap",
+      "aliases": [
+        "数量级不宜差太大",
+        "差一到两级",
+        "不能小到离谱"
+      ],
+      "status": "kept",
+      "role": "parameter",
+      "phase": "market_context",
+      "is_key": false,
+      "source_quote": "[650s] 差一到两级比较合适。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [
+        "T010",
+        "T012"
+      ],
+      "appears_in": [
+        "scope_and_params"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "大小周期的配比约束；'一级'的粒度未定义（如 日线→60分钟→15分钟？），并排除秒级数据。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "timeframe_gap"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "parameter"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "market_context"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "supports",
+          "from": [],
+          "to": [
+            "T010",
+            "T012"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "T028",
+      "name_zh": "高一级周期转向信号",
+      "name_en": "",
+      "aliases": [
+        "转向信号"
+      ],
+      "status": "dropped",
+      "role": null,
+      "phase": null,
+      "is_key": false,
+      "source_quote": "[653s] 第四个细节,高一级周期出现转向信号后,",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [],
+      "appears_in": [
+        "execution_steps"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "D003: 用户确认转向信号与大周期方向判定是同一件事，merged into T011。",
+      "notes": "同向信号执行的前置条件：大周期先出现转向；'转向信号'未定义，可能与'大周期方向判定'和'趋势反转'是同一判断的不同侧面。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "dropped"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        }
+      ]
+    },
+    {
+      "id": "T029",
+      "name_zh": "震荡扛得住",
+      "name_en": "",
+      "aliases": [
+        "活过震荡期",
+        "活着",
+        "没有大行情的时候还能活着"
+      ],
+      "status": "dropped",
+      "role": null,
+      "phase": null,
+      "is_key": false,
+      "source_quote": "[672s] 趋势交易其实就一句话,震荡扛得住。",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [],
+      "appears_in": [
+        "one_liner",
+        "premise"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "merged into T002：“震荡扛得住”是对同一前提的口号式表述。",
+      "notes": "原文对趋势交易的一句话总结；'扛得住'指靠低止损成本存活而非扛单，需与'死扛亏损'区分。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "dropped"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        }
+      ]
+    },
+    {
+      "id": "T030",
+      "name_zh": "适用品种",
+      "name_en": "instrument_scope",
+      "aliases": [
+        "期货",
+        "股票",
+        "其他什么品种"
+      ],
+      "status": "kept",
+      "role": "scope",
+      "phase": "market_context",
+      "is_key": false,
+      "source_quote": "[892s] 这条路径对任何用趋势跟踪方法的交易者或许都有参考价值。不管你做的是期货,股票,还是其他什么品种,市场的本质是一样的,大部分时间没有趋势,少部分时间有。如何在没有趋势的时候活着,在有趋势的时候赚钱,这是同一道题的两面。你的系统准备好应对这70%了吗?",
+      "definition_zh": "",
+      "definition_en": "",
+      "supports": [],
+      "appears_in": [
+        "scope_and_params"
+      ],
+      "origin": "S2_extract",
+      "drop_reason": "",
+      "notes": "原文背景是期货，但结尾声明方法不限品种；未指定具体品种或合约。",
+      "history": [
+        {
+          "at": "2026-09-23T21:58:46+08:00",
+          "by": "S4",
+          "field": "carried",
+          "from": "S2_terms_init.json",
+          "to": "S4_terms_filtered.json"
+        },
+        {
+          "at": "2026-09-23T21:59:35+08:00",
+          "by": "S4_filter",
+          "field": "status",
+          "from": "candidate",
+          "to": "kept"
+        },
+        {
+          "at": "2026-09-23T22:08:13+08:00",
+          "by": "S5",
+          "field": "carried",
+          "from": "S4_terms_filtered.json",
+          "to": "S5_terms_classified.json"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "name_en",
+          "from": "",
+          "to": "instrument_scope"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "role",
+          "from": null,
+          "to": "scope"
+        },
+        {
+          "at": "2026-09-23T22:10:02+08:00",
+          "by": "S5_classify",
+          "field": "phase",
+          "from": null,
+          "to": "market_context"
+        }
+      ]
+    }
+  ]
+}
