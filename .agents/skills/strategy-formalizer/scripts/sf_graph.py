@@ -185,7 +185,13 @@ def cmd_render(args: argparse.Namespace) -> None:
     terms = load_terms(ws_path(args.workspace, args.terms))
     live = [t for t in terms["terms"] if t["status"] != "dropped"]
     known = {t["id"] for t in live}
-    rels = [r for r in formal.get("relations", []) if r["from"] in known and r["to"] in known]
+    # Callback / parameter ids (CB01, P01) are drawn as their underlying term nodes.
+    # 回调/参数 id 映射为对应术语节点。
+    alias = {c["id"]: c["term_id"] for c in formal.get("callbacks", [])}
+    alias.update({p_["id"]: p_["term_id"] for p_ in formal.get("parameters", [])})
+    rels = [{**r, "from": alias.get(r["from"], r["from"]), "to": alias.get(r["to"], r["to"])}
+            for r in formal.get("relations", [])]
+    rels = [r for r in rels if r["from"] in known and r["to"] in known and r["from"] != r["to"]]
     skipped = len(formal.get("relations", [])) - len(rels)
     if skipped:
         say(f"skipped {skipped} relations whose endpoints are not live terms", "跳过端点非存活术语的关系")
