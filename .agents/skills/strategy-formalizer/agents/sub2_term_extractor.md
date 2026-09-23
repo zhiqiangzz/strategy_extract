@@ -1,20 +1,18 @@
-# sub2 — Key-term extractor (S2 subagent prompt) / 关键术语提取子代理提示词
+# sub2 — Key-term extractor (S2 subagent prompt)
 
-> Agents: read the English blocks only. 中文仅供人类阅读。 The main agent pastes this file into the Agent-tool prompt, followed by the concrete paths listed under "Handoff".
+> **Agents: follow the English part only (above the "中文版" divider). The Chinese part is a translation for human readers and adds no instructions.** The main agent pastes this whole file into the Agent-tool prompt and appends the concrete paths listed under "Handoff".
+>
+> **说明：agent 执行时只需参考上半部分的英文；下半部分的中文仅供人类阅读，内容相同，不含额外指令。**
 
-## Role / 角色
+## Role
 
 You extract the *key terms* of a trading strategy from its corrected text: the concepts a downstream trading agent could not act on without a precise definition. A key term is (a) a judgement the strategy delegates ("大周期方向", "有利运动", "趋势反转"), (b) a concept the text uses but never pins down ("小周期", "尽快", "级别差一到两级"), (c) a rule or filter whose boundary matters ("逆向信号过滤掉", "止损只进不退"), or (d) a scope statement ("只做碳酸锂", "远月合约"). It is **not** a word every trader understands the same way (入场, 止损, 平仓, 做多) unless the text gives it a special meaning. Extract phrases as the text uses them; do not invent terms the text does not contain, and do not extract from secondary/reference files (you may use them to recognise that a phrase is a term of art).
 
-你从矫正后的策略文本中提取*关键术语*：下游交易 agent 若没有精确定义就无法执行的概念。关键术语是 (a) 策略交出去的判断（"大周期方向""有利运动""趋势反转"）；(b) 原文使用但从未界定的概念（"小周期""尽快""级别差一到两级"）；(c) 边界重要的规则或过滤条件（"逆向信号过滤掉""止损只进不退"）；(d) 范围陈述（"只做碳酸锂""远月合约"）。**不是**所有交易者理解一致的词（入场、止损、平仓、做多），除非原文赋予特殊含义。按原文措辞提取；不杜撰原文没有的术语；不从 secondary/reference 文件提取（可借助它们识别某短语是行话）。
-
-## Budget / 数量
+## Budget
 
 Target 15–30 terms; never more than 40 (the pipeline's hard limit is 50 and later stages add terms). If you have more candidates, merge synonyms (record the others in `aliases`) and drop the least decision-relevant ones.
 
-目标 15~30 个，最多 40 个（流水线硬上限 50，后续阶段还会新增）。超出时合并同义词（其余写入 `aliases`）并舍弃与决策最不相关的。
-
-## Output format / 输出格式
+## Output format
 
 Write a JSON file with exactly this shape (UTF-8, Chinese unescaped):
 
@@ -50,12 +48,34 @@ Write a JSON file with exactly this shape (UTF-8, Chinese unescaped):
 
 Rules: ids `T001`, `T002`, … in order of first appearance; `name_zh` is a short noun phrase (2–10 characters) that could be bolded in a sentence; `source_quote` is a verbatim quote (with timestamp if the text has them) of the sentence that best shows the term's use; `appears_in` is your guess among `summary, one_liner, premise, execution_steps, exit_and_risk, scope_and_params`; `notes` records why the term is ambiguous or what the text says around it. Leave `name_en`, `definition_*`, `role`, `phase`, `supports` empty.
 
-规则：id 按首次出现顺序编号；`name_zh` 为 2~10 字、能在句中加粗的名词短语；`source_quote` 为最能体现用法的原文原句（有时间戳则带上）；`appears_in` 从六个章节键中猜测；`notes` 记录该术语为何含糊或上下文说了什么。`name_en`、`definition_*`、`role`、`phase`、`supports` 留空。
-
-## Handoff (main agent fills in) / 交接信息（主代理填写）
+## Handoff (main agent fills in)
 
 - Primary text: `<abs path>/S1_strategy_raw.md`
 - Sources manifest: `<abs path>/S1_sources.json`
 - Schema for reference: `<abs path>/schemas/term.schema.json`
 - Write to: `<abs path>/S2_terms_init.json`
 - Reply with 5 lines: term count, the ids you consider callbacks-to-be (judgements), the ids that are scope statements, synonyms you merged, phrases you deliberately did not extract and why.
+
+---
+
+# 中文版（仅供人类阅读；agent 请参考上方英文）
+
+## 角色
+
+你从矫正后的策略文本中提取*关键术语*：下游交易 agent 若没有精确定义就无法执行的概念。关键术语是 (a) 策略交出去的判断（"大周期方向""有利运动""趋势反转"）；(b) 原文使用但从未界定的概念（"小周期""尽快""级别差一到两级"）；(c) 边界重要的规则或过滤条件（"逆向信号过滤掉""止损只进不退"）；(d) 范围陈述（"只做碳酸锂""远月合约"）。**不是**所有交易者理解一致的词（入场、止损、平仓、做多），除非原文赋予特殊含义。按原文措辞提取；不杜撰原文没有的术语；不从 secondary/reference 文件提取（可借助它们识别某短语是行话）。
+
+## 数量
+
+目标 15~30 个，最多 40 个（流水线硬上限 50，后续阶段还会新增）。超出时合并同义词（其余写入 `aliases`）并舍弃与决策最不相关的。
+
+## 输出格式
+
+写一个 JSON 文件，形状与上方英文部分的示例完全一致（UTF-8，中文不转义）。规则：id 按首次出现顺序为 `T001`、`T002`…；`name_zh` 为 2~10 字、能在句中加粗的名词短语；`source_quote` 为最能体现用法的原文原句（有时间戳则带上）；`appears_in` 从 `summary, one_liner, premise, execution_steps, exit_and_risk, scope_and_params` 中猜测；`notes` 记录该术语为何含糊或上下文说了什么。`name_en`、`definition_*`、`role`、`phase`、`supports` 留空。
+
+## 交接信息（主代理填写）
+
+- 主文本：`<绝对路径>/S1_strategy_raw.md`
+- 来源清单：`<绝对路径>/S1_sources.json`
+- 参考 schema：`<绝对路径>/schemas/term.schema.json`
+- 写入：`<绝对路径>/S2_terms_init.json`
+- 回复 5 行：术语数量、你认为将成为回调（判断类）的 id、属于范围陈述的 id、合并的同义词、有意不提取的短语及原因。

@@ -130,19 +130,23 @@ def render_report(errors: list[str], warnings: list[str], inputs: dict[str, str]
 
     渲染 S8_check_report.md 的脚本部分；之后由 agent 追加"语义审查"章节。
     """
-    lines = ["# S8 check report / 交叉核对报告", "",
-             "> Agents: read the English lines. 中文仅供人类阅读。", "",
+    lines = ["# S8 check report", "",
+             "> **Agents: follow the English part only. The Chinese part at the end is a translation for human readers.**",
+             "> **说明：agent 只需参考英文；末尾中文仅供人类阅读。**", "",
              f"Generated: {now_iso()}", "",
-             "## Inputs / 输入"]
+             "## Inputs"]
     lines += [f"- {k}: `{v}`" for k, v in inputs.items()]
-    lines += ["", "## Script findings / 脚本发现", "",
+    lines += ["", "## Script findings", "",
               f"Errors: {len(errors)}, warnings: {len(warnings)}", ""]
-    lines += [f"- ERROR: {e}" for e in errors] or ["- no errors / 无错误"]
+    lines += [f"- ERROR: {e}" for e in errors] or ["- no errors"]
     lines += [""]
-    lines += [f"- warning: {w}" for w in warnings] or ["- no warnings / 无警告"]
-    lines += ["", "## Semantic review (agent) / 语义审查（由 agent 填写）", "",
+    lines += [f"- warning: {w}" for w in warnings] or ["- no warnings"]
+    lines += ["", "## Semantic review (agent)", "",
               "_The agent appends here: for each execution step and exit rule in the summary, the terms it relies on, "
-              "and any omission or contradiction found. 逐条核对执行步骤与出场风控所依赖的术语，记录遗漏与矛盾。_", ""]
+              "and any omission or contradiction found._", "",
+              "---", "", "# 中文版（仅供人类阅读；agent 请参考上方英文）", "",
+              f"脚本发现：{len(errors)} 个错误，{len(warnings)} 个警告（明细见上方英文部分）。"
+              "语义审查由 agent 在上方 Semantic review 节填写：逐条核对执行步骤与出场风控所依赖的术语，记录遗漏与矛盾。", ""]
     return "\n".join(lines)
 
 
