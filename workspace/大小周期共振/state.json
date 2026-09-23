@@ -6,7 +6,7 @@
   "input_dir": "strategy_zoo/大小周期共振",
   "scheme_id": "role_x_phase",
   "created_at": "2026-09-23T18:21:11+08:00",
-  "updated_at": "2026-09-23T21:26:56+08:00",
+  "updated_at": "2026-09-23T21:31:05+08:00",
   "current_stage": "S2",
   "stages": {
     "S1": {
@@ -22,11 +22,15 @@
       }
     },
     "S2": {
-      "status": "in_progress",
+      "status": "awaiting_review",
       "started_at": "2026-09-23T21:26:56+08:00",
-      "completed_at": null,
+      "completed_at": "2026-09-23T21:31:05+08:00",
       "accepted_at": null,
-      "checkpoint_hashes": {}
+      "checkpoint_hashes": {
+        "S2_summary_init.md": "fc3056b538dade6bc3798d25d146c24ec3c8da3507d8952c6b034b47c3668a43",
+        "S2_terms_init.json": "439d285fc0754ac0a320dd691a624d1ba2531a8b7a28c6ffe185f1f617805fdb",
+        "S2_terms_init.xlsx": "feffa5e6495d5c25b9779bb8818ab631cbcee63b0ef8eeb79f5f218d70a8af1a"
+      }
     },
     "S3": {
       "status": "pending",
