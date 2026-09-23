@@ -6,14 +6,14 @@
   "input_dir": "strategy_zoo/大小周期共振",
   "scheme_id": "role_x_phase",
   "created_at": "2026-09-23T18:21:11+08:00",
-  "updated_at": "2026-09-23T18:53:38+08:00",
-  "current_stage": "S1",
+  "updated_at": "2026-09-23T20:31:17+08:00",
+  "current_stage": "S2",
   "stages": {
     "S1": {
-      "status": "awaiting_review",
+      "status": "done",
       "started_at": "2026-09-23T18:53:38+08:00",
       "completed_at": "2026-09-23T18:53:38+08:00",
-      "accepted_at": null,
+      "accepted_at": "2026-09-23T20:26:05+08:00",
       "checkpoint_hashes": {
         "S1_sources.json": "2a667e5f3b788b9b577151360cc8e04221be687899ffb7c5005e7dbf84b41899",
         "S1_strategy_raw.md": "85d8d0e2640ff0286b146c2ea4301c437252e9de76eaf00d8ee398e9789e22aa",
@@ -22,11 +22,15 @@
       }
     },
     "S2": {
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
+      "status": "awaiting_review",
+      "started_at": "2026-09-23T20:26:05+08:00",
+      "completed_at": "2026-09-23T20:31:17+08:00",
       "accepted_at": null,
-      "checkpoint_hashes": {}
+      "checkpoint_hashes": {
+        "S2_summary_init.md": "fbdadb2a78a76984662612336c350a7a554e5c45c1c77bb8b7f98f852acd4080",
+        "S2_terms_init.json": "d95ed8a72b664cf6f7feaee29a74b760fb8b83e56bfefca9cf56d1f6e425b7b0",
+        "S2_terms_init.xlsx": "d3d7d71d52647cdee0c3145a1a49cef0f2b52fe47fece846a6b5756227d93589"
+      }
     },
     "S3": {
       "status": "pending",
