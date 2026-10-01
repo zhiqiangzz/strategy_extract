@@ -167,7 +167,7 @@ All paths are under `workspace/<strategy_name>/`. json files are the source of t
 | `S7_formal.json` `.xlsx` | S7 | Callbacks (name, invocation point, inputs, output enum, aux/constraint/parameter term ids), parameters, typed relations, and the `flow` (states + ordered rules + dry-run scenarios) that wires the callbacks; see `references/flow_dsl.md`. |
 | `S7_term_graph.mmd` `.dot` `.pdf` | S7 | Term relationship graph (Mermaid, Graphviz source, PDF rendering). |
 | `S7_callbacks_stub.py` | S7 | Standard interface dataclasses (Bar, MarketData, Instrument, Position, EntryDecision, StopDistance) plus an abstract class with one typed method per callback, docstring = definition + all auxiliary notes. The downstream agent subclasses it. |
-| `S7_strategy_driver.py` | S7 | Generated from `flow`: `StrategyDriver.step(ctx)` calls the callbacks in execution order and returns `Action`s (enter / set_stop / close); the downstream agent executes them via its `ExecutionPort`. Includes the runtime (Account sizing, stop-hit test, RecordingPort for dry-runs). |
+| `S7_strategy_driver.py` | S7 | Generated from `flow`: `StrategyDriver.on_event(event, ctx)` runs the rules scheduled for that event (tick / minor_bar / major_bar / timer), reads the other callbacks' last results from a signal cache, and returns `Action`s (enter / set_stop / close); the downstream agent executes them via its `ExecutionPort`. Includes the runtime (Account sizing, stop-hit test on tick, async-aware callback calls, RecordingPort for dry-runs). |
 | `S8_check_report.md` | S8 | Script findings (bold ↔ terms ↔ formal consistency) plus the agent's semantic review. |
 | `final/strategy.md` `terms.json` `formal.json` `callbacks_stub.py` `strategy_driver.py` | S8 | Frozen deliverables for the downstream trading agent. |
 
@@ -291,7 +291,7 @@ tests/                        pytest suite (`uv run pytest` from the repo root)
 | `S7_formal.json` `.xlsx` | S7 | 回调（名称、调用位置、输入、输出枚举、辅助/约束/参数术语 id）、参数、带类型的关系，以及把回调串起来的 `flow`（状态 + 有序规则 + dry-run 场景）；见 `references/flow_dsl.md`。 |
 | `S7_term_graph.mmd` `.dot` `.pdf` | S7 | 术语关系图（Mermaid、Graphviz 源文件、PDF 渲染）。 |
 | `S7_callbacks_stub.py` | S7 | 标准接口 dataclass（Bar、MarketData、Instrument、Position、EntryDecision、StopDistance）加抽象类：每个回调一个带类型的方法，docstring = 定义 + 全部辅助说明。下游 agent 继承它实现。 |
-| `S7_strategy_driver.py` | S7 | 由 `flow` 生成：`StrategyDriver.step(ctx)` 按执行顺序调用回调并返回 `Action`（enter / set_stop / close），下游 agent 通过自己的 `ExecutionPort` 执行。内含运行时（按风险算仓位、止损触发判断、dry-run 用的 RecordingPort）。 |
+| `S7_strategy_driver.py` | S7 | 由 `flow` 生成：`StrategyDriver.on_event(event, ctx)` 执行该事件（tick / minor_bar / major_bar / timer）上调度的规则，其他回调的上次结果从信号缓存读取，返回 `Action`（enter / set_stop / close），下游 agent 通过自己的 `ExecutionPort` 执行。内含运行时（按风险算仓位、tick 上的止损触发判断、异步感知的回调调用、dry-run 用的 RecordingPort）。 |
 | `S8_check_report.md` | S8 | 脚本发现（加粗 ↔ 术语 ↔ 形式化的一致性）加上 agent 的语义审查。 |
 | `final/strategy.md` `terms.json` `formal.json` `callbacks_stub.py` `strategy_driver.py` | S8 | 冻结后交付给下游交易 agent 的文件。 |
 

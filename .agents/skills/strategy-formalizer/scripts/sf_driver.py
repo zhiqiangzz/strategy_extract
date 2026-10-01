@@ -11,9 +11,13 @@ in which state it applies, under which condition (`when`, a Python boolean
 expression over a fixed namespace), which callback to call (`call`) and under
 what name to keep its result (`bind`), which built-in action to emit when the
 result satisfies `when_result` (`then`: enter, close:<reason>, move_stop_to_cost,
-move_stop, set_stop), and which state to move to (`next`). `gen` renders the
-rules into a readable `step()` method appended to
-templates/strategy_driver.template.py; `validate` checks the spec (every
+move_stop, set_stop), and which state to move to (`next`). Each rule also names its
+`trigger` event (tick / minor_bar / major_bar / timer): the rule runs only on
+that event and on other events its callback's last result is read from the
+driver's signal cache, so slow major-timeframe judgements and tick-level stop
+checks coexist. Callbacks carry a `schedule` (trigger + sync/async) that the
+rule triggers must agree with. `gen` renders the rules into a readable
+`on_event()` method appended to templates/strategy_driver.template.py; `validate` checks the spec (every
 callback used, states reachable, expressions restricted to the namespace,
 callback inputs resolvable); `dryrun` imports the generated driver, feeds it
 scripted callback results from `flow.dryrun`, applies the actions with
@@ -28,8 +32,11 @@ sf_driver.py 负责 S7 的策略 driver：生成、校验并 dry-run 把回调�
 每条规则说明：适用于哪个状态、满足什么条件（`when`，固定命名空间上的 Python 布尔表达式）、
 调用哪个回调（`call`）并以什么名字保存结果（`bind`）、结果满足 `when_result` 时发出哪个内置
 动作（`then`：enter、close:<原因>、move_stop_to_cost、move_stop、set_stop）、以及转到哪个状态
-（`next`）。`gen` 把规则渲染成可读的 `step()` 方法并接在 templates/strategy_driver.template.py
-之后；`validate` 检查规格（每个回调被使用、状态可达、表达式只用命名空间内的名字、回调输入可
+（`next`）。每条规则还声明自己的 `trigger`
+事件（tick / minor_bar / major_bar / timer）：规则只在该事件上执行，其他事件上从 driver 的信号
+缓存读取其回调上次的结果，因此慢速的大周期判断与 tick 级止损检查可以共存。回调带有 `schedule`
+（触发事件 + sync/async），规则的 trigger 必须与之一致。`gen` 把规则渲染成可读的 `on_event()`
+方法并接在 templates/strategy_driver.template.py 之后；`validate` 检查规格（每个回调被使用、状态可达、表达式只用命名空间内的名字、回调输入可
 解析）；`dryrun` 导入生成的 driver，用 `flow.dryrun` 中脚本化的回调结果驱动它，用 RecordingPort
 应用动作，并把动作轨迹与场景的 `expect` 比较。
 """
@@ -45,10 +52,12 @@ from pathlib import Path
 from sf_common import SUMMARY_SECTIONS, TEMPLATES_DIR, fail, load_json, now_iso, read_text, relpath, resolve_workspace, say
 
 ACTIONS = ("enter", "close", "move_stop_to_cost", "move_stop", "set_stop")
+EVENTS = ("tick", "minor_bar", "major_bar", "timer")
+MODES = ("sync", "async")
 CTX_FIELDS = ("instrument", "major_tf_data", "minor_tf_data", "major_tf_context", "position", "last_price", "now", "extra")
 BASE_NAMES = {"state", "position", "ctx", "stop_hit", "None", "True", "False"}
 STUB_TYPES = ("StrategyCallbacks", "Position", "Instrument", "MarketData", "Bar", "EntryDecision", "StopDistance", "Direction")
-RULE_COLUMNS = ("id", "state", "when", "call", "bind", "args", "when_result", "then", "next", "step_ref", "note_en", "note_zh")
+RULE_COLUMNS = ("id", "state", "trigger", "when", "call", "bind", "args", "when_result", "then", "next", "step_ref", "note_en", "note_zh")
 _ALLOWED_NODES = (ast.Expression, ast.BoolOp, ast.UnaryOp, ast.Compare, ast.Name, ast.Attribute, ast.Constant,
                   ast.Tuple, ast.List, ast.And, ast.Or, ast.Not, ast.USub, ast.BinOp, ast.Add, ast.Sub, ast.Mult,
                   ast.Div, ast.Load, ast.Eq, ast.NotEq, ast.Lt, ast.LtE, ast.Gt, ast.GtE, ast.In, ast.NotIn,
@@ -159,6 +168,12 @@ def validate_flow(formal: dict) -> tuple[list[str], list[str]]:
     if not flow:
         return ["formal.json has no 'flow' section"], warnings
     cbs = {c["id"]: c for c in formal.get("callbacks", [])}
+    for cid, cb in cbs.items():
+        sch = cb.get("schedule") or {}
+        if sch.get("trigger") not in EVENTS:
+            errors.append(f"callback {cid} {cb.get('name_en')}: schedule.trigger must be one of {EVENTS} (got {sch.get('trigger')!r})")
+        if sch.get("mode", "sync") not in MODES:
+            errors.append(f"callback {cid}: schedule.mode must be sync or async")
     states = [s["id"] if isinstance(s, dict) else s for s in flow.get("states", [])]
     initial = flow.get("initial_state")
     if not states:
@@ -181,6 +196,9 @@ def validate_flow(formal: dict) -> tuple[list[str], list[str]]:
         st = r.get("state", "*")
         if st != "*" and st not in states:
             errors.append(f"{rid}: state {st!r} not in states")
+        trig = r.get("trigger") or "*"
+        if trig != "*" and trig not in EVENTS:
+            errors.append(f"{rid}: trigger {trig!r} must be '*' or one of {EVENTS}")
         names = BASE_NAMES | binds
         for key in ("when", "when_result"):
             err = check_expression(r.get(key, "") or "", names | ({r["bind"]} if r.get("bind") and key == "when_result" else set()))
@@ -194,6 +212,11 @@ def validate_flow(formal: dict) -> tuple[list[str], list[str]]:
                 used_cbs.add(call)
                 _, errs = resolve_args(r, cbs[call], binds)
                 errors += errs
+                cb_trig = (cbs[call].get("schedule") or {}).get("trigger")
+                if trig == "*":
+                    warnings.append(f"{rid}: trigger '*' calls {call} on every event although its schedule is {cb_trig!r}")
+                elif cb_trig in EVENTS and cb_trig != trig:
+                    errors.append(f"{rid}: trigger {trig!r} differs from {call}'s schedule.trigger {cb_trig!r}")
             if not r.get("bind"):
                 warnings.append(f"{rid}: calls {call} but binds no name; the result is discarded")
         if r.get("bind"):
@@ -203,6 +226,8 @@ def validate_flow(formal: dict) -> tuple[list[str], list[str]]:
                 errors.append(f"{rid}: bind {r['bind']!r} shadows a reserved name")
             binds.add(r["bind"])
         then = r.get("then") or ""
+        if then and "stop_hit" in (r.get("when") or "") and trig not in ("tick", "*"):
+            errors.append(f"{rid}: a stop_hit rule must run on tick (trigger={trig!r})")
         if then:
             base = then.split(":", 1)[0]
             if base not in ACTIONS:
@@ -284,18 +309,27 @@ def render_step(formal: dict, terms: dict | None = None) -> str:
     L.append("    生成的控制流。下面每个代码块对应一条 flow 规则；注释给出规则编号和它实现的总结行。")
     L.append('    """')
     L.append("")
-    L.append("    def step(self, ctx: StepContext) -> list[Action]:")
-    L.append('        """')
-    L.append("        One evaluation: walk the rules in order and return the actions to execute.")
+    meta_items = ", ".join(
+        f"{c['name_en']!r}: ({(c.get('schedule') or {}).get('trigger', '')!r}, {(c.get('schedule') or {}).get('mode', 'sync')!r}, {(c.get('output') or {}).get('type', '')!r})"
+        for c in formal.get("callbacks", []))
+    L.append(f"    callback_meta = {{{meta_items}}}")
     L.append("")
-    L.append("        一次评估：按顺序走一遍规则，返回要执行的动作。")
+    L.append("    def on_event(self, event: Event, ctx: StepContext) -> list[Action]:")
     L.append('        """')
+    L.append("        One evaluation for `event`: rules whose trigger matches run (calling their callback),")
+    L.append("        the others are skipped and their bound values come from the signal cache.")
+    L.append("")
+    L.append("        对 `event` 评估一次：触发事件匹配的规则执行（调用其回调），其余规则跳过，其绑定值取自")
+    L.append("        信号缓存。")
+    L.append('        """')
+    L.append("        self.cache.seq += 1")
     L.append("        actions: list[Action] = []")
     L.append("        state = self.state")
     L.append("        position = ctx.position")
-    L.append("        stop_hit = self.stop_hit(ctx)")
-    if binds:
-        L.append("        " + " = ".join(dict.fromkeys(binds)) + " = None")
+    L.append("        stop_hit = self.stop_hit(ctx) if event == 'tick' else False")
+    bind_src = {r["bind"]: cbs[r["call"]]["name_en"] for r in flow["rules"] if r.get("bind") and r.get("call") in cbs}
+    for b in dict.fromkeys(binds):
+        L.append(f"        {b} = self.cache.get({bind_src[b]!r})" if b in bind_src else f"        {b} = None")
     L.append("")
     binds_so_far: set[str] = set()
     for r in flow["rules"]:
@@ -306,8 +340,11 @@ def render_step(formal: dict, terms: dict | None = None) -> str:
             t = tmap.get(cb["term_id"], {})
             label = f" {cb['name_en']} ({t.get('name_zh', cb.get('name_zh', ''))})"
         note = r.get("note_zh") or r.get("note_en") or ""
-        L.append(f"        # {rid} [{r.get('step_ref', '')}]{label}{': ' + note if note else ''}")
+        trig = r.get("trigger") or "*"
+        L.append(f"        # {rid} [{r.get('step_ref', '')}] on {trig}{label}{': ' + note if note else ''}")
         state_expr = "" if r.get("state", "*") == "*" else f"state == {r['state']!r}"
+        if trig != "*":
+            state_expr = f"event == {trig!r}" + (f" and {state_expr}" if state_expr else "")
         cond = _cond(state_expr, r.get("when", ""))
         indent = "        " if cond == "True" else "            "
         if cond != "True":
@@ -315,7 +352,7 @@ def render_step(formal: dict, terms: dict | None = None) -> str:
         body: list[str] = []
         if cb:
             mapping, _ = resolve_args(r, cb, binds_so_far)
-            call = f"self.callbacks.{cb['name_en']}(" + ", ".join(f"{k}={v}" for k, v in mapping.items()) + ")"
+            call = f"self._call({cb['name_en']!r}, event" + "".join(f", {k}={v}" for k, v in mapping.items()) + ")"
             if r.get("bind"):
                 body.append(f"{r['bind']} = {call}")
             else:
@@ -432,6 +469,9 @@ def build_scripted_callbacks(formal: dict, mod, scenario: dict):
             if cb["id"] not in vals:
                 raise RuntimeError(f"tick {holder['tick']}: {cb['name_en']} ({cb['id']}) was called but the scenario gives no value")
             v = vals[cb["id"]]
+            if v is None:
+                holder["calls"].append((holder["tick"], cb["id"], None))
+                return None
             if isinstance(v, dict) and otype in ("EntryDecision", "StopDistance"):
                 v = getattr(mod, otype)(**v)
             holder["calls"].append((holder["tick"], cb["id"], v))
@@ -466,9 +506,10 @@ def run_scenario(formal: dict, mod, scenario: dict, verbose: bool = True) -> tup
     for i, tick in enumerate(scenario.get("ticks", []), 1):
         holder["tick"] = i
         holder["values"] = {k: v for k, v in tick.items() if k.startswith("CB")}
+        event = tick.get("event", "tick")
         ctx = mod.StepContext(instrument=inst, major_tf_data=empty("major"), minor_tf_data=empty("minor"),
                               position=port.position, last_price=tick.get("last_price"), now=datetime.now())
-        actions = driver.step(ctx)
+        actions = driver.on_event(event, ctx)
         calls = ", ".join(f"{cid}={val!r}" for t, cid, val in holder["calls"] if t == i)
         for a in actions:
             port.apply(a, ctx)
@@ -477,7 +518,7 @@ def run_scenario(formal: dict, mod, scenario: dict, verbose: bool = True) -> tup
                          + (f" stop={a.stop_price}" if a.stop_price is not None else "") + (f" size={a.size}" if a.size else "")
                          for a in actions) or "-"
         if verbose:
-            print(f"tick {i:>2} price={tick.get('last_price')!s:<8} state={driver.state:<12} calls[{calls}] -> {acts}")
+            print(f"{i:>2} {event:<9} price={tick.get('last_price')!s:<7} state={driver.state:<12} calls[{calls}] -> {acts}")
     return trace, list(scenario.get("expect", []))
 
 

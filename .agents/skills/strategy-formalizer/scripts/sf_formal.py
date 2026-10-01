@@ -55,8 +55,8 @@ from sf_terms import load_terms
 ROLE_TO_RELATION = {"aux_note": "supports", "constraint": "constrains", "parameter": "parameterizes",
                     "scope": "supports"}
 
-FLOW_COLUMNS = ("id", "state", "when", "call", "bind", "args", "when_result", "then", "next", "step_ref", "note_en", "note_zh")
-CB_COLUMNS = ["id", "term_id", "name_en", "name_zh", "invoked_in", "inputs", "output_type", "output_values",
+FLOW_COLUMNS = ("id", "state", "trigger", "when", "call", "bind", "args", "when_result", "then", "next", "step_ref", "note_en", "note_zh")
+CB_COLUMNS = ["id", "term_id", "name_en", "name_zh", "invoked_in", "trigger", "mode", "inputs", "output_type", "output_values",
               "aux_term_ids", "constraint_term_ids", "parameter_term_ids", "description_en", "description_zh"]
 PARAM_COLUMNS = ["id", "term_id", "name_en", "name_zh", "default", "unit", "range", "description_en", "description_zh"]
 REL_COLUMNS = ["from", "to", "type", "note"]
@@ -130,6 +130,7 @@ def scaffold(terms: dict, terms_file: str) -> dict:
                 "name_en": t["name_en"],
                 "name_zh": t["name_zh"],
                 "invoked_in": (t["appears_in"][0] if t["appears_in"] else "") ,
+                "schedule": {"trigger": "", "mode": "sync", "note_en": "TODO: set from the S6 schedule answer (tick | minor_bar | major_bar | timer; sync | async)"},
                 "inputs": [],
                 "output": {"type": "enum", "values": [], "description_en": ""},
                 "aux_term_ids": [],
@@ -152,7 +153,7 @@ def scaffold(terms: dict, terms_file: str) -> dict:
     # flow 骨架：每个回调一条占位规则，按执行顺序；agent 在 S7 补全条件/动作/状态
     for i, cb in enumerate(formal["callbacks"], 1):
         formal["flow"]["rules"].append({
-            "id": f"F{i:02d}", "state": "*", "when": "", "call": cb["id"], "bind": cb["name_en"].split("_")[-1],
+            "id": f"F{i:02d}", "state": "*", "trigger": (cb.get("schedule") or {}).get("trigger", ""), "when": "", "call": cb["id"], "bind": cb["name_en"].split("_")[-1],
             "args": {}, "when_result": "", "then": "", "next": "", "step_ref": cb.get("invoked_in", ""),
             "note_en": "TODO: set state / when / then / next", "note_zh": "待填：状态 / 条件 / 动作 / 跳转",
         })
@@ -293,7 +294,9 @@ def to_xlsx(formal: dict, out: Path) -> None:
     sh.append(CB_COLUMNS)
     for cb in formal["callbacks"]:
         out_ = cb.get("output") or {}
+        sch = cb.get("schedule") or {}
         sh.append([cb["id"], cb["term_id"], cb["name_en"], cb.get("name_zh", ""), cb.get("invoked_in", ""),
+                   sch.get("trigger", ""), sch.get("mode", "sync"),
                    inputs_to_cell(cb.get("inputs", [])), out_.get("type", ""), join_list(out_.get("values", [])),
                    join_list(cb.get("aux_term_ids")), join_list(cb.get("constraint_term_ids")),
                    join_list(cb.get("parameter_term_ids")), cb.get("description_en", ""), cb.get("description_zh", "")])
@@ -315,6 +318,7 @@ def to_xlsx(formal: dict, out: Path) -> None:
     lg.append(["callbacks.output_type", "enum | number | bool | price | object", "输出类型"])
     lg.append(["callbacks.output_values", "enum values, '; ' separated, e.g. long; short; uncertain", "枚举取值，如 多; 空; 不确定 的英文"])
     lg.append(["callbacks.*_term_ids", "term ids the implementer must read", "实现者必须阅读的术语 id"])
+    lg.append(["callbacks.trigger / mode", "schedule: tick | minor_bar | major_bar | timer; sync | async (async = may return None to keep the cached value)", "调度：触发事件与同步/异步（异步可返回 None 以沿用缓存值）"])
     lg.append(["relations.type", " | ".join(RELATION_TYPES), "关系类型"])
     lg.append(["flow.*", "one rule per row; see references/flow_dsl.md; args is a JSON object", "每行一条控制流规则，见 references/flow_dsl.md；args 为 JSON 对象"])
     lg.append(["", "Agents read the json; edit here then run sf_formal.py from-xlsx.", "供人编辑，改完运行 from-xlsx"])
@@ -364,6 +368,9 @@ def from_xlsx(formal: dict, xlsx: Path) -> None:
         cb["name_en"] = str(r.get("name_en") or "").strip()
         cb["name_zh"] = str(r.get("name_zh") or "").strip()
         cb["invoked_in"] = str(r.get("invoked_in") or "").strip()
+        sch = cb.setdefault("schedule", {})
+        sch["trigger"] = str(r.get("trigger") or sch.get("trigger") or "").strip()
+        sch["mode"] = str(r.get("mode") or sch.get("mode") or "sync").strip()
         if r.get("inputs") not in (None, ""):
             cb["inputs"] = cell_to_inputs(r.get("inputs"))
         out_ = cb.setdefault("output", {})

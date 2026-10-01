@@ -110,6 +110,35 @@
           },
           "description_zh": {
             "type": "string"
+          },
+          "schedule": {
+            "type": "object",
+            "required": [
+              "trigger"
+            ],
+            "description": "EN: when the callback is re-evaluated and whether it may run asynchronously. | 中文：回调何时重新评估、是否可异步。",
+            "properties": {
+              "trigger": {
+                "enum": [
+                  "tick",
+                  "minor_bar",
+                  "major_bar",
+                  "timer"
+                ]
+              },
+              "mode": {
+                "enum": [
+                  "sync",
+                  "async"
+                ]
+              },
+              "note_en": {
+                "type": "string"
+              },
+              "note_zh": {
+                "type": "string"
+              }
+            }
           }
         }
       }
@@ -243,6 +272,10 @@
               },
               "note_zh": {
                 "type": "string"
+              },
+              "trigger": {
+                "type": "string",
+                "description": "'*' or tick | minor_bar | major_bar | timer; must equal the called callback's schedule.trigger"
               }
             }
           }
@@ -278,7 +311,20 @@
               "ticks": {
                 "type": "array",
                 "items": {
-                  "type": "object"
+                  "type": "object",
+                  "properties": {
+                    "event": {
+                      "enum": [
+                        "tick",
+                        "minor_bar",
+                        "major_bar",
+                        "timer"
+                      ]
+                    },
+                    "last_price": {
+                      "type": "number"
+                    }
+                  }
                 }
               },
               "expect": {
