@@ -125,7 +125,8 @@ def test_complete_last_stage_is_done(tmp_path, monkeypatch):
     (ws / "state.json").write_text(__import__("json").dumps(st), encoding="utf-8")
     sf_state.main(["--workspace", str(ws), "start", "S8"])
     (ws / "final").mkdir()
-    for f in ("S8_check_report.md", "final/strategy.md", "final/terms.json", "final/formal.json", "final/callbacks_stub.py"):
+    for f in ("S8_check_report.md", "final/strategy.md", "final/terms.json", "final/formal.json", "final/callbacks_stub.py",
+              "final/strategy_driver.py"):
         (ws / f).write_text("x", encoding="utf-8")
     sf_state.main(["--workspace", str(ws), "complete", "S8"])
     assert load(ws / "state.json")["stages"]["S8"]["status"] == "done"

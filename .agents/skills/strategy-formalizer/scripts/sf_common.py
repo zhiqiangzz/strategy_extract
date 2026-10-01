@@ -83,9 +83,10 @@ STAGE_OUTPUTS: dict[str, list[tuple[str, bool]]] = {
     "S6": [("S6_dialog.json", True), ("S6_dialog.md", True), ("S6_terms_defined.json", True),
            ("S6_terms_defined.xlsx", True), ("S6_conflict_log.md", True)],
     "S7": [("S7_formal.json", True), ("S7_formal.xlsx", True), ("S7_term_graph.mmd", True),
-           ("S7_term_graph.dot", True), ("S7_term_graph.pdf", False), ("S7_callbacks_stub.py", True)],
+           ("S7_term_graph.dot", True), ("S7_term_graph.pdf", False), ("S7_callbacks_stub.py", True),
+           ("S7_strategy_driver.py", True)],
     "S8": [("S8_check_report.md", True), ("final/strategy.md", True), ("final/terms.json", True),
-           ("final/formal.json", True), ("final/callbacks_stub.py", True)],
+           ("final/formal.json", True), ("final/callbacks_stub.py", True), ("final/strategy_driver.py", True)],
 }
 
 # Which stage's term file is the "latest terms" input for a later stage.

@@ -86,3 +86,8 @@ flowchart LR
   T011 ==>|triggers| T021
   T011 -->|constrains| T013
   T014 -->|parameterizes| T004
+  T011 ==>|flow F01→F02| T013
+  T013 ==>|flow F02→F03| T014
+  T014 ==>|flow F03→F05| T021
+  T021 ==>|flow F05→F06| T024
+  T024 ==>|flow F06→F07| T020

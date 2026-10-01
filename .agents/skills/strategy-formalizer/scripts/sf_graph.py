@@ -36,9 +36,9 @@ from sf_terms import load_terms
 PHASE_ZH = {"market_context": "环境/方向", "entry": "入场", "position_mgmt": "持仓管理", "exit": "出场",
             "risk": "风控", "philosophy": "理念", None: "未分类"}
 EDGE_STYLE_DOT = {"supports": "dashed", "constrains": "solid", "parameterizes": "dotted", "triggers": "bold",
-                  "sequence": "solid", "conflicts": "solid"}
+                  "sequence": "solid", "conflicts": "solid", "flow": "bold"}
 EDGE_COLOR_DOT = {"supports": "#5b8def", "constrains": "#d9534f", "parameterizes": "#7b7b7b",
-                  "triggers": "#2e8b57", "sequence": "#111111", "conflicts": "#ff00ff"}
+                  "triggers": "#2e8b57", "sequence": "#111111", "conflicts": "#ff00ff", "flow": "#8e44ad"}
 
 
 def ws_path(ws_arg: str | None, p: str) -> Path:
@@ -104,8 +104,9 @@ def to_mermaid(terms: list[dict], relations: list[dict]) -> str:
                 lines.append(f'    {t["id"]}["{lab}"]:::aux')
         lines.append("  end")
     for r in relations:
-        arrow = "-.->" if r["type"] == "supports" else ("==>" if r["type"] == "triggers" else "-->")
-        lines.append(f'  {r["from"]} {arrow}|{r["type"]}| {r["to"]}')
+        arrow = "-.->" if r["type"] == "supports" else ("==>" if r["type"] in ("triggers", "flow") else "-->")
+        elabel = f"{r['type']} {r.get('note', '')}".strip() if r["type"] == "flow" else r["type"]
+        lines.append(f'  {r["from"]} {arrow}|{elabel}| {r["to"]}')
     return "\n".join(lines)
 
 
@@ -138,7 +139,8 @@ def to_dot(terms: list[dict], relations: list[dict]) -> str:
             lines.append(f'    {t["id"]} [label="{lab}", {attrs}];')
         lines.append("  }")
     for r in relations:
-        lines.append(f'  {r["from"]} -> {r["to"]} [label="{r["type"]}", style={EDGE_STYLE_DOT.get(r["type"], "solid")}, '
+        elabel = f"{r['type']} {r.get('note', '')}".strip() if r["type"] == "flow" else r["type"]
+        lines.append(f'  {r["from"]} -> {r["to"]} [label="{elabel}", style={EDGE_STYLE_DOT.get(r["type"], "solid")}, '
                      f'color="{EDGE_COLOR_DOT.get(r["type"], "#333333")}"];')
     lines.append("}")
     return "\n".join(lines)
@@ -196,6 +198,13 @@ def cmd_render(args: argparse.Namespace) -> None:
     rels = [{**r, "from": alias.get(r["from"], r["from"]), "to": alias.get(r["to"], r["to"])}
             for r in formal.get("relations", [])]
     rels = [r for r in rels if r["from"] in known and r["to"] in known and r["from"] != r["to"]]
+    # flow rules: consecutive callback-calling rules become labelled "flow" edges between their term nodes
+    # flow 规则：相邻两条调用回调的规则在对应术语节点之间连一条带规则编号的 "flow" 边
+    flow_rules = [r for r in (formal.get("flow") or {}).get("rules", []) if r.get("call") in alias]
+    for a, b in zip(flow_rules, flow_rules[1:]):
+        fa, fb = alias[a["call"]], alias[b["call"]]
+        if fa != fb and fa in known and fb in known:
+            rels.append({"from": fa, "to": fb, "type": "flow", "note": f"{a['id']}→{b['id']}"})
     skipped = len(formal.get("relations", [])) - len(rels)
     if skipped:
         say(f"skipped {skipped} relations whose endpoints are not live terms", "跳过端点非存活术语的关系")

@@ -6,7 +6,7 @@
   "input_dir": "strategy_zoo/大小周期共振",
   "scheme_id": "role_x_phase",
   "created_at": "2026-09-23T18:21:11+08:00",
-  "updated_at": "2026-09-23T23:56:30+08:00",
+  "updated_at": "2026-10-01T18:19:08+08:00",
   "current_stage": "S8",
   "stages": {
     "S1": {
@@ -80,29 +80,31 @@
     },
     "S7": {
       "status": "done",
-      "started_at": "2026-09-23T23:56:28+08:00",
-      "completed_at": "2026-09-23T23:56:29+08:00",
-      "accepted_at": "2026-09-23T23:56:29+08:00",
+      "started_at": "2026-10-01T18:18:21+08:00",
+      "completed_at": "2026-10-01T18:18:22+08:00",
+      "accepted_at": "2026-10-01T18:18:22+08:00",
       "checkpoint_hashes": {
-        "S7_formal.json": "dbf62a551bd3f58278b6888f4a42271e67eaca3b448fae86afd45f97f4e9eb5b",
-        "S7_formal.xlsx": "99d7fcf8806ae6269b4c84c96f62958a1342edad4ac3ea48c2ea3826dbb563be",
-        "S7_term_graph.mmd": "f9a76376bce2ce5273253d58bdb958debba1f8b8c69f51c625a2ac70fd910654",
-        "S7_term_graph.dot": "83e25efeca555b3dfb8bd8e187e547194917443f79f535874426fbe2595b764f",
-        "S7_term_graph.pdf": "ba900864fdc03d1f9b7b114ff4f97ab2254c11d9c477ca3035d345c9d338550a",
-        "S7_callbacks_stub.py": "7ffbdfba07882846fa23222306107e5fd25012de162855790a00a41e2afeb4d8"
+        "S7_formal.json": "c99a6404720572963e5b72a456848215966b85c8287035e96f949c26bc54fdb1",
+        "S7_formal.xlsx": "429037e60a45b14aa8f84ca47cbb14656640b41aa55ca47e5ba317df5e037d58",
+        "S7_term_graph.mmd": "20aa7c16fdf1dc5c8772f6c3b9230e85305db03d9cc37be0f2281768c2fc5739",
+        "S7_term_graph.dot": "81b522b6b7333345f2ffe120f74324f0919dac3446952ea035cec0e67d7394fa",
+        "S7_term_graph.pdf": "0df15799b43c95acbeba882311c45aa9bbc213ffe36f57306c6f0ca7b1feb023",
+        "S7_callbacks_stub.py": "7ffbdfba07882846fa23222306107e5fd25012de162855790a00a41e2afeb4d8",
+        "S7_strategy_driver.py": "f6e171afcb0d27534596c1cb59bb5e2e0c9f7fc96bea5145e9423c9c9c876430"
       }
     },
     "S8": {
       "status": "done",
-      "started_at": "2026-09-23T23:56:29+08:00",
-      "completed_at": "2026-09-23T23:56:30+08:00",
-      "accepted_at": "2026-09-23T23:56:30+08:00",
+      "started_at": "2026-10-01T18:18:22+08:00",
+      "completed_at": "2026-10-01T18:19:08+08:00",
+      "accepted_at": "2026-10-01T18:19:08+08:00",
       "checkpoint_hashes": {
-        "S8_check_report.md": "3bb6adffb55d82afd8df417514fb527bfc1a7503cb821fd12d167160b4bdc7f3",
+        "S8_check_report.md": "9df8268e28907f5f255014c0973c34cc7f2115e83e880ba7aba4935557e0d000",
         "final/strategy.md": "606138d5457b0d5815efd85d0b8c01ab6544e8824f35a04fed9b3d002eba050b",
         "final/terms.json": "65a762197f746ba421bcc9ed805139fe3202718dd79e310f373415b7c7dfeb0a",
-        "final/formal.json": "dbf62a551bd3f58278b6888f4a42271e67eaca3b448fae86afd45f97f4e9eb5b",
-        "final/callbacks_stub.py": "7ffbdfba07882846fa23222306107e5fd25012de162855790a00a41e2afeb4d8"
+        "final/formal.json": "c99a6404720572963e5b72a456848215966b85c8287035e96f949c26bc54fdb1",
+        "final/callbacks_stub.py": "7ffbdfba07882846fa23222306107e5fd25012de162855790a00a41e2afeb4d8",
+        "final/strategy_driver.py": "b781bb09f51ee104cd92ac94632dae8c62c2505ef29edd5df696bf98460b3589"
       }
     }
   }

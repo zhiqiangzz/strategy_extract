@@ -89,4 +89,9 @@ digraph strategy_terms {
   T011 -> T021 [label="triggers", style=bold, color="#2e8b57"];
   T011 -> T013 [label="constrains", style=solid, color="#d9534f"];
   T014 -> T004 [label="parameterizes", style=dotted, color="#7b7b7b"];
+  T011 -> T013 [label="flow F01→F02", style=bold, color="#8e44ad"];
+  T013 -> T014 [label="flow F02→F03", style=bold, color="#8e44ad"];
+  T014 -> T021 [label="flow F03→F05", style=bold, color="#8e44ad"];
+  T021 -> T024 [label="flow F05→F06", style=bold, color="#8e44ad"];
+  T024 -> T020 [label="flow F06→F07", style=bold, color="#8e44ad"];
 }

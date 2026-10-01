@@ -3,9 +3,10 @@
 Agents: read the English part of every docstring only. 中文段落仅供人类阅读。
 
 sf_check.py — S8 cross-check of summary markdown vs term file vs formal
-interface, the `freeze` step that copies the deliverables into final/, and
-the S1 `s1-coverage` check that the organised clean text keeps every
-sentence of the timestamped raw text.
+interface (including the S7 flow against the numbered execution steps and a
+dry-run of the generated driver), the `freeze` step that copies the
+deliverables into final/, and the S1 `s1-coverage` check that the organised
+clean text keeps every sentence of the timestamped raw text.
 
 `run` performs the mechanical checks and writes the "Script findings" part
 of S8_check_report.md (the agent appends its own semantic review below it):
@@ -113,6 +114,12 @@ def check(ws: Path, summary: Path, terms_path: Path, formal_path: Path | None,
         e, w = validate_formal(load_json(formal_path), terms)
         errors += [f"formal: {x}" for x in e]
         warnings += [f"formal: {x}" for x in w]
+        # flow ↔ execution steps: every rule's step_ref names an existing numbered line, every bold
+        # callback line of §4 is referenced by at least one rule, and the dry-run passes.
+        # flow 与执行步骤交叉核对：step_ref 指向存在的编号行，§4 每个含回调的行至少被一条规则引用，dry-run 通过。
+        fe, fw = check_flow_vs_summary(load_json(formal_path), text, ws, formal_path)
+        errors += [f"flow: {x}" for x in fe]
+        warnings += [f"flow: {x}" for x in fw]
     elif formal_path is not None:
         errors.append(f"formal file {relpath(formal_path)} missing")
 
@@ -123,6 +130,95 @@ def check(ws: Path, summary: Path, terms_path: Path, formal_path: Path | None,
             open_ids = [x["id"] for x in load_json(dp).get("entries", []) if x.get("status") == "open"]
             if open_ids:
                 errors.append(f"{ds} dialog has open questions: {open_ids}")
+    return errors, warnings
+
+
+def numbered_lines(text: str, section: str) -> dict[int, str]:
+    """
+    Return {n: line} for the numbered (`1. ...`) or bulleted (`- ...`) lines
+    of one summary section, numbering bullets from 1 in order.
+
+    返回某总结章节中编号行（`1. ...`）或项目行（`- ...`）的 {序号: 行}，项目行按出现顺序从 1
+    编号。
+    """
+    m = re.search(rf"<!--\s*section:\s*{section}\s*-->(.*?)(?=<!--\s*section:|\Z)", text, flags=re.S)
+    if not m:
+        return {}
+    out: dict[int, str] = {}
+    k = 0
+    for line in m.group(1).splitlines():
+        mm = re.match(r"^\s*(\d+)\.\s+(.*)$", line)
+        if mm:
+            out[int(mm.group(1))] = mm.group(2)
+            continue
+        mm = re.match(r"^\s*-\s+(.*)$", line)
+        if mm:
+            k += 1
+            out[k] = mm.group(1)
+    return out
+
+
+def check_flow_vs_summary(formal: dict, text: str, ws: Path, formal_path: Path) -> tuple[list[str], list[str]]:
+    """
+    S8 flow checks: the flow validates (sf_driver.validate_flow); every
+    rule's `step_ref` (`section.n` or `section.n-m`) points at an existing
+    numbered line; every line of execution_steps that contains a **bold**
+    callback is referenced by at least one rule; the generated driver exists
+    and its dry-run scenarios pass. Returns (errors, warnings).
+
+    S8 的 flow 检查：flow 通过 sf_driver.validate_flow；每条规则的 `step_ref`（`章节.n` 或
+    `章节.n-m`）指向存在的编号行；执行步骤中每个含加粗回调的行至少被一条规则引用；生成的 driver
+    存在且 dry-run 场景全部通过。返回 (错误, 警告)。
+    """
+    from sf_driver import load_module, run_scenario, validate_flow
+    errors: list[str] = []
+    warnings: list[str] = []
+    fe, fw = validate_flow(formal)
+    errors += fe
+    warnings += fw
+    if fe:
+        return errors, warnings
+    lines_by_sec = {sec: numbered_lines(text, sec) for sec in SUMMARY_SECTIONS}
+    covered: set[tuple[str, int]] = set()
+    for r in formal["flow"]["rules"]:
+        ref = r.get("step_ref") or ""
+        if not ref:
+            continue
+        sec, _, nums = ref.partition(".")
+        if not nums:
+            warnings.append(f"{r['id']}: step_ref {ref!r} names a section without a line number")
+            continue
+        a, _, b = nums.partition("-")
+        try:
+            lo, hi = int(a), int(b or a)
+        except ValueError:
+            errors.append(f"{r['id']}: step_ref {ref!r} is not <section>.<n>[-<m>]")
+            continue
+        for n in range(lo, hi + 1):
+            if n not in lines_by_sec.get(sec, {}):
+                errors.append(f"{r['id']}: step_ref {ref!r}: line {n} does not exist in section {sec}")
+            covered.add((sec, n))
+    for n, line in lines_by_sec.get("execution_steps", {}).items():
+        if BOLD_RE.search(line) and ("execution_steps", n) not in covered:
+            errors.append(f"execution_steps line {n} has a callback but no flow rule references it (step_ref)")
+    driver = ws / "S7_strategy_driver.py"
+    if not driver.exists():
+        errors.append(f"{relpath(driver)} missing; run sf_driver.py gen")
+        return errors, warnings
+    scenarios = formal["flow"].get("dryrun") or []
+    if isinstance(scenarios, dict):
+        scenarios = [scenarios]
+    if not scenarios:
+        warnings.append("flow.dryrun has no scenarios; the driver is untested")
+    else:
+        try:
+            mod = load_module(driver)
+            for sc in scenarios:
+                trace, expect = run_scenario(formal, mod, sc, verbose=False)
+                if trace != expect:
+                    errors.append(f"dry-run scenario {sc.get('name', '?')} failed: trace={trace} expect={expect}")
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"dry-run crashed: {type(exc).__name__}: {str(exc)[:200]}")
     return errors, warnings
 
 
@@ -214,6 +310,15 @@ def cmd_freeze(args: argparse.Namespace) -> None:
     for src, dst in pairs:
         shutil.copyfile(src, dst)
         say(f"{relpath(src)} -> {relpath(dst)}")
+    if formal and (ws / "S7_strategy_driver.py").exists():
+        # The driver imports its stub by module name, so final/ gets a re-rendered copy that
+        # imports `callbacks_stub` instead of `S7_callbacks_stub`.
+        # driver 按模块名导入桩，final/ 里重新渲染一份改为导入 callbacks_stub。
+        from sf_driver import render_driver
+        from sf_terms import load_terms
+        code = render_driver(load_json(formal), load_terms(terms), ws.name, "callbacks_stub")
+        (final / "strategy_driver.py").write_text(code, encoding="utf-8")
+        say(f"S7_strategy_driver.py -> {relpath(final / 'strategy_driver.py')} (re-rendered for callbacks_stub)")
     say("final/ frozen", "final/ 已冻结")
 
 

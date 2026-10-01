@@ -40,6 +40,7 @@ S7_callbacks_stub.py：一个抽象类，每个回调一个方法，docstring �
 from __future__ import annotations
 
 import argparse
+import json
 import re
 from pathlib import Path
 
@@ -54,6 +55,7 @@ from sf_terms import load_terms
 ROLE_TO_RELATION = {"aux_note": "supports", "constraint": "constrains", "parameter": "parameterizes",
                     "scope": "supports"}
 
+FLOW_COLUMNS = ("id", "state", "when", "call", "bind", "args", "when_result", "then", "next", "step_ref", "note_en", "note_zh")
 CB_COLUMNS = ["id", "term_id", "name_en", "name_zh", "invoked_in", "inputs", "output_type", "output_values",
               "aux_term_ids", "constraint_term_ids", "parameter_term_ids", "description_en", "description_zh"]
 PARAM_COLUMNS = ["id", "term_id", "name_en", "name_zh", "default", "unit", "range", "description_en", "description_zh"]
@@ -87,6 +89,14 @@ def empty_formal(terms_file: str) -> dict:
         "callbacks": [],
         "parameters": [],
         "relations": [],
+        "flow": {
+            "_comment_en": "Control flow that wires the callbacks (see references/flow_dsl.md). Rules run top to bottom on every StepContext; a rule with `next` ends the evaluation. Filled by the agent in S7; sf_driver.py gen renders S7_strategy_driver.py from it.",
+            "_comment_zh": "把回调串起来的控制流（见 references/flow_dsl.md）。每次评估按顺序执行规则；带 `next` 的规则结束本次评估。S7 由 agent 填写；sf_driver.py gen 据此生成 S7_strategy_driver.py。",
+            "initial_state": "FLAT",
+            "states": [{"id": "FLAT", "name_zh": "空仓"}, {"id": "IN_POSITION", "name_zh": "持仓"}],
+            "rules": [],
+            "dryrun": [],
+        },
     }
 
 
@@ -138,6 +148,14 @@ def scaffold(terms: dict, terms_file: str) -> dict:
                 "default": "", "unit": "", "range": "",
                 "description_en": t["definition_en"], "description_zh": t["definition_zh"],
             })
+    # flow skeleton: one placeholder rule per callback, in execution order (sequence relations later refine it)
+    # flow 骨架：每个回调一条占位规则，按执行顺序；agent 在 S7 补全条件/动作/状态
+    for i, cb in enumerate(formal["callbacks"], 1):
+        formal["flow"]["rules"].append({
+            "id": f"F{i:02d}", "state": "*", "when": "", "call": cb["id"], "bind": cb["name_en"].split("_")[-1],
+            "args": {}, "when_result": "", "then": "", "next": "", "step_ref": cb.get("invoked_in", ""),
+            "note_en": "TODO: set state / when / then / next", "note_zh": "待填：状态 / 条件 / 动作 / 跳转",
+        })
     for t in live:
         rel_type = ROLE_TO_RELATION.get(t["role"] or "")
         for target in t["supports"]:
@@ -225,6 +243,13 @@ def validate(formal: dict, terms: dict) -> tuple[list[str], list[str]]:
         errors.append(f"sequence relations form a cycle: {cycle}")
     except nx.NetworkXNoCycle:
         pass
+    if formal.get("flow") is not None and formal["flow"].get("rules"):
+        from sf_driver import validate_flow  # lazy: sf_driver imports nothing from here
+        fe, fw = validate_flow(formal)
+        errors += [f"flow: {x}" for x in fe]
+        warnings += [f"flow: {x}" for x in fw]
+    else:
+        warnings.append("flow.rules is empty: S7 must author the control flow before gen-driver")
     return errors, warnings
 
 
@@ -280,6 +305,10 @@ def to_xlsx(formal: dict, out: Path) -> None:
     rs.append(REL_COLUMNS)
     for r in formal.get("relations", []):
         rs.append([r.get(c, "") for c in REL_COLUMNS])
+    fs = wb.create_sheet("flow")
+    fs.append(list(FLOW_COLUMNS))
+    for r in (formal.get("flow") or {}).get("rules", []):
+        fs.append([json.dumps(r.get(c) or {}, ensure_ascii=False) if c == "args" else (r.get(c) or "") for c in FLOW_COLUMNS])
     lg = wb.create_sheet("legend")
     lg.append(["sheet/column", "meaning (EN)", "含义 (中文)"])
     lg.append(["callbacks.inputs", "name:type; name:type", "输入，形如 name:type; name:type"])
@@ -287,8 +316,9 @@ def to_xlsx(formal: dict, out: Path) -> None:
     lg.append(["callbacks.output_values", "enum values, '; ' separated, e.g. long; short; uncertain", "枚举取值，如 多; 空; 不确定 的英文"])
     lg.append(["callbacks.*_term_ids", "term ids the implementer must read", "实现者必须阅读的术语 id"])
     lg.append(["relations.type", " | ".join(RELATION_TYPES), "关系类型"])
+    lg.append(["flow.*", "one rule per row; see references/flow_dsl.md; args is a JSON object", "每行一条控制流规则，见 references/flow_dsl.md；args 为 JSON 对象"])
     lg.append(["", "Agents read the json; edit here then run sf_formal.py from-xlsx.", "供人编辑，改完运行 from-xlsx"])
-    for ws_ in (sh, ps, rs, lg):
+    for ws_ in (sh, ps, rs, fs, lg):
         for c in ws_[1]:
             c.font = Font(bold=True)
         for row in ws_.iter_rows(min_row=2):
@@ -354,6 +384,18 @@ def from_xlsx(formal: dict, xlsx: Path) -> None:
             v = r.get(c)
             p[c] = "" if v is None else (v if isinstance(v, (int, float)) else str(v).strip())
     formal["parameters"] = list(ps.values())
+    frows = rows("flow")
+    if frows:
+        formal.setdefault("flow", {"initial_state": "FLAT", "states": [], "rules": [], "dryrun": []})
+        new_rules = []
+        for r in frows:
+            rule = {c: ("" if r.get(c) is None else str(r.get(c)).strip()) for c in FLOW_COLUMNS if c != "args"}
+            try:
+                rule["args"] = json.loads(str(r.get("args") or "{}"))
+            except json.JSONDecodeError:
+                rule["args"] = {}
+            new_rules.append(rule)
+        formal["flow"]["rules"] = new_rules
     rels = rows("relations")
     if rels:
         formal["relations"] = [{"from": str(r.get("from") or "").strip(), "to": str(r.get("to") or "").strip(),

@@ -10,19 +10,19 @@ Confirm that the summary, the term set and the formal interface describe the sam
 
 ## Inputs
 
-- `S5_summary_marked.md`, `S6_terms_defined.json`, `S7_formal.json`, `S7_callbacks_stub.py`, `S6_conflict_log.md`, `references/consistency_rules.md`.
+- `S5_summary_marked.md`, `S6_terms_defined.json`, `S7_formal.json` (incl. `flow`), `S7_callbacks_stub.py`, `S7_strategy_driver.py`, `S6_conflict_log.md`, `references/consistency_rules.md`.
 
 ## Outputs
 
 | File | Content |
 |---|---|
 | `S8_check_report.md` | Script findings (written by `sf_check.py run`) followed by your "Semantic review" section: a table step by step (summary line → terms/callbacks covering it → OK / issue), and a list of fixes applied. |
-| `final/strategy.md`, `final/terms.json`, `final/formal.json`, `final/callbacks_stub.py` | Frozen copies written by `sf_check.py freeze`. These are what the downstream trading agent consumes. |
+| `final/strategy.md`, `final/terms.json`, `final/formal.json`, `final/callbacks_stub.py`, `final/strategy_driver.py` | Frozen copies written by `sf_check.py freeze` (the driver is re-rendered so it imports `callbacks_stub`). These are what the downstream trading agent consumes. |
 
 ## Procedure
 
-1. `SF/sf_state.py start S8`; `SF/sf_check.py run`. Fix every ERROR at its source (summary bold, term file, formal file) and re-run until zero errors. Read the warnings; a term never mentioned in the summary is usually either stale (drop it) or a missing sentence in the summary (add it).
-2. Semantic review: for each numbered line in sections 4 and 5 and each bullet in section 6, list the terms that make it executable. A line that needs a judgement but has no callback, or a callback whose definition allows something the summary forbids, is an issue. Check the conflict log's resolutions are actually reflected in both files. Write the section into `S8_check_report.md` under "Semantic review".
+1. `SF/sf_state.py start S8`; `SF/sf_check.py run`. Besides the bold/term/formal checks it validates the flow, maps every rule's `step_ref` to a numbered summary line, requires every bold-callback line of section 4 to be referenced by a rule, and re-runs the driver's dry-run scenarios. Fix every ERROR at its source (summary bold, term file, formal file / flow) and re-run until zero errors. Read the warnings; a term never mentioned in the summary is usually either stale (drop it) or a missing sentence in the summary (add it).
+2. Semantic review: for each numbered line in sections 4 and 5 and each bullet in section 6, list the terms that make it executable and the flow rule(s) that implement it (`step_ref`). Read the generated `step()` once more as the downstream agent: the order of the rule blocks must be the order of section 4, and no exit path of section 5 may be missing from the in-position block. A line that needs a judgement but has no callback, or a callback whose definition allows something the summary forbids, is an issue. Check the conflict log's resolutions are actually reflected in both files. Write the section into `S8_check_report.md` under "Semantic review".
 3. If an issue needs a definition change that alters meaning, stop and ask the user (a single question; log it in `S6_dialog.json` with `--stage S6` for the record), apply the answer to both files, re-run step 1. If the change is large, `reopen S6` instead.
 4. `SF/sf_check.py freeze`; `SF/sf_state.py complete S8` (this marks S8 done directly; no accept step follows); final message; end the turn.
 
@@ -45,19 +45,19 @@ Summarize in ≤10 lines: number of live terms, number of callbacks with their n
 
 ## 输入
 
-- `S5_summary_marked.md`、`S6_terms_defined.json`、`S7_formal.json`、`S7_callbacks_stub.py`、`S6_conflict_log.md`、`references/consistency_rules.md`。
+- `S5_summary_marked.md`、`S6_terms_defined.json`、`S7_formal.json`（含 `flow`）、`S7_callbacks_stub.py`、`S7_strategy_driver.py`、`S6_conflict_log.md`、`references/consistency_rules.md`。
 
 ## 产出
 
 | 文件 | 内容 |
 |---|---|
 | `S8_check_report.md` | 脚本发现（由 `sf_check.py run` 写出）之后是你的"语义审查"节：逐行表格（总结行 → 覆盖它的术语/回调 → 通过 / 问题）和已做修复的列表。 |
-| `final/strategy.md`、`final/terms.json`、`final/formal.json`、`final/callbacks_stub.py` | `sf_check.py freeze` 写出的冻结副本。下游交易 agent 使用的就是这些。 |
+| `final/strategy.md`、`final/terms.json`、`final/formal.json`、`final/callbacks_stub.py`、`final/strategy_driver.py` | `sf_check.py freeze` 写出的冻结副本（driver 重新渲染为导入 `callbacks_stub`）。下游交易 agent 使用的就是这些。 |
 
 ## 步骤
 
-1. `SF/sf_state.py start S8`；`SF/sf_check.py run`。从源头（总结加粗、术语文件、形式化文件）修复每个 ERROR 并重跑直到为零。阅读警告——总结从未提到的术语通常要么过期（丢弃）要么总结漏了一句（补上）。
-2. 语义审查：对第 4、5 节每个编号行和第 6 节每个条目，列出使其可执行的术语。需要判断却没有回调、或回调定义允许总结禁止的事，都是问题。核对冲突日志的裁决是否真的体现在两个文件里。写入 `S8_check_report.md` 的"Semantic review"节。
+1. `SF/sf_state.py start S8`；`SF/sf_check.py run`。除加粗/术语/形式化检查外，它还校验 flow、把每条规则的 `step_ref` 对应到总结的编号行、要求第 4 节每个含加粗回调的行都被某条规则引用、并重跑 driver 的 dry-run 场景。从源头（总结加粗、术语文件、形式化文件 / flow）修复每个 ERROR 并重跑直到为零。阅读警告——总结从未提到的术语通常要么过期（丢弃）要么总结漏了一句（补上）。
+2. 语义审查：对第 4、5 节每个编号行和第 6 节每个条目，列出使其可执行的术语和实现它的 flow 规则（`step_ref`）。再以下游 agent 的视角读一遍生成的 `step()`：规则块的顺序必须就是第 4 节的顺序，第 5 节的每条出场路径都不能在持仓块里缺席。需要判断却没有回调、或回调定义允许总结禁止的事，都是问题。核对冲突日志的裁决是否真的体现在两个文件里。写入 `S8_check_report.md` 的"Semantic review"节。
 3. 若某问题需要改变含义的定义修改，停下来问用户（单个问题；用 `--stage S6` 记入 `S6_dialog.json` 留痕），把回答落实到两个文件后重跑第 1 步。改动大则 `reopen S6`。
 4. `SF/sf_check.py freeze`；`SF/sf_state.py complete S8`（直接标记 S8 为 done，之后没有 accept）；最终消息；结束本轮。
 

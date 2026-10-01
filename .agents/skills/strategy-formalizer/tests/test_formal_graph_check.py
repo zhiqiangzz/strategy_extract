@@ -15,6 +15,7 @@ import shutil
 import pytest
 
 import sf_check
+import sf_driver
 import sf_formal
 import sf_graph
 import sf_terms
@@ -23,17 +24,18 @@ from conftest import load
 
 def _scaffold(ws):
     """
-    Scaffold S7_formal.json from the fixture terms and fill inputs/outputs so it validates without warnings.
+    Scaffold S7_formal.json from the fixture terms with a complete flow (via
+    test_driver.formal_with_flow) and generate the stub and driver, so the
+    S7 outputs exist for the check/freeze tests.
 
-    由夹具术语生成 S7_formal.json 并补上输入/输出，使其无警告地通过校验。
+    由夹具术语生成带完整 flow 的 S7_formal.json（借用 test_driver.formal_with_flow），并生成桩
+    与 driver，使 check/freeze 测试所需的 S7 产出齐全。
     """
+    from test_driver import formal_with_flow
+    formal = formal_with_flow(ws)
     w = str(ws)
-    sf_formal.main(["--workspace", w, "scaffold", "S6_terms_defined.json", "S7_formal.json"])
-    formal = load(ws / "S7_formal.json")
-    for cb in formal["callbacks"]:
-        cb["inputs"] = [{"name": "bars", "type": "MarketData", "source_term_id": None, "description_en": "recent bars"}]
-        cb["output"] = {"type": "enum", "values": ["long", "short", "uncertain"], "description_en": ""}
-    (ws / "S7_formal.json").write_text(__import__("json").dumps(formal, ensure_ascii=False, indent=2), encoding="utf-8")
+    sf_formal.main(["--workspace", w, "gen-stub", "S7_formal.json", "--terms", "S6_terms_defined.json", "--out", "S7_callbacks_stub.py"])
+    sf_driver.main(["--workspace", w, "gen", "S7_formal.json", "--terms", "S6_terms_defined.json", "--out", "S7_strategy_driver.py", "--strategy-name", "demo"])
     return formal
 
 
@@ -54,7 +56,7 @@ def test_scaffold_validate_stub(ws):
     sf_formal.main(["--workspace", str(ws), "gen-stub", "S7_formal.json", "--terms", "S6_terms_defined.json",
                     "--out", "S7_callbacks_stub.py", "--strategy-name", "demo"])
     code = (ws / "S7_callbacks_stub.py").read_text(encoding="utf-8")
-    assert "def major_timeframe_direction(self, bars: MarketData) -> Literal['long', 'short', 'uncertain']" in code
+    assert "def major_timeframe_direction(self, major_tf_data: MarketData, instrument: Instrument) -> Literal['long', 'short', 'uncertain']" in code
     assert "class MarketData" in code and "class EntryDecision" in code
     assert "尽快但不是立刻" in code
     compile(code, "stub", "exec")
@@ -71,7 +73,7 @@ def test_formal_xlsx_roundtrip(ws):
     sf_formal.main(["--workspace", w, "to-xlsx", "S7_formal.json"])
     sf_formal.main(["--workspace", w, "from-xlsx", "S7_formal.xlsx"])
     formal = load(ws / "S7_formal.json")
-    assert formal["callbacks"][0]["inputs"][0]["name"] == "bars"
+    assert formal["callbacks"][0]["inputs"][0]["name"] == "major_tf_data"
     assert formal["callbacks"][0]["output"]["values"] == ["long", "short", "uncertain"]
 
 
@@ -116,6 +118,8 @@ def test_check_and_freeze(ws):
     sf_check.main(["--workspace", str(ws), "run"])
     sf_check.main(["--workspace", str(ws), "freeze"])
     assert (ws / "final" / "strategy.md").exists() and (ws / "final" / "callbacks_stub.py").exists()
+    drv = (ws / "final" / "strategy_driver.py").read_text(encoding="utf-8")
+    assert "from callbacks_stub import" in drv
     assert "Script findings" in (ws / "S8_check_report.md").read_text(encoding="utf-8")
 
 

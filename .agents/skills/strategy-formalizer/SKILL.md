@@ -65,6 +65,7 @@ strategy_zoo/<name>/ (input folder: transcript .md, analysis .md, references/)
         │           │ S7 formalize                      │
         │           │ S7_formal.json  S7_term_graph.*   │  STOP
         │           │ S7_callbacks_stub.py              │
+        │           │ S7_strategy_driver.py (flow→code) │
         │           └───────────────────────────────────┘
         │                           ▼
         └──────────►┌───────────────────────────────────┐
@@ -104,7 +105,7 @@ Each row names the stage doc to read (`stages/`), the main inputs, and the outpu
 | S4 | `stages/S4_term_filter.md` | `S2_terms_init.json`, S3 outputs | `S4_terms_filtered.json/.xlsx` | no |
 | S5 | `stages/S5_term_classify.md` | `S4_terms_filtered.json`, `S3_summary_corrected.md` | `S5_categories.json`, `S5_terms_classified.json/.xlsx`, `S5_summary_marked.md` | short (scheme choice) |
 | S6 | `stages/S6_term_define_dialog.md` | S5 outputs | `S6_dialog.json/.md`, `S6_terms_defined.json/.xlsx`, `S6_conflict_log.md` | ⟲ yes |
-| S7 | `stages/S7_formalize.md` | `S6_terms_defined.json` | `S7_formal.json/.xlsx`, `S7_term_graph.mmd/.dot(/.pdf)`, `S7_callbacks_stub.py` | no |
+| S7 | `stages/S7_formalize.md` | `S6_terms_defined.json`, `S5_summary_marked.md` §4 | `S7_formal.json/.xlsx` (incl. `flow`), `S7_term_graph.mmd/.dot(/.pdf)`, `S7_callbacks_stub.py`, `S7_strategy_driver.py` | no |
 | S8 | `stages/S8_double_check.md` | S5 summary, S6 terms, S7 formal | `S8_check_report.md`, `final/*` | no |
 
 ## 4. How to invoke and route
@@ -163,11 +164,12 @@ All paths are under `workspace/<strategy_name>/`. json files are the source of t
 | `S6_dialog.json` `.md` | S6 | Every question/answer while defining terms. |
 | `S6_terms_defined.json` `.xlsx` | S6 | All terms `defined` with `definition_zh` and `definition_en`, including terms added during the dialog (`origin: S6_dialog`). |
 | `S6_conflict_log.md` | S6 | Contradictions found between term definitions and the summary (or between terms), and how each was resolved. |
-| `S7_formal.json` `.xlsx` | S7 | Callbacks (name, invocation point, inputs, output enum, aux/constraint/parameter term ids), parameters, typed relations. |
+| `S7_formal.json` `.xlsx` | S7 | Callbacks (name, invocation point, inputs, output enum, aux/constraint/parameter term ids), parameters, typed relations, and the `flow` (states + ordered rules + dry-run scenarios) that wires the callbacks; see `references/flow_dsl.md`. |
 | `S7_term_graph.mmd` `.dot` `.pdf` | S7 | Term relationship graph (Mermaid, Graphviz source, PDF rendering). |
 | `S7_callbacks_stub.py` | S7 | Standard interface dataclasses (Bar, MarketData, Instrument, Position, EntryDecision, StopDistance) plus an abstract class with one typed method per callback, docstring = definition + all auxiliary notes. The downstream agent subclasses it. |
+| `S7_strategy_driver.py` | S7 | Generated from `flow`: `StrategyDriver.step(ctx)` calls the callbacks in execution order and returns `Action`s (enter / set_stop / close); the downstream agent executes them via its `ExecutionPort`. Includes the runtime (Account sizing, stop-hit test, RecordingPort for dry-runs). |
 | `S8_check_report.md` | S8 | Script findings (bold ↔ terms ↔ formal consistency) plus the agent's semantic review. |
-| `final/strategy.md` `terms.json` `formal.json` `callbacks_stub.py` | S8 | Frozen deliverables for the downstream trading agent. |
+| `final/strategy.md` `terms.json` `formal.json` `callbacks_stub.py` `strategy_driver.py` | S8 | Frozen deliverables for the downstream trading agent. |
 
 ## 8. Conventions that every stage obeys
 
@@ -189,6 +191,7 @@ All paths are under `workspace/<strategy_name>/`. json files are the source of t
 | `sf_dialog.py` | Q/A audit trail | `--stage S3 add -q "..." --affects-terms T001`, `answer D001 -a "..."`, `close D001 -r "..."`, `to-md`, `from-md`, `list --open` |
 | `sf_terms.py` | term files | `new`, `add`, `carry <src> <dst> --stage S4`, `to-xlsx <json> --categories S5_categories.json`, `from-xlsx <xlsx>`, `validate <json> [--require-classified] [--require-defined]`, `diff a b` |
 | `sf_formal.py` | S7 interface | `scaffold S6_terms_defined.json S7_formal.json`, `validate S7_formal.json --terms ...`, `to-xlsx`, `from-xlsx`, `gen-stub S7_formal.json --terms ... --out S7_callbacks_stub.py` |
+| `sf_driver.py` | S7 control flow → driver | `validate S7_formal.json`, `gen S7_formal.json --terms ... --out S7_strategy_driver.py`, `dryrun S7_formal.json` |
 | `sf_graph.py` | S7 graph | `render S7_formal.json --terms S6_terms_defined.json --pdf` |
 | `sf_check.py` | S1 coverage, S8 checks & freeze | `s1-coverage`, `run [--lenient]`, `freeze` |
 
@@ -201,10 +204,11 @@ SKILL.md                      this file: DAG, routing, protocols, manifest
 stages/S1..S8_*.md            one instruction doc per stage (goal, inputs, procedure, done criteria, stop message)
 agents/sub1_summarizer.md     prompt for the S2 summary subagent
 agents/sub2_term_extractor.md prompt for the S2 term-extraction subagent
-templates/                    summary skeleton, category schemes (3), state template, stub header
+templates/                    summary skeleton, category schemes (3), state template, stub header, driver runtime
 schemas/                      JSON schemas for state / sources / term / dialog / formal files
 references/classification_schemes.md   the three classification schemes with worked examples
 references/consistency_rules.md        checklist for S6/S8 contradiction detection
+references/flow_dsl.md                 the flow rule language that wires callbacks into the driver
 references/bilingual_style.md          documentation and docstring conventions
 scripts/sf_*.py               the tools listed in section 9
 tests/                        pytest suite (`uv run pytest` from the repo root)
@@ -234,7 +238,7 @@ tests/                        pytest suite (`uv run pytest` from the repo root)
 | S4 | `stages/S4_term_filter.md` | `S2_terms_init.json`、S3 产出 | `S4_terms_filtered.json/.xlsx` | 无 |
 | S5 | `stages/S5_term_classify.md` | `S4_terms_filtered.json`、`S3_summary_corrected.md` | `S5_categories.json`、`S5_terms_classified.json/.xlsx`、`S5_summary_marked.md` | 简短（选分类方案） |
 | S6 | `stages/S6_term_define_dialog.md` | S5 产出 | `S6_dialog.json/.md`、`S6_terms_defined.json/.xlsx`、`S6_conflict_log.md` | ⟲ 有 |
-| S7 | `stages/S7_formalize.md` | `S6_terms_defined.json` | `S7_formal.json/.xlsx`、`S7_term_graph.mmd/.dot(/.pdf)`、`S7_callbacks_stub.py` | 无 |
+| S7 | `stages/S7_formalize.md` | `S6_terms_defined.json`、`S5_summary_marked.md` 第 4 节 | `S7_formal.json/.xlsx`（含 `flow`）、`S7_term_graph.mmd/.dot(/.pdf)`、`S7_callbacks_stub.py`、`S7_strategy_driver.py` | 无 |
 | S8 | `stages/S8_double_check.md` | S5 总结、S6 术语、S7 形式化 | `S8_check_report.md`、`final/*` | 无 |
 
 ## 4. 调用方式与分派
@@ -284,11 +288,12 @@ tests/                        pytest suite (`uv run pytest` from the repo root)
 | `S6_dialog.json` `.md` | S6 | 定义术语过程中的每个问答。 |
 | `S6_terms_defined.json` `.xlsx` | S6 | 全部术语 `defined`，含 `definition_zh` 与 `definition_en`，包括对话中新增的术语（`origin: S6_dialog`）。 |
 | `S6_conflict_log.md` | S6 | 术语定义与总结之间（或术语之间）发现的矛盾及其解决方式。 |
-| `S7_formal.json` `.xlsx` | S7 | 回调（名称、调用位置、输入、输出枚举、辅助/约束/参数术语 id）、参数、带类型的关系。 |
+| `S7_formal.json` `.xlsx` | S7 | 回调（名称、调用位置、输入、输出枚举、辅助/约束/参数术语 id）、参数、带类型的关系，以及把回调串起来的 `flow`（状态 + 有序规则 + dry-run 场景）；见 `references/flow_dsl.md`。 |
 | `S7_term_graph.mmd` `.dot` `.pdf` | S7 | 术语关系图（Mermaid、Graphviz 源文件、PDF 渲染）。 |
 | `S7_callbacks_stub.py` | S7 | 标准接口 dataclass（Bar、MarketData、Instrument、Position、EntryDecision、StopDistance）加抽象类：每个回调一个带类型的方法，docstring = 定义 + 全部辅助说明。下游 agent 继承它实现。 |
+| `S7_strategy_driver.py` | S7 | 由 `flow` 生成：`StrategyDriver.step(ctx)` 按执行顺序调用回调并返回 `Action`（enter / set_stop / close），下游 agent 通过自己的 `ExecutionPort` 执行。内含运行时（按风险算仓位、止损触发判断、dry-run 用的 RecordingPort）。 |
 | `S8_check_report.md` | S8 | 脚本发现（加粗 ↔ 术语 ↔ 形式化的一致性）加上 agent 的语义审查。 |
-| `final/strategy.md` `terms.json` `formal.json` `callbacks_stub.py` | S8 | 冻结后交付给下游交易 agent 的文件。 |
+| `final/strategy.md` `terms.json` `formal.json` `callbacks_stub.py` `strategy_driver.py` | S8 | 冻结后交付给下游交易 agent 的文件。 |
 
 ## 8. 各阶段共同约定
 
@@ -310,6 +315,7 @@ tests/                        pytest suite (`uv run pytest` from the repo root)
 | `sf_dialog.py` | 问答留痕 | `--stage S3 add -q "..." --affects-terms T001`、`answer D001 -a "..."`、`close D001 -r "..."`、`to-md`、`from-md`、`list --open` |
 | `sf_terms.py` | 术语文件 | `new`、`add`、`carry <源> <目标> --stage S4`、`to-xlsx <json> --categories S5_categories.json`、`from-xlsx <xlsx>`、`validate <json> [--require-classified] [--require-defined]`、`diff a b` |
 | `sf_formal.py` | S7 接口 | `scaffold S6_terms_defined.json S7_formal.json`、`validate S7_formal.json --terms ...`、`to-xlsx`、`from-xlsx`、`gen-stub S7_formal.json --terms ... --out S7_callbacks_stub.py` |
+| `sf_driver.py` | S7 控制流 → driver | `validate S7_formal.json`、`gen S7_formal.json --terms ... --out S7_strategy_driver.py`、`dryrun S7_formal.json` |
 | `sf_graph.py` | S7 关系图 | `render S7_formal.json --terms S6_terms_defined.json --pdf` |
 | `sf_check.py` | S1 覆盖检查、S8 检查与冻结 | `s1-coverage`、`run [--lenient]`、`freeze` |
 
@@ -322,10 +328,11 @@ SKILL.md                      本文件：流程图、分派、协议、文件�
 stages/S1..S8_*.md            每个阶段一份说明（目标、输入、步骤、完成标准、停止消息）
 agents/sub1_summarizer.md     S2 总结子代理的提示词
 agents/sub2_term_extractor.md S2 术语提取子代理的提示词
-templates/                    总结骨架、分类方案（3 种）、状态模板、桩代码头部
+templates/                    总结骨架、分类方案（3 种）、状态模板、桩代码头部、driver 运行时
 schemas/                      state / sources / term / dialog / formal 文件的 JSON schema
 references/classification_schemes.md   三种分类方案及示例
 references/consistency_rules.md        S6/S8 矛盾检查清单
+references/flow_dsl.md                 把回调串成 driver 的 flow 规则语言
 references/bilingual_style.md          文档与 docstring 的双语规范
 scripts/sf_*.py               第 9 节列出的工具
 tests/                        pytest 测试（在仓库根目录运行 uv run pytest）

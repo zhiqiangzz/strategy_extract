@@ -560,5 +560,236 @@
       "type": "parameterizes",
       "note": "stop distance + per_trade_loss_ratio -> position size"
     }
-  ]
+  ],
+  "flow": {
+    "initial_state": "FLAT",
+    "states": [
+      {
+        "id": "FLAT",
+        "name_zh": "空仓",
+        "description_en": "no position; waiting for a same-direction minor-timeframe entry signal"
+      },
+      {
+        "id": "IN_POSITION",
+        "name_zh": "持仓",
+        "description_en": "position open; minor timeframe closed, everything judged on the major timeframe"
+      }
+    ],
+    "rules": [
+      {
+        "id": "F01",
+        "state": "*",
+        "when": "",
+        "call": "CB01",
+        "bind": "direction",
+        "args": {},
+        "when_result": "",
+        "then": "",
+        "next": "",
+        "step_ref": "execution_steps.1",
+        "note_zh": "每次评估先刷新大周期方向"
+      },
+      {
+        "id": "F02",
+        "state": "FLAT",
+        "when": "direction in ('long', 'short')",
+        "call": "CB02",
+        "bind": "entry",
+        "args": {
+          "major_direction": "direction"
+        },
+        "when_result": "",
+        "then": "",
+        "next": "",
+        "step_ref": "execution_steps.2",
+        "note_zh": "只在方向明确时评估同向入场信号"
+      },
+      {
+        "id": "F03",
+        "state": "FLAT",
+        "when": "entry is not None and entry.decision == 'enter'",
+        "call": "CB03",
+        "bind": "stop",
+        "args": {
+          "entry_price": "entry.entry_price"
+        },
+        "when_result": "",
+        "then": "enter",
+        "next": "IN_POSITION",
+        "step_ref": "execution_steps.3",
+        "note_zh": "入场并按小周期止损设初始止损；此后只看大周期"
+      },
+      {
+        "id": "F04",
+        "state": "IN_POSITION",
+        "when": "stop_hit",
+        "call": "",
+        "bind": "",
+        "args": {},
+        "when_result": "",
+        "then": "close:stop",
+        "next": "FLAT",
+        "step_ref": "exit_and_risk.4",
+        "note_zh": "出场路径一：打止损"
+      },
+      {
+        "id": "F05",
+        "state": "IN_POSITION",
+        "when": "",
+        "call": "CB05",
+        "bind": "reversed",
+        "args": {
+          "major_direction": "direction"
+        },
+        "when_result": "reversed",
+        "then": "close:reversal",
+        "next": "FLAT",
+        "step_ref": "execution_steps.5",
+        "note_zh": "出场路径二：大周期趋势反转主动清仓"
+      },
+      {
+        "id": "F06",
+        "state": "IN_POSITION",
+        "when": "not position.stop_at_cost",
+        "call": "CB06",
+        "bind": "favorable",
+        "args": {},
+        "when_result": "favorable",
+        "then": "move_stop_to_cost",
+        "next": "",
+        "step_ref": "execution_steps.4",
+        "note_zh": "有利运动后尽快移损至成本"
+      },
+      {
+        "id": "F07",
+        "state": "IN_POSITION",
+        "when": "position.stop_at_cost",
+        "call": "CB04",
+        "bind": "new_stop",
+        "args": {},
+        "when_result": "new_stop is not None",
+        "then": "move_stop",
+        "next": "",
+        "step_ref": "execution_steps.5",
+        "note_zh": "移损至成本后按大周期信号移动止损，只进不退"
+      }
+    ],
+    "dryrun": [
+      {
+        "name": "trend_then_reversal",
+        "note_zh": "入场→移损至成本→移动止损→大周期反转清仓",
+        "account": {
+          "capital": 1000000,
+          "per_trade_loss_ratio": 0.01
+        },
+        "multiplier": 10,
+        "ticks": [
+          {
+            "last_price": 100,
+            "CB01": "long",
+            "CB02": {
+              "decision": "enter",
+              "entry_price": 100
+            },
+            "CB03": {
+              "value": 2,
+              "unit": "points"
+            }
+          },
+          {
+            "last_price": 101,
+            "CB01": "long",
+            "CB05": false,
+            "CB06": false
+          },
+          {
+            "last_price": 103,
+            "CB01": "long",
+            "CB05": false,
+            "CB06": true
+          },
+          {
+            "last_price": 106,
+            "CB01": "long",
+            "CB05": false,
+            "CB04": 103.0
+          },
+          {
+            "last_price": 107,
+            "CB01": "long",
+            "CB05": false,
+            "CB04": 102.0
+          },
+          {
+            "last_price": 104,
+            "CB01": "uncertain",
+            "CB05": true
+          }
+        ],
+        "expect": [
+          "enter",
+          "move_stop_to_cost",
+          "move_stop",
+          "close:reversal"
+        ],
+        "note_en": "enter → move stop to cost → trail (a looser stop is ignored) → major trend reversal closes the position"
+      },
+      {
+        "name": "stopped_out_then_reenter",
+        "note_zh": "入场后被初始止损打出，方向不变再次入场",
+        "account": {
+          "capital": 1000000,
+          "per_trade_loss_ratio": 0.01
+        },
+        "multiplier": 10,
+        "ticks": [
+          {
+            "last_price": 100,
+            "CB01": "short",
+            "CB02": {
+              "decision": "enter",
+              "entry_price": 100
+            },
+            "CB03": {
+              "value": 1.5,
+              "unit": "percent"
+            }
+          },
+          {
+            "last_price": 102,
+            "CB01": "short",
+            "CB05": false,
+            "CB06": false
+          },
+          {
+            "last_price": 100,
+            "CB01": "short",
+            "CB02": {
+              "decision": "no_enter"
+            }
+          },
+          {
+            "last_price": 99,
+            "CB01": "short",
+            "CB02": {
+              "decision": "enter",
+              "entry_price": 99
+            },
+            "CB03": {
+              "value": 1,
+              "unit": "points"
+            }
+          }
+        ],
+        "expect": [
+          "enter",
+          "close:stop",
+          "enter"
+        ],
+        "note_en": "stopped out by the initial stop, then re-entry on the next signal while the major direction is unchanged"
+      }
+    ],
+    "_comment_en": "Control flow wiring the six callbacks in the order of summary section 4 (see references/flow_dsl.md). Evaluated on every StepContext the downstream agent builds; callbacks decide their own re-evaluation timing internally.",
+    "_comment_zh": "按总结第 4 节顺序串联 6 个回调的控制流（见 references/flow_dsl.md）。下游 agent 每构造一个 StepContext 就评估一次；回调内部自行决定重新评估时机。"
+  }
 }

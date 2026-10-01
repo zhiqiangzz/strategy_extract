@@ -6,7 +6,7 @@
 
 ## What is here
 
-A self-contained repository holding one Claude Code skill, **strategy-formalizer**, which turns a trading strategy written as prose (voice transcript, forum post) into a structured summary, a classified term set, callback wrappers for a downstream trading agent, and a term-relationship graph. The pipeline has eight stages (S1..S8), stops after every stage for human review, logs every question and answer, and can be resumed after a session ends. Read `.agents/skills/strategy-formalizer/SKILL.md` for the full flow.
+A self-contained repository holding one Claude Code skill, **strategy-formalizer**, which turns a trading strategy written as prose (voice transcript, forum post) into a structured summary, a classified term set, callback wrappers for a downstream trading agent, a generated driver that wires those callbacks into the strategy's control flow, and a term-relationship graph. The pipeline has eight stages (S1..S8), stops after every stage for human review, logs every question and answer, and can be resumed after a session ends. Read `.agents/skills/strategy-formalizer/SKILL.md` for the full flow.
 
 ## Layout
 
@@ -88,7 +88,7 @@ Market data, instrument lists and backtesting belong to the downstream trading a
 
 ## 这是什么
 
-这是一个自包含仓库，包含一个 Claude Code skill：**strategy-formalizer**。它把以文字形式存在的交易策略（语音转写、论坛帖）转换为结构化总结、分类后的术语集、下游交易 agent 使用的回调包装，以及术语关系图。流水线共八个阶段（S1..S8），每个阶段后停止等待人工审阅，记录所有问答，会话中断后可恢复。完整流程见 `.agents/skills/strategy-formalizer/SKILL.md`。
+这是一个自包含仓库，包含一个 Claude Code skill：**strategy-formalizer**。它把以文字形式存在的交易策略（语音转写、论坛帖）转换为结构化总结、分类后的术语集、下游交易 agent 使用的回调包装、把这些回调按策略控制流串起来的生成式 driver，以及术语关系图。流水线共八个阶段（S1..S8），每个阶段后停止等待人工审阅，记录所有问答，会话中断后可恢复。完整流程见 `.agents/skills/strategy-formalizer/SKILL.md`。
 
 ## 目录
 

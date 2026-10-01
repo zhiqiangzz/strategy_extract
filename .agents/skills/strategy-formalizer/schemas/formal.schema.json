@@ -3,41 +3,292 @@
   "title": "strategy-formalizer formal interface",
   "description": "EN: S7 output. callbacks are decisions the downstream agent implements; parameters are tunables; relations are typed edges between terms used by sf_graph.py. | 中文：S7 产出。callbacks 为下游实现的决策；parameters 为可调参数；relations 为术语间带类型的边，供 sf_graph.py 绘图。",
   "type": "object",
-  "required": ["stage", "callbacks", "relations"],
+  "required": [
+    "stage",
+    "callbacks",
+    "relations"
+  ],
   "properties": {
-    "stage": {"const": "S7"},
-    "terms_file": {"type": "string"},
+    "stage": {
+      "const": "S7"
+    },
+    "terms_file": {
+      "type": "string"
+    },
     "callbacks": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "term_id", "name_en", "output"],
+        "required": [
+          "id",
+          "term_id",
+          "name_en",
+          "output"
+        ],
         "properties": {
-          "id": {"type": "string", "pattern": "^CB\\d{2,}$"},
-          "term_id": {"type": "string", "pattern": "^T\\d{3,}$"},
-          "name_en": {"type": "string"},
-          "name_zh": {"type": "string"},
-          "invoked_in": {"type": "string", "description": "section key or 'execution_steps.3' / 调用位置"},
-          "inputs": {"type": "array", "items": {"type": "object", "required": ["name"], "properties": {"name": {"type": "string"}, "type": {"type": "string"}, "source_term_id": {"type": ["string", "null"]}, "description_en": {"type": "string"}}}},
-          "output": {"type": "object", "properties": {"type": {"type": "string"}, "values": {"type": "array", "items": {"type": "string"}}, "description_en": {"type": "string"}}},
-          "aux_term_ids": {"type": "array", "items": {"type": "string"}},
-          "constraint_term_ids": {"type": "array", "items": {"type": "string"}},
-          "parameter_term_ids": {"type": "array", "items": {"type": "string"}},
-          "description_en": {"type": "string"},
-          "description_zh": {"type": "string"}
+          "id": {
+            "type": "string",
+            "pattern": "^CB\\d{2,}$"
+          },
+          "term_id": {
+            "type": "string",
+            "pattern": "^T\\d{3,}$"
+          },
+          "name_en": {
+            "type": "string"
+          },
+          "name_zh": {
+            "type": "string"
+          },
+          "invoked_in": {
+            "type": "string",
+            "description": "section key or 'execution_steps.3' / 调用位置"
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "name"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "source_term_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "description_en": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "output": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "description_en": {
+                "type": "string"
+              }
+            }
+          },
+          "aux_term_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "constraint_term_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "parameter_term_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description_en": {
+            "type": "string"
+          },
+          "description_zh": {
+            "type": "string"
+          }
         }
       }
     },
-    "parameters": {"type": "array", "items": {"type": "object", "required": ["id", "term_id", "name_en"]}},
+    "parameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "term_id",
+          "name_en"
+        ]
+      }
+    },
     "relations": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["from", "to", "type"],
+        "required": [
+          "from",
+          "to",
+          "type"
+        ],
         "properties": {
-          "from": {"type": "string"}, "to": {"type": "string"},
-          "type": {"enum": ["supports", "constrains", "parameterizes", "triggers", "sequence", "conflicts"]},
-          "note": {"type": "string"}
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "supports",
+              "constrains",
+              "parameterizes",
+              "triggers",
+              "sequence",
+              "conflicts"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "flow": {
+      "type": "object",
+      "description": "EN: control flow wiring the callbacks; rendered to S7_strategy_driver.py by sf_driver.py. See references/flow_dsl.md. | 中文：串联回调的控制流，由 sf_driver.py 渲染为 S7_strategy_driver.py。见 references/flow_dsl.md。",
+      "required": [
+        "initial_state",
+        "states",
+        "rules"
+      ],
+      "properties": {
+        "initial_state": {
+          "type": "string"
+        },
+        "states": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name_zh": {
+                "type": "string"
+              },
+              "description_en": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "state"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^F\\d{2,}$"
+              },
+              "state": {
+                "type": "string"
+              },
+              "when": {
+                "type": "string"
+              },
+              "call": {
+                "type": "string"
+              },
+              "bind": {
+                "type": "string"
+              },
+              "args": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "uses": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "when_result": {
+                "type": "string"
+              },
+              "then": {
+                "type": "string"
+              },
+              "next": {
+                "type": "string"
+              },
+              "step_ref": {
+                "type": "string"
+              },
+              "note_en": {
+                "type": "string"
+              },
+              "note_zh": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "dryrun": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "ticks",
+              "expect"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "note_en": {
+                "type": "string"
+              },
+              "note_zh": {
+                "type": "string"
+              },
+              "account": {
+                "type": "object"
+              },
+              "instrument": {
+                "type": "string"
+              },
+              "multiplier": {
+                "type": "number"
+              },
+              "ticks": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "expect": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
         }
       }
     }
