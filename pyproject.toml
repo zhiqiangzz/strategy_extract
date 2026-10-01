@@ -7,6 +7,8 @@ dependencies = [
     "openpyxl>=3.1",
     "pydantic>=2.7",
     "networkx>=3.3",
+    # database access of third_party/quant_trading (editable, see [tool.uv.sources])
+    "futures-quant-database-v2",
 ]
 
 [dependency-groups]
@@ -20,3 +22,6 @@ pythonpath = [".agents/skills/strategy-formalizer/scripts"]
 
 [tool.uv]
 package = false
+
+[tool.uv.sources]
+futures-quant-database-v2 = { path = "third_party/quant_trading/database_refactor", editable = true }

@@ -16,6 +16,7 @@ A self-contained repository holding one Claude Code skill, **strategy-formalizer
 strategy_zoo/<name>/                  input folders (git-ignored: private transcripts and media)
 workspace/<name>/                     one folder per pipeline run; committed; see SKILL.md §7 for every file
 workspace/ACTIVE                      name of the workspace that `continue` resumes
+scripts/db_smoke_test.py              read-only smoke test of the quant_trading database API
 pyproject.toml, uv.lock, .venv/       python deps managed by uv (openpyxl, pydantic, networkx, pytest)
 pixi.toml, .pixi/                     non-python deps managed by pixi (graphviz for the S7 graph pdf)
 third_party/quant_trading             git submodule: market data, DB access, backtesting (zhiqiangzz/quant_trading)
@@ -33,7 +34,13 @@ uv venv .venv --python 3.12      # once
 uv sync                          # python deps into .venv/
 pixi install                     # graphviz into .pixi/
 pixi run graphviz-register       # once per machine: registers graphviz plugins (sf_graph.py also does this)
-uv run pytest                    # 13 tests
+uv run pytest                    # tests
+```
+
+Database access (the `futures_quant_database_v2` package of `third_party/quant_trading`) is installed into `.venv` as an editable dependency by `uv sync`. Its connection settings are read from a git-ignored `.env` in the repo root (copy the keys from `third_party/quant_trading/database_refactor/.env.example` and fill in the real values). Verify with:
+
+```sh
+uv run python scripts/db_smoke_test.py   # read-only connectivity + API checks
 ```
 
 ## Run
@@ -91,6 +98,7 @@ Market data, instrument lists and backtesting belong to the downstream trading a
 strategy_zoo/<名称>/                  输入目录（gitignore：私有转写稿与媒体）
 workspace/<名称>/                     每次流水线运行一个目录；提交到 git；每个文件的含义见 SKILL.md 第 7 节
 workspace/ACTIVE                      `continue` 恢复的 workspace 名称
+scripts/db_smoke_test.py              quant_trading 数据库接口的只读冒烟测试
 pyproject.toml, uv.lock, .venv/       uv 管理的 python 依赖（openpyxl、pydantic、networkx、pytest）
 pixi.toml, .pixi/                     pixi 管理的非 python 依赖（S7 关系图 pdf 所需的 graphviz）
 third_party/quant_trading             git submodule：行情数据、数据库访问、回测（zhiqiangzz/quant_trading）
@@ -101,7 +109,9 @@ third_party/Multi-Agent-Trading-Platform  git submodule：下游多 agent 交易
 
 ## 环境
 
-所有依赖都装在本目录内，不做全局安装。命令见英文部分：`uv venv`、`uv sync`、`pixi install`、`pixi run graphviz-register`（每台机器一次，注册 graphviz 插件；脚本也会自动做）、`uv run pytest`（13 个测试）。
+所有依赖都装在本目录内，不做全局安装。命令见英文部分：`uv venv`、`uv sync`、`pixi install`、`pixi run graphviz-register`（每台机器一次，注册 graphviz 插件；脚本也会自动做）、`uv run pytest`。
+
+数据库访问（`third_party/quant_trading` 的 `futures_quant_database_v2` 包）由 `uv sync` 以可编辑方式装进 `.venv`。连接参数读取仓库根目录下被 git 忽略的 `.env`（键名见 `third_party/quant_trading/database_refactor/.env.example`，填入真实值）。用 `uv run python scripts/db_smoke_test.py` 做只读的连通性与接口检查。
 
 ## 运行
 
