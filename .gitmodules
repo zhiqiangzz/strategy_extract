@@ -1,0 +1,6 @@
+[submodule "third_party/Multi-Agent-Trading-Platform"]
+	path = third_party/Multi-Agent-Trading-Platform
+	url = git@github.com:Ken1208/Multi-Agent-Trading-Platform.git
+[submodule "third_party/quant_trading"]
+	path = third_party/quant_trading
+	url = git@github.com:zhiqiangzz/quant_trading.git

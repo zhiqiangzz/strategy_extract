@@ -18,7 +18,11 @@ workspace/<name>/                     one folder per pipeline run; committed; se
 workspace/ACTIVE                      name of the workspace that `continue` resumes
 pyproject.toml, uv.lock, .venv/       python deps managed by uv (openpyxl, pydantic, networkx, pytest)
 pixi.toml, .pixi/                     non-python deps managed by pixi (graphviz for the S7 graph pdf)
+third_party/quant_trading             git submodule: market data, DB access, backtesting (zhiqiangzz/quant_trading)
+third_party/Multi-Agent-Trading-Platform  git submodule: downstream multi-agent trading platform (Ken1208)
 ```
+
+After cloning, fetch the submodules with `git submodule update --init --recursive`.
 
 ## Setup
 
@@ -67,9 +71,9 @@ print("problems:", bad or "none")
 PY
 ```
 
-## Not in this repository
+## Not wired into the skill
 
-Market data, instrument lists and backtesting belong to the downstream trading agent (the separate `quant_trading` project) and are intentionally not wired in here.
+Market data, instrument lists and backtesting belong to the downstream trading agent. The two `third_party/` submodules provide them, but the skill itself does not call them; `final/` is the hand-off point.
 
 ---
 
@@ -89,7 +93,11 @@ workspace/<名称>/                     每次流水线运行一个目录；提�
 workspace/ACTIVE                      `continue` 恢复的 workspace 名称
 pyproject.toml, uv.lock, .venv/       uv 管理的 python 依赖（openpyxl、pydantic、networkx、pytest）
 pixi.toml, .pixi/                     pixi 管理的非 python 依赖（S7 关系图 pdf 所需的 graphviz）
+third_party/quant_trading             git submodule：行情数据、数据库访问、回测（zhiqiangzz/quant_trading）
+third_party/Multi-Agent-Trading-Platform  git submodule：下游多 agent 交易平台（Ken1208）
 ```
+
+克隆后用 `git submodule update --init --recursive` 拉取子模块。
 
 ## 环境
 
@@ -110,6 +118,6 @@ pixi.toml, .pixi/                     pixi 管理的非 python 依赖（S7 关�
 
 每个 `.md` 先是完整英文，`# 中文版` 标题之后是完整中文翻译；每个 Python docstring 先英文块再中文块。提交前运行英文部分给出的检查脚本，输出必须为 none。
 
-## 不包含
+## 未接入 skill 的部分
 
-行情数据、品种列表、回测属于下游交易 agent（独立的 `quant_trading` 项目），本仓库有意不接入。
+行情数据、品种列表、回测属于下游交易 agent。两个 `third_party/` 子模块提供这些能力，但 skill 本身不调用它们；`final/` 是交接点。
