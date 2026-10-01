@@ -43,7 +43,12 @@
       ],
       "parameter_term_ids": [],
       "description_en": "Judge the current trend direction on the major-timeframe chart; return exactly one of long / short / uncertain. This is following, not forecasting: an ongoing up-move is 'long' (only long trades allowed), an ongoing down-move is 'short' (only short trades allowed); do not try to call where a trend starts or ends. On 'uncertain' open no new position; existing positions keep being managed by the normal rules unless T021 judges that uncertainty to be a high-confidence reversal (then the position is closed). Inputs may be the major-timeframe bars (price, volume) and any technical indicator; the method and the re-evaluation timing are the downstream agent's choice. The text's 'turn signal on the higher timeframe' is the same judgement: a change of this output is the turn.",
-      "description_zh": "在大周期图表上判断当前趋势方向，输出 多 / 空 / 不确定 三值之一。判断是跟随而非预测：处于上涨途中为“多”（只做多不做空），处于下跌途中为“空”（只做空不做多），不判断趋势何时开始、何时结束。结果为“不确定”时不开新仓；已有持仓按原规则继续管理，除非该不确定被 T021 判定为置信度较高的反转（届时清仓）。可用输入为大周期 K 线（价格、成交量）及任何技术指标，具体方法与重新评估的时机均由下游 agent 自行决定。原文中的“高一级周期出现转向信号”与本判定是同一件事：方向改变即视为转向。"
+      "description_zh": "在大周期图表上判断当前趋势方向，输出 多 / 空 / 不确定 三值之一。判断是跟随而非预测：处于上涨途中为“多”（只做多不做空），处于下跌途中为“空”（只做空不做多），不判断趋势何时开始、何时结束。结果为“不确定”时不开新仓；已有持仓按原规则继续管理，除非该不确定被 T021 判定为置信度较高的反转（届时清仓）。可用输入为大周期 K 线（价格、成交量）及任何技术指标，具体方法与重新评估的时机均由下游 agent 自行决定。原文中的“高一级周期出现转向信号”与本判定是同一件事：方向改变即视为转向。",
+      "schedule": {
+        "trigger": "on_demand",
+        "mode": "sync",
+        "note_en": "D030: caller-paced; used for entry direction and (via T021) for reversal"
+      }
     },
     {
       "id": "CB02",
@@ -92,7 +97,12 @@
       ],
       "parameter_term_ids": [],
       "description_en": "Decide on the minor timeframe whether to enter now; return enter / no-enter, and on 'enter' also a limit entry price. Evaluated only while T011 gives a definite direction (long or short), and may only produce entries in that direction (see T022). The signal type is unrestricted and chosen by the downstream agent; inputs may be minor-timeframe bars and any indicator, the T011 direction, and other major-timeframe information such as support/resistance. Do not chase a perfect entry. After a stop-out, re-entry on the next signal is allowed as long as the major direction is unchanged; whether to impose a cool-down or a cap on attempts is the downstream agent's decision.",
-      "description_zh": "在小周期上判断此刻是否入场，输出 入场 / 不入场；输出“入场”时附带一个入场价位（限价）。只在 T011 给出明确方向（多或空）时评估，且只能产生与该方向同向的入场（见 T022）。信号形式不限，由下游 agent 自定；可用输入为小周期 K 线及任何技术指标、T011 的方向，以及大周期的其他信息（如支撑阻力）。不追求完美入场点。被止损出场后，只要大周期方向不变即可凭下一个信号再次入场，是否设置间隔或次数上限由下游 agent 自行决定。"
+      "description_zh": "在小周期上判断此刻是否入场，输出 入场 / 不入场；输出“入场”时附带一个入场价位（限价）。只在 T011 给出明确方向（多或空）时评估，且只能产生与该方向同向的入场（见 T022）。信号形式不限，由下游 agent 自定；可用输入为小周期 K 线及任何技术指标、T011 的方向，以及大周期的其他信息（如支撑阻力）。不追求完美入场点。被止损出场后，只要大周期方向不变即可凭下一个信号再次入场，是否设置间隔或次数上限由下游 agent 自行决定。",
+      "schedule": {
+        "trigger": "on_demand",
+        "mode": "sync",
+        "note_en": "D031: re-evaluated repeatedly while flat and direction is definite, cadence chosen by the caller"
+      }
     },
     {
       "id": "CB03",
@@ -136,7 +146,12 @@
         "T023"
       ],
       "description_en": "At entry, determine the initial stop on the minor timeframe; return a stop distance (points or percent) that the caller converts into a stop price and, with T023, into position size (see T004). The basis is the downstream agent's choice (minor-timeframe bars, indicators, volatility, anything); the only requirement is that it is 'very close': clearly smaller than one major-timeframe bar's range, so each loss is small and the same capital fraction allows many attempts. Never place the initial stop by the major timeframe. Being stopped out right after entry is normal trial-and-error cost.",
-      "description_zh": "入场时在小周期上确定初始止损，输出一个止损距离（点数或百分比），由调用方换算成止损价位并据此与 T023 反算手数（见 T004）。依据由下游 agent 自定，可用小周期 K 线、指标、波动率等任何信息，唯一要求是“很近”：明显小于大周期一根 K 线的波动幅度，使单笔亏损很有限、同样的本金比例能试更多次。绝不按大周期设初始止损。入场后价格马上打到该止损属于正常试错成本。"
+      "description_zh": "入场时在小周期上确定初始止损，输出一个止损距离（点数或百分比），由调用方换算成止损价位并据此与 T023 反算手数（见 T004）。依据由下游 agent 自定，可用小周期 K 线、指标、波动率等任何信息，唯一要求是“很近”：明显小于大周期一根 K 线的波动幅度，使单笔亏损很有限、同样的本金比例能试更多次。绝不按大周期设初始止损。入场后价格马上打到该止损属于正常试错成本。",
+      "schedule": {
+        "trigger": "on_demand",
+        "mode": "sync",
+        "note_en": "D032: once, synchronously, right after an 'enter' decision"
+      }
     },
     {
       "id": "CB06",
@@ -178,7 +193,12 @@
       ],
       "parameter_term_ids": [],
       "description_en": "While holding, judge on the major timeframe whether price has made 'a certain favourable move' in the position's direction; return yes / no. 'Yes' triggers T015, moving the stop to the cost price. The criterion is the downstream agent's choice (major-timeframe price, structure, indicators, anything) but must embody 'as soon as possible, yet not immediately': moving the stop right after entry does not count, while leaving it after price has clearly moved favourably is taking unnecessary risk. Evaluated only until the stop has reached cost; a stop-out before that is normal trial-and-error cost.",
-      "description_zh": "持仓期间在大周期上判断价格是否已朝持仓方向走出“一定的有利运动”，输出 是 / 否；输出“是”即触发 T015 把止损移到成本价。认定标准由下游 agent 自定，可用大周期的价格、结构、指标等任何信息，但必须体现“尽快，但不是立刻”：入场后立即移损不算有利运动，价格已明显朝有利方向运动却迟迟不移则是在冒不必要的风险。只在止损尚未移到成本价之前评估；若在此之前被初始止损打出，属正常试错成本。"
+      "description_zh": "持仓期间在大周期上判断价格是否已朝持仓方向走出“一定的有利运动”，输出 是 / 否；输出“是”即触发 T015 把止损移到成本价。认定标准由下游 agent 自定，可用大周期的价格、结构、指标等任何信息，但必须体现“尽快，但不是立刻”：入场后立即移损不算有利运动，价格已明显朝有利方向运动却迟迟不移则是在冒不必要的风险。只在止损尚未移到成本价之前评估；若在此之前被初始止损打出，属正常试错成本。",
+      "schedule": {
+        "trigger": "on_demand",
+        "mode": "sync",
+        "note_en": "D033: caller-paced while in position and stop not yet at cost"
+      }
     },
     {
       "id": "CB04",
@@ -218,7 +238,12 @@
         "T007"
       ],
       "description_en": "After the stop has reached cost, decide on the major timeframe, from major-timeframe signals, whether and where to move the stop; return a new stop price or 'hold'. The stop only tightens: it may only rise for a long / fall for a short, never move the other way, and never below/above cost. The basis is the downstream agent's choice with major-timeframe price as the primary signal (structure, indicators, volatility or any other major-timeframe information may also be used); evaluation timing is the downstream agent's choice. Applies while the major trend is progressing (T019); the aim is to let profits run without picking tops or bottoms, until the stop is hit or the major trend reverses and the position is closed.",
-      "description_zh": "止损移到成本价之后，在大周期上按大周期的信号决定是否以及把止损移到哪里，输出 一个新的止损价位 或 “不动”。止损只进不退：多头只能上移、空头只能下移，永不反向调整，且不低于/高于成本价。依据由下游 agent 自定，以大周期的价格为主要信号，也可用结构、指标、波动率等任何大周期信息；评估时机由下游自选。前提是大周期趋势发展顺利（T019）；目的是让利润自己跑，不猜顶猜底，直到打止损出场或大周期趋势反转清仓。"
+      "description_zh": "止损移到成本价之后，在大周期上按大周期的信号决定是否以及把止损移到哪里，输出 一个新的止损价位 或 “不动”。止损只进不退：多头只能上移、空头只能下移，永不反向调整，且不低于/高于成本价。依据由下游 agent 自定，以大周期的价格为主要信号，也可用结构、指标、波动率等任何大周期信息；评估时机由下游自选。前提是大周期趋势发展顺利（T019）；目的是让利润自己跑，不猜顶猜底，直到打止损出场或大周期趋势反转清仓。",
+      "schedule": {
+        "trigger": "on_demand",
+        "mode": "sync",
+        "note_en": "D034: caller-paced after the stop is at cost"
+      }
     },
     {
       "id": "CB05",
@@ -263,7 +288,12 @@
       ],
       "parameter_term_ids": [],
       "description_en": "While holding, judge on the major timeframe whether the trend has reversed; return yes / no. 'Yes' means close the position actively without waiting for the stop: this is the second exit path, independent of the stop. Reversal means either that T011's direction has flipped to the opposite of the position, or that T011 returns 'uncertain' and the downstream agent judges that uncertainty to be of high confidence ('high confidence' is not quantified; the downstream agent decides inside this callback). A low-confidence 'uncertain' from T011 is not a reversal; the position keeps being managed by the normal rules. Evaluation timing is the downstream agent's choice.",
-      "description_zh": "持仓期间在大周期上判断趋势是否已反转，输出 是 / 否；输出“是”即主动清仓，不等止损被打。这是独立于打止损的第二条出场路径。反转的含义：T011 大周期方向判定的输出翻转为与持仓相反的方向，或者 T011 输出“不确定”且下游 agent 认为该不确定的置信度较高（“置信度较高”不量化，由下游在本回调内自行判断）。T011 输出低置信度的“不确定”时不算反转，持仓按原规则继续管理。评估时机由下游自选。"
+      "description_zh": "持仓期间在大周期上判断趋势是否已反转，输出 是 / 否；输出“是”即主动清仓，不等止损被打。这是独立于打止损的第二条出场路径。反转的含义：T011 大周期方向判定的输出翻转为与持仓相反的方向，或者 T011 输出“不确定”且下游 agent 认为该不确定的置信度较高（“置信度较高”不量化，由下游在本回调内自行判断）。T011 输出低置信度的“不确定”时不算反转，持仓按原规则继续管理。评估时机由下游自选。",
+      "schedule": {
+        "trigger": "on_demand",
+        "mode": "async",
+        "note_en": "D035: caller-paced, slow judgement allowed to run asynchronously (return None to keep the last result)"
+      }
     }
   ],
   "parameters": [
@@ -587,7 +617,8 @@
         "then": "",
         "next": "",
         "step_ref": "execution_steps.1",
-        "note_zh": "每次评估先刷新大周期方向"
+        "note_zh": "每次评估先刷新大周期方向",
+        "trigger": "on_demand"
       },
       {
         "id": "F02",
@@ -602,7 +633,8 @@
         "then": "",
         "next": "",
         "step_ref": "execution_steps.2",
-        "note_zh": "只在方向明确时评估同向入场信号"
+        "note_zh": "只在方向明确时评估同向入场信号",
+        "trigger": "on_demand"
       },
       {
         "id": "F03",
@@ -617,7 +649,8 @@
         "then": "enter",
         "next": "IN_POSITION",
         "step_ref": "execution_steps.3",
-        "note_zh": "入场并按小周期止损设初始止损；此后只看大周期"
+        "note_zh": "入场并按小周期止损设初始止损；此后只看大周期",
+        "trigger": "on_demand"
       },
       {
         "id": "F04",
@@ -630,7 +663,8 @@
         "then": "close:stop",
         "next": "FLAT",
         "step_ref": "exit_and_risk.4",
-        "note_zh": "出场路径一：打止损"
+        "note_zh": "出场路径一：打止损",
+        "trigger": "tick"
       },
       {
         "id": "F05",
@@ -645,7 +679,8 @@
         "then": "close:reversal",
         "next": "FLAT",
         "step_ref": "execution_steps.5",
-        "note_zh": "出场路径二：大周期趋势反转主动清仓"
+        "note_zh": "出场路径二：大周期趋势反转主动清仓",
+        "trigger": "on_demand"
       },
       {
         "id": "F06",
@@ -658,7 +693,8 @@
         "then": "move_stop_to_cost",
         "next": "",
         "step_ref": "execution_steps.4",
-        "note_zh": "有利运动后尽快移损至成本"
+        "note_zh": "有利运动后尽快移损至成本",
+        "trigger": "on_demand"
       },
       {
         "id": "F07",
@@ -671,13 +707,15 @@
         "then": "move_stop",
         "next": "",
         "step_ref": "execution_steps.5",
-        "note_zh": "移损至成本后按大周期信号移动止损，只进不退"
+        "note_zh": "移损至成本后按大周期信号移动止损，只进不退",
+        "trigger": "on_demand"
       }
     ],
     "dryrun": [
       {
         "name": "trend_then_reversal",
-        "note_zh": "入场→移损至成本→移动止损→大周期反转清仓",
+        "note_zh": "入场→移损至成本→移动止损→大周期反转清仓；tick 之间不调用任何回调",
+        "note_en": "enter → stop to cost → trail (a looser stop is ignored) → reversal closes; no callback is consulted on ticks",
         "account": {
           "capital": 1000000,
           "per_trade_loss_ratio": 0.01
@@ -685,6 +723,7 @@
         "multiplier": 10,
         "ticks": [
           {
+            "event": "on_demand",
             "last_price": 100,
             "CB01": "long",
             "CB02": {
@@ -697,30 +736,36 @@
             }
           },
           {
-            "last_price": 101,
-            "CB01": "long",
-            "CB05": false,
-            "CB06": false
+            "event": "tick",
+            "last_price": 101
           },
           {
+            "event": "on_demand",
             "last_price": 103,
             "CB01": "long",
             "CB05": false,
             "CB06": true
           },
           {
+            "event": "tick",
+            "last_price": 104
+          },
+          {
+            "event": "on_demand",
             "last_price": 106,
             "CB01": "long",
             "CB05": false,
             "CB04": 103.0
           },
           {
+            "event": "on_demand",
             "last_price": 107,
             "CB01": "long",
-            "CB05": false,
+            "CB05": null,
             "CB04": 102.0
           },
           {
+            "event": "on_demand",
             "last_price": 104,
             "CB01": "uncertain",
             "CB05": true
@@ -731,12 +776,12 @@
           "move_stop_to_cost",
           "move_stop",
           "close:reversal"
-        ],
-        "note_en": "enter → move stop to cost → trail (a looser stop is ignored) → major trend reversal closes the position"
+        ]
       },
       {
         "name": "stopped_out_then_reenter",
-        "note_zh": "入场后被初始止损打出，方向不变再次入场",
+        "note_zh": "入场后在 tick 上被初始止损打出；方向不变时下一次 on_demand 再次入场",
+        "note_en": "stopped out on a tick by the initial stop; re-entry on the next on_demand while the direction is unchanged",
         "account": {
           "capital": 1000000,
           "per_trade_loss_ratio": 0.01
@@ -744,6 +789,7 @@
         "multiplier": 10,
         "ticks": [
           {
+            "event": "on_demand",
             "last_price": 100,
             "CB01": "short",
             "CB02": {
@@ -756,12 +802,15 @@
             }
           },
           {
-            "last_price": 102,
-            "CB01": "short",
-            "CB05": false,
-            "CB06": false
+            "event": "tick",
+            "last_price": 101
           },
           {
+            "event": "tick",
+            "last_price": 102
+          },
+          {
+            "event": "on_demand",
             "last_price": 100,
             "CB01": "short",
             "CB02": {
@@ -769,6 +818,7 @@
             }
           },
           {
+            "event": "on_demand",
             "last_price": 99,
             "CB01": "short",
             "CB02": {
@@ -785,11 +835,10 @@
           "enter",
           "close:stop",
           "enter"
-        ],
-        "note_en": "stopped out by the initial stop, then re-entry on the next signal while the major direction is unchanged"
+        ]
       }
     ],
-    "_comment_en": "Control flow wiring the six callbacks in the order of summary section 4 (see references/flow_dsl.md). Evaluated on every StepContext the downstream agent builds; callbacks decide their own re-evaluation timing internally.",
-    "_comment_zh": "按总结第 4 节顺序串联 6 个回调的控制流（见 references/flow_dsl.md）。下游 agent 每构造一个 StepContext 就评估一次；回调内部自行决定重新评估时机。"
+    "_comment_en": "Control flow wiring the six callbacks in the order of summary section 4 (see references/flow_dsl.md). All judgements are caller-paced (on_demand): the downstream agent calls on_event('on_demand', ctx) at the cadence it chooses, pre-entry while flat and in-position while holding; stop hits are checked on every tick via on_event('tick', ctx). major_trend_reversal may run asynchronously (returns None until a fresh result exists).",
+    "_comment_zh": "按总结第 4 节顺序串联 6 个回调的控制流（见 references/flow_dsl.md）。所有判断均由调用方定频率（on_demand）：下游 agent 以自选节奏调用 on_event('on_demand', ctx)，空仓时做入场前判断、持仓时做持仓期判断；止损触发在每个 tick 通过 on_event('tick', ctx) 检查。趋势反转判断可异步执行（无新结果时返回 None）。"
   }
 }

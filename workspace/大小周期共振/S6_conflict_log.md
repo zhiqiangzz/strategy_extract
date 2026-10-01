@@ -20,3 +20,7 @@
 Consistency checklist (references/consistency_rules.md §1–8) walked over all 25 live terms and the summary on 2026-09-23: exit paths (stop / T021 reversal, T025), stop direction and trigger (T015, T020, T024), direction filter and the 'uncertain' consequence (T011, T022, T021), scope (T030, T010, T012, T027), parameters stated once (T007, T023, T027), wording, coverage of every step and bullet, no dialog-added terms. No further conflicts found on 2026-09-23.
 
 2026-09-23 已对全部 25 个存活术语和总结走完一致性清单，未再发现矛盾。
+
+### S2 — 回调调度补充（2026-10-01，skill 新增 schedule 后重开 S6）
+- D030–D035 为 6 个回调补充了调度：T011、T013、T014、T024、T020 为 on_demand/sync（由下游调用方决定频率；T014 在入场时调用一次），T021 为 on_demand/async（允许异步慢判断）。
+- 一致性：入场前（T011、T013）与持仓期（T024、T020、T021）的判断都由调用方定频率，止损触发由 driver 在 tick 上内置；与总结第 4、5 节无矛盾。未再发现矛盾。

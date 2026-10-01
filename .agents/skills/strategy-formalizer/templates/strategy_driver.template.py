@@ -7,7 +7,8 @@ Do not edit by hand; edit the `flow` section of S7_formal.json and regenerate.
 This module turns the strategy's execution steps into code. `StrategyDriver.on_event(event, ctx)`
 is a generated, event-driven state machine. The downstream agent calls it whenever one
 of the scheduling events happens: `tick` (a new price), `minor_bar` (a minor-timeframe
-bar closed), `major_bar` (a major-timeframe bar closed) or `timer`. Each flow rule
+bar closed), `major_bar` (a major-timeframe bar closed), `timer`, or `on_demand` (the
+caller decides the cadence). Each flow rule
 declares the event it runs on; on other events the rule is skipped and the value its
 callback produced last time is read from `SignalCache`. This is how pre-entry judgements
 (polled on bar closes) and in-position judgements (slow, major-timeframe) coexist with
@@ -23,7 +24,7 @@ every tick) and sizing a new position from the account's per-trade risk fraction
 
 本模块把策略的执行步骤变成代码。`StrategyDriver.on_event(event, ctx)` 是生成的事件驱动状态机。
 下游 agent 在调度事件发生时调用它：`tick`（新价格）、`minor_bar`（小周期 K 线收盘）、`major_bar`
-（大周期 K 线收盘）或 `timer`。每条 flow 规则声明自己在哪个事件上执行；其他事件上该规则被跳过，
+（大周期 K 线收盘）、`timer`，或 `on_demand`（由调用方决定频率）。每条 flow 规则声明自己在哪个事件上执行；其他事件上该规则被跳过，
 其回调上一次的结果从 `SignalCache` 读取。入场前的判断（按 K 线收盘轮询）、持仓期的慢判断（大周期）
 与 tick 级止损检查因此可以共存，driver 永不阻塞。schedule 声明为 `async` 的回调必须立即返回；
 返回 None 表示沿用上次缓存值，下游可以在线程或协程里计算，再通过回调把结果交回。driver 不下单：
@@ -41,8 +42,10 @@ from typing import Any, Literal, Optional, Protocol
 {stub_import}
 
 ActionKind = Literal["enter", "close", "set_stop"]
-Event = Literal["tick", "minor_bar", "major_bar", "timer"]
-EVENTS: tuple[str, ...] = ("tick", "minor_bar", "major_bar", "timer")
+Event = Literal["tick", "minor_bar", "major_bar", "timer", "on_demand"]
+EVENTS: tuple[str, ...] = ("tick", "minor_bar", "major_bar", "timer", "on_demand")
+# on_demand: the downstream caller decides the cadence and calls on_event("on_demand", ctx) itself.
+# on_demand：由下游调用方自行决定频率并调用 on_event("on_demand", ctx)。
 
 
 @dataclass

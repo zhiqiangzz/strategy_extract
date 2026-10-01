@@ -10,7 +10,7 @@ The `flow` section of `S7_formal.json` is the strategy's control flow: the code-
 
 ## Callback schedule
 
-Every callback in `formal.json` carries `schedule: {trigger, mode}` decided in S6: `trigger` is the event on which it is re-evaluated (`tick`, `minor_bar`, `major_bar`, `timer`); `mode` is `sync` (the implementation returns the result) or `async` (a slow judgement: the implementation must return immediately, and may return `None` to keep the previous cached value while a thread or coroutine computes the new one; the downstream agent then hands the result back through the next call). The driver never spawns threads itself; the schedule tells the downstream agent what to run where. A rule's `trigger` must equal its callback's `schedule.trigger`.
+Every callback in `formal.json` carries `schedule: {trigger, mode}` decided in S6: `trigger` is the event on which it is re-evaluated (`tick`, `minor_bar`, `major_bar`, `timer`, or `on_demand` when the downstream caller decides the cadence and calls `on_event("on_demand", ctx)` itself); `mode` is `sync` (the implementation returns the result) or `async` (a slow judgement: the implementation must return immediately, and may return `None` to keep the previous cached value while a thread or coroutine computes the new one; the downstream agent then hands the result back through the next call). The driver never spawns threads itself; the schedule tells the downstream agent what to run where. A rule's `trigger` must equal its callback's `schedule.trigger`.
 
 ## Structure
 
@@ -29,7 +29,7 @@ Every callback in `formal.json` carries `schedule: {trigger, mode}` decided in S
 |---|---|
 | `id` | `F01`, `F02`, … in evaluation order. |
 | `state` | State the rule applies to, or `*` for every state. |
-| `trigger` | Event the rule runs on: `tick`, `minor_bar`, `major_bar`, `timer`, or `*` (every event). Must equal the called callback's `schedule.trigger`. A rule testing `stop_hit` must run on `tick`. |
+| `trigger` | Event the rule runs on: `tick`, `minor_bar`, `major_bar`, `timer`, `on_demand` (caller-paced), or `*` (every event). Must equal the called callback's `schedule.trigger`. A rule testing `stop_hit` must run on `tick`. |
 | `when` | Python boolean expression; empty = always. Namespace: `state`, `position`, `ctx`, `stop_hit`, every `bind` name of earlier rules, `None/True/False`. Only comparisons, boolean operators, arithmetic and attribute access one level deep (`entry.entry_price`, `position.stop_at_cost`) are allowed; no calls. |
 | `call` | Callback id (`CB01`) to invoke, or empty for a built-in-only rule (e.g. the stop-hit exit). |
 | `args` | Map `input_name → expression` for callback inputs that cannot be resolved automatically. Resolution order: `args`, a bind with the same name, a `StepContext` field with the same name (`instrument`, `major_tf_data`, `minor_tf_data`, `major_tf_context`, `position`, `last_price`, `now`). |
@@ -93,7 +93,7 @@ Reading it as prose: on every major bar refresh the direction (slow, may be asyn
 
 ## 回调调度
 
-`formal.json` 中每个回调带 `schedule: {trigger, mode}`，在 S6 商定：`trigger` 是重新评估的事件（`tick`、`minor_bar`、`major_bar`、`timer`）；`mode` 为 `sync`（实现直接返回结果）或 `async`（慢判断：实现必须立即返回，可返回 `None` 以沿用缓存值，由线程或协程计算新值后在下次调用交回）。driver 自己不开线程；schedule 告诉下游该在哪里跑什么。规则的 `trigger` 必须等于其回调的 `schedule.trigger`。
+`formal.json` 中每个回调带 `schedule: {trigger, mode}`，在 S6 商定：`trigger` 是重新评估的事件（`tick`、`minor_bar`、`major_bar`、`timer`，或 `on_demand`：由下游调用方决定频率并自行调用 `on_event("on_demand", ctx)`）；`mode` 为 `sync`（实现直接返回结果）或 `async`（慢判断：实现必须立即返回，可返回 `None` 以沿用缓存值，由线程或协程计算新值后在下次调用交回）。driver 自己不开线程；schedule 告诉下游该在哪里跑什么。规则的 `trigger` 必须等于其回调的 `schedule.trigger`。
 
 ## 结构
 
@@ -105,7 +105,7 @@ Reading it as prose: on every major bar refresh the direction (slow, may be asyn
 |---|---|
 | `id` | `F01`、`F02`…，按评估顺序。 |
 | `state` | 规则适用的状态，`*` 表示所有状态。 |
-| `trigger` | 规则执行的事件：`tick`、`minor_bar`、`major_bar`、`timer` 或 `*`（所有事件）。必须等于所调用回调的 `schedule.trigger`。判断 `stop_hit` 的规则必须在 `tick` 上执行。 |
+| `trigger` | 规则执行的事件：`tick`、`minor_bar`、`major_bar`、`timer`、`on_demand`（调用方定频率）或 `*`（所有事件）。必须等于所调用回调的 `schedule.trigger`。判断 `stop_hit` 的规则必须在 `tick` 上执行。 |
 | `when` | Python 布尔表达式；空 = 总是。命名空间：`state`、`position`、`ctx`、`stop_hit`、此前规则的所有 `bind` 名、`None/True/False`。只允许比较、布尔运算、算术和一级属性访问（`entry.entry_price`、`position.stop_at_cost`）；不允许函数调用。 |
 | `call` | 要调用的回调 id（`CB01`），空表示只用内置逻辑的规则（如止损出场）。 |
 | `args` | 无法自动解析的回调输入的映射 `输入名 → 表达式`。解析顺序：`args`、同名 bind、同名 `StepContext` 字段（`instrument`、`major_tf_data`、`minor_tf_data`、`major_tf_context`、`position`、`last_price`、`now`）。 |

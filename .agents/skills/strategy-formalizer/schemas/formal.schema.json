@@ -123,7 +123,8 @@
                   "tick",
                   "minor_bar",
                   "major_bar",
-                  "timer"
+                  "timer",
+                  "on_demand"
                 ]
               },
               "mode": {
@@ -275,7 +276,7 @@
               },
               "trigger": {
                 "type": "string",
-                "description": "'*' or tick | minor_bar | major_bar | timer; must equal the called callback's schedule.trigger"
+                "description": "'*' or tick | minor_bar | major_bar | timer | on_demand; must equal the called callback's schedule.trigger"
               }
             }
           }
@@ -318,7 +319,8 @@
                         "tick",
                         "minor_bar",
                         "major_bar",
-                        "timer"
+                        "timer",
+                        "on_demand"
                       ]
                     },
                     "last_price": {

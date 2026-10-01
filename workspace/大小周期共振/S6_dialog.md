@@ -2,7 +2,7 @@
 
 > Agents: this markdown is a rendering of the json; the json is the source of truth. Read the English headings only. 中文仅供人类阅读；可直接在此文件中填写回答后运行 from-md 同步回 json。
 
-Entries: 29, open: 0
+Entries: 35, open: 0
 
 ## Round 1
 
@@ -406,3 +406,93 @@ T021 定义确认，status=defined。T007、T030 由原文决定，直接定义�
 
 **Resolution:**
 用户确认无需补充术语。
+
+## Round 14
+
+### D030 [closed]
+
+**Q (agent, 2026-10-01T19:00:31+08:00):**
+【T011 大周期方向判定 · 调度】skill 新增了每个回调的调度（触发事件 + 执行模式）。这个回调在什么事件上重新评估？(a) 每根大周期 K 线收盘，允许异步慢判断（实现可立即返回 None 沿用上次结果，由线程/协程计算后交回）；(b) 每根大周期 K 线收盘，同步；(c) 每根小周期 K 线收盘；(d) 每个 tick；(e) 定时（请给间隔）。
+
+**A (user, 2026-10-01T19:08:20+08:00):**
+用于开仓的"大周期方向判定" 由下游agent调用方决定调用频率。
+
+**Affects:** terms: T011; sections: execution_steps
+
+**Resolution:**
+T011 schedule = on_demand/sync：开仓用的方向判定由下游调用方决定调用频率。skill 新增 on_demand 触发事件。
+
+## Round 15
+
+### D031 [closed]
+
+**Q (agent, 2026-10-01T19:08:21+08:00):**
+【T013 小周期入场信号 · 调度】这个回调在什么事件上重新评估？(a) 每根小周期 K 线收盘，同步；(b) 每个 tick；(c) 由下游调用方决定频率（on_demand）；(d) 定时（请给间隔）。
+
+**A (user, 2026-10-01T19:20:39+08:00):**
+"大周期入场信号" 不返还空时并且现在还未入场则反复执行 "小周期入场信号" 的执行，具体执行时间间隔或者频率由下游调用方决定频率(on_demand)。
+
+**Affects:** terms: T013; sections: execution_steps
+
+**Resolution:**
+T013 schedule = on_demand/sync：空仓且方向非空时反复评估，频率由下游调用方决定。
+
+## Round 16
+
+### D032 [closed]
+
+**Q (agent, 2026-10-01T19:20:39+08:00):**
+【T014 小周期止损 · 调度】初始止损只在入场那一刻需要。它的调度是否就是：与入场信号同一事件（on_demand），在入场信号给出“入场”后立即同步调用一次？(a) 是；(b) 否，请说明。
+
+**A (user, 2026-10-01T19:22:07+08:00):**
+a
+
+**Affects:** terms: T014; sections: execution_steps
+
+**Resolution:**
+T014 schedule = on_demand/sync，入场时同步调用一次。
+
+## Round 17
+
+### D033 [closed]
+
+**Q (agent, 2026-10-01T19:22:07+08:00):**
+【T024 有利运动 · 调度】持仓后、止损尚未移到成本前，这个大周期上的判断在什么事件上重新评估？(a) 每根大周期 K 线收盘，允许异步慢判断（返回 None 沿用上次结果）；(b) 每根大周期 K 线收盘，同步；(c) 由下游调用方决定频率（on_demand）；(d) 每个 tick；(e) 定时（请给间隔）。
+
+**A (user, 2026-10-01T19:27:21+08:00):**
+c
+
+**Affects:** terms: T024; sections: execution_steps, exit_and_risk
+
+**Resolution:**
+T024 schedule = on_demand/sync。
+
+## Round 18
+
+### D034 [closed]
+
+**Q (agent, 2026-10-01T19:27:21+08:00):**
+【T020 大周期移动止损 · 调度】止损移到成本后，这个大周期上的判断在什么事件上重新评估？(a) 每根大周期 K 线收盘，允许异步慢判断；(b) 每根大周期 K 线收盘，同步；(c) 由下游调用方决定频率（on_demand）；(d) 每个 tick；(e) 定时（请给间隔）。
+
+**A (user, 2026-10-01T19:33:50+08:00):**
+c
+
+**Affects:** terms: T020; sections: exit_and_risk
+
+**Resolution:**
+T020 schedule = on_demand/sync。
+
+## Round 19
+
+### D035 [closed]
+
+**Q (agent, 2026-10-01T19:33:50+08:00):**
+【T021 趋势反转 · 调度】最后一个。持仓期间用于平仓的趋势反转判断在什么事件上重新评估？你之前提到这类判断频率更低、耗时较长、可能由子线程或协程异步执行。(a) 每根大周期 K 线收盘，允许异步慢判断（返回 None 沿用上次结果）；(b) 每根大周期 K 线收盘，同步；(c) 由下游调用方决定频率（on_demand），允许异步；(d) 由下游调用方决定频率（on_demand），同步；(e) 定时（请给间隔）。
+
+**A (user, 2026-10-01T19:34:47+08:00):**
+c
+
+**Affects:** terms: T021, T011; sections: exit_and_risk
+
+**Resolution:**
+T021 schedule = on_demand/async。全部 6 个回调的调度已记录在各自 notes。

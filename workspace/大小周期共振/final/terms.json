@@ -1100,7 +1100,7 @@
       ],
       "origin": "S2_extract",
       "drop_reason": "",
-      "notes": "原文强调'判断不是预测而是跟随'，只需知道当下方向，但未给出方向的判定方法（用什么指标/结构）。 S3 D003/D004：“高一级周期出现转向信号”与本判定合并为同一件事（T028 并入）；“顺势”原则由本判定落实（T003 并入）。",
+      "notes": "原文强调'判断不是预测而是跟随'，只需知道当下方向，但未给出方向的判定方法（用什么指标/结构）。 S3 D003/D004：“高一级周期出现转向信号”与本判定合并为同一件事（T028 并入）；“顺势”原则由本判定落实（T003 并入）。 schedule: on_demand/sync（D030：用于开仓的方向判定由下游调用方决定调用频率）。",
       "history": [
         {
           "at": "2026-09-23T21:58:46+08:00",
@@ -1228,6 +1228,13 @@
           "field": "definition_en",
           "from": "Judge the current trend direction on the major-timeframe chart; return exactly one of long / short / uncertain. This is following, not forecasting: an ongoing up-move is 'long' (only long trades allowed), an ongoing down-move is 'short' (only short trades allowed); do not try to call where a trend starts or ends. On 'uncertain' open no new position; existing positions keep being managed by the normal rules. Inputs may be the major-timeframe bars (price, volume) and any technical indicator; the method and the re-evaluation timing are the downstream agent's choice. The text's 'turn signal on the higher timeframe' is the same judgement: a change of this output is the turn.",
           "to": "Judge the current trend direction on the major-timeframe chart; return exactly one of long / short / uncertain. This is following, not forecasting: an ongoing up-move is 'long' (only long trades allowed), an ongoing down-move is 'short' (only short trades allowed); do not try to call where a trend starts or ends. On 'uncertain' open no new position; existing positions keep being managed by the normal rules unless T021 judges that uncertainty to be a high-confidence reversal (then the position is closed). Inputs may be the major-timeframe bars (price, volume) and any technical indicator; the method and the re-evaluation timing are the downstream agent's choice. The text's 'turn signal on the higher timeframe' is the same judgement: a change of this output is the turn."
+        },
+        {
+          "at": "2026-10-01T19:08:20+08:00",
+          "by": "S6_dialog",
+          "field": "notes",
+          "from": "原文强调'判断不是预测而是跟随'，只需知道当下方向，但未给出方向的判定方法（用什么指标/结构）。 S3 D003/D004：“高一级周期出现转向信号”与本判定合并为同一件事（T028 并入）；“顺势”原则由本判定落实（T003 并入）。",
+          "to": "原文强调'判断不是预测而是跟随'，只需知道当下方向，但未给出方向的判定方法（用什么指标/结构）。 S3 D003/D004：“高一级周期出现转向信号”与本判定合并为同一件事（T028 并入）；“顺势”原则由本判定落实（T003 并入）。 schedule: on_demand/sync（D030：用于开仓的方向判定由下游调用方决定调用频率）。"
         }
       ]
     },
@@ -1365,7 +1372,7 @@
       ],
       "origin": "S2_extract",
       "drop_reason": "",
-      "notes": "原文只说在小周期入场并只执行与大周期同向的信号，未定义入场信号本身；且明确'不要试图找完美入场点'。",
+      "notes": "原文只说在小周期入场并只执行与大周期同向的信号，未定义入场信号本身；且明确'不要试图找完美入场点'。 schedule: on_demand/sync（D031：空仓且大周期方向判定非空（多/空）时反复评估，间隔/频率由下游调用方决定）。",
       "history": [
         {
           "at": "2026-09-23T21:58:46+08:00",
@@ -1436,6 +1443,13 @@
           "field": "status",
           "from": "kept",
           "to": "defined"
+        },
+        {
+          "at": "2026-10-01T19:20:39+08:00",
+          "by": "S6_dialog",
+          "field": "notes",
+          "from": "原文只说在小周期入场并只执行与大周期同向的信号，未定义入场信号本身；且明确'不要试图找完美入场点'。",
+          "to": "原文只说在小周期入场并只执行与大周期同向的信号，未定义入场信号本身；且明确'不要试图找完美入场点'。 schedule: on_demand/sync（D031：空仓且大周期方向判定非空（多/空）时反复评估，间隔/频率由下游调用方决定）。"
         }
       ]
     },
@@ -1462,7 +1476,7 @@
       ],
       "origin": "S2_extract",
       "drop_reason": "",
-      "notes": "初始止损按小周期设置、'很近'，但未给出具体位置（结构位/固定点数/波动）；原文只论证为何不用大周期止损。",
+      "notes": "初始止损按小周期设置、'很近'，但未给出具体位置（结构位/固定点数/波动）；原文只论证为何不用大周期止损。 schedule: on_demand/sync（D032：与入场信号同一事件，入场信号为“入场”后立即同步调用一次）。",
       "history": [
         {
           "at": "2026-09-23T21:58:46+08:00",
@@ -1533,6 +1547,13 @@
           "field": "status",
           "from": "kept",
           "to": "defined"
+        },
+        {
+          "at": "2026-10-01T19:22:07+08:00",
+          "by": "S6_dialog",
+          "field": "notes",
+          "from": "初始止损按小周期设置、'很近'，但未给出具体位置（结构位/固定点数/波动）；原文只论证为何不用大周期止损。",
+          "to": "初始止损按小周期设置、'很近'，但未给出具体位置（结构位/固定点数/波动）；原文只论证为何不用大周期止损。 schedule: on_demand/sync（D032：与入场信号同一事件，入场信号为“入场”后立即同步调用一次）。"
         }
       ]
     },
@@ -2146,7 +2167,7 @@
       ],
       "origin": "S2_extract",
       "drop_reason": "",
-      "notes": "持仓期间止损只按大周期信号推进，但'大周期的信号'是什么、推进到哪里未说明；原文亦未明说止损只进不退，但'朝有利方向移动'暗示如此。",
+      "notes": "持仓期间止损只按大周期信号推进，但'大周期的信号'是什么、推进到哪里未说明；原文亦未明说止损只进不退，但'朝有利方向移动'暗示如此。 schedule: on_demand/sync（D034：移损至成本后，由下游调用方决定评估频率）。",
       "history": [
         {
           "at": "2026-09-23T21:58:46+08:00",
@@ -2217,6 +2238,13 @@
           "field": "status",
           "from": "kept",
           "to": "defined"
+        },
+        {
+          "at": "2026-10-01T19:33:50+08:00",
+          "by": "S6_dialog",
+          "field": "notes",
+          "from": "持仓期间止损只按大周期信号推进，但'大周期的信号'是什么、推进到哪里未说明；原文亦未明说止损只进不退，但'朝有利方向移动'暗示如此。",
+          "to": "持仓期间止损只按大周期信号推进，但'大周期的信号'是什么、推进到哪里未说明；原文亦未明说止损只进不退，但'朝有利方向移动'暗示如此。 schedule: on_demand/sync（D034：移损至成本后，由下游调用方决定评估频率）。"
         }
       ]
     },
@@ -2241,7 +2269,7 @@
       ],
       "origin": "S2_extract",
       "drop_reason": "",
-      "notes": "两种出场方式之一，判定方法未定义；与'不主动平仓'并列时略有张力（反转出场是否算主动平仓）。 S3 D001：趋势反转出场是独立于打止损的平仓路径，大周期出现趋势反转即主动清仓。",
+      "notes": "两种出场方式之一，判定方法未定义；与'不主动平仓'并列时略有张力（反转出场是否算主动平仓）。 S3 D001：趋势反转出场是独立于打止损的平仓路径，大周期出现趋势反转即主动清仓。 schedule: on_demand/async（D035：持仓期由下游调用方决定频率，允许异步慢判断，返回 None 沿用上次结果）。",
       "history": [
         {
           "at": "2026-09-23T21:58:46+08:00",
@@ -2331,6 +2359,13 @@
           "field": "status",
           "from": "kept",
           "to": "defined"
+        },
+        {
+          "at": "2026-10-01T19:34:47+08:00",
+          "by": "S6_dialog",
+          "field": "notes",
+          "from": "两种出场方式之一，判定方法未定义；与'不主动平仓'并列时略有张力（反转出场是否算主动平仓）。 S3 D001：趋势反转出场是独立于打止损的平仓路径，大周期出现趋势反转即主动清仓。",
+          "to": "两种出场方式之一，判定方法未定义；与'不主动平仓'并列时略有张力（反转出场是否算主动平仓）。 S3 D001：趋势反转出场是独立于打止损的平仓路径，大周期出现趋势反转即主动清仓。 schedule: on_demand/async（D035：持仓期由下游调用方决定频率，允许异步慢判断，返回 None 沿用上次结果）。"
         }
       ]
     },
@@ -2573,7 +2608,7 @@
       ],
       "origin": "S2_extract",
       "drop_reason": "",
-      "notes": "移损至成本的触发条件；'一定'/'一段'的幅度未量化。 S3 D002：有利运动在大周期上判断（原文说“小周期出现有利运动”，以用户修订为准）。",
+      "notes": "移损至成本的触发条件；'一定'/'一段'的幅度未量化。 S3 D002：有利运动在大周期上判断（原文说“小周期出现有利运动”，以用户修订为准）。 schedule: on_demand/sync（D033：持仓且未移损至成本时，由下游调用方决定评估频率）。",
       "history": [
         {
           "at": "2026-09-23T21:58:46+08:00",
@@ -2651,6 +2686,13 @@
           "field": "status",
           "from": "kept",
           "to": "defined"
+        },
+        {
+          "at": "2026-10-01T19:27:21+08:00",
+          "by": "S6_dialog",
+          "field": "notes",
+          "from": "移损至成本的触发条件；'一定'/'一段'的幅度未量化。 S3 D002：有利运动在大周期上判断（原文说“小周期出现有利运动”，以用户修订为准）。",
+          "to": "移损至成本的触发条件；'一定'/'一段'的幅度未量化。 S3 D002：有利运动在大周期上判断（原文说“小周期出现有利运动”，以用户修订为准）。 schedule: on_demand/sync（D033：持仓且未移损至成本时，由下游调用方决定评估频率）。"
         }
       ]
     },

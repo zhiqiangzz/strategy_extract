@@ -12,8 +12,8 @@ expression over a fixed namespace), which callback to call (`call`) and under
 what name to keep its result (`bind`), which built-in action to emit when the
 result satisfies `when_result` (`then`: enter, close:<reason>, move_stop_to_cost,
 move_stop, set_stop), and which state to move to (`next`). Each rule also names its
-`trigger` event (tick / minor_bar / major_bar / timer): the rule runs only on
-that event and on other events its callback's last result is read from the
+`trigger` event (tick / minor_bar / major_bar / timer / on_demand, the last
+meaning the caller decides the cadence): the rule runs only on that event and on other events its callback's last result is read from the
 driver's signal cache, so slow major-timeframe judgements and tick-level stop
 checks coexist. Callbacks carry a `schedule` (trigger + sync/async) that the
 rule triggers must agree with. `gen` renders the rules into a readable
@@ -33,7 +33,7 @@ sf_driver.py 负责 S7 的策略 driver：生成、校验并 dry-run 把回调�
 调用哪个回调（`call`）并以什么名字保存结果（`bind`）、结果满足 `when_result` 时发出哪个内置
 动作（`then`：enter、close:<原因>、move_stop_to_cost、move_stop、set_stop）、以及转到哪个状态
 （`next`）。每条规则还声明自己的 `trigger`
-事件（tick / minor_bar / major_bar / timer）：规则只在该事件上执行，其他事件上从 driver 的信号
+事件（tick / minor_bar / major_bar / timer / on_demand，最后一个表示由调用方决定频率）：规则只在该事件上执行，其他事件上从 driver 的信号
 缓存读取其回调上次的结果，因此慢速的大周期判断与 tick 级止损检查可以共存。回调带有 `schedule`
 （触发事件 + sync/async），规则的 trigger 必须与之一致。`gen` 把规则渲染成可读的 `on_event()`
 方法并接在 templates/strategy_driver.template.py 之后；`validate` 检查规格（每个回调被使用、状态可达、表达式只用命名空间内的名字、回调输入可
@@ -52,7 +52,7 @@ from pathlib import Path
 from sf_common import SUMMARY_SECTIONS, TEMPLATES_DIR, fail, load_json, now_iso, read_text, relpath, resolve_workspace, say
 
 ACTIONS = ("enter", "close", "move_stop_to_cost", "move_stop", "set_stop")
-EVENTS = ("tick", "minor_bar", "major_bar", "timer")
+EVENTS = ("tick", "minor_bar", "major_bar", "timer", "on_demand")
 MODES = ("sync", "async")
 CTX_FIELDS = ("instrument", "major_tf_data", "minor_tf_data", "major_tf_context", "position", "last_price", "now", "extra")
 BASE_NAMES = {"state", "position", "ctx", "stop_hit", "None", "True", "False"}

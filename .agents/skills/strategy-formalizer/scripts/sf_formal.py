@@ -130,7 +130,7 @@ def scaffold(terms: dict, terms_file: str) -> dict:
                 "name_en": t["name_en"],
                 "name_zh": t["name_zh"],
                 "invoked_in": (t["appears_in"][0] if t["appears_in"] else "") ,
-                "schedule": {"trigger": "", "mode": "sync", "note_en": "TODO: set from the S6 schedule answer (tick | minor_bar | major_bar | timer; sync | async)"},
+                "schedule": {"trigger": "", "mode": "sync", "note_en": "TODO: set from the S6 schedule answer (tick | minor_bar | major_bar | timer | on_demand; sync | async)"},
                 "inputs": [],
                 "output": {"type": "enum", "values": [], "description_en": ""},
                 "aux_term_ids": [],
@@ -318,7 +318,7 @@ def to_xlsx(formal: dict, out: Path) -> None:
     lg.append(["callbacks.output_type", "enum | number | bool | price | object", "输出类型"])
     lg.append(["callbacks.output_values", "enum values, '; ' separated, e.g. long; short; uncertain", "枚举取值，如 多; 空; 不确定 的英文"])
     lg.append(["callbacks.*_term_ids", "term ids the implementer must read", "实现者必须阅读的术语 id"])
-    lg.append(["callbacks.trigger / mode", "schedule: tick | minor_bar | major_bar | timer; sync | async (async = may return None to keep the cached value)", "调度：触发事件与同步/异步（异步可返回 None 以沿用缓存值）"])
+    lg.append(["callbacks.trigger / mode", "schedule: tick | minor_bar | major_bar | timer | on_demand (caller-paced); sync | async (async = may return None to keep the cached value)", "调度：触发事件与同步/异步（异步可返回 None 以沿用缓存值）"])
     lg.append(["relations.type", " | ".join(RELATION_TYPES), "关系类型"])
     lg.append(["flow.*", "one rule per row; see references/flow_dsl.md; args is a JSON object", "每行一条控制流规则，见 references/flow_dsl.md；args 为 JSON 对象"])
     lg.append(["", "Agents read the json; edit here then run sf_formal.py from-xlsx.", "供人编辑，改完运行 from-xlsx"])
@@ -506,6 +506,11 @@ def gen_stub(formal: dict, terms: dict, strategy_name: str) -> str:
         lines.append("")
         lines += _wrap("Definition (EN): " + (cb.get("description_en") or t.get("definition_en") or "(missing)"), ind)
         lines.append(f"{ind}Invoked in: {cb.get('invoked_in') or '(unspecified)'}")
+        sch = cb.get("schedule") or {}
+        if sch.get("trigger"):
+            lines += _wrap(f"Schedule: trigger={sch['trigger']}, mode={sch.get('mode', 'sync')}"
+                           + (" (async: return immediately; None keeps the last cached result)" if sch.get("mode") == "async" else "")
+                           + (f". {sch['note_en']}" if sch.get("note_en") else ""), ind)
         for i in cb.get("inputs", []):
             lines += _wrap(f"Input {i['name']} ({i.get('type', '')}): {i.get('description_en', '')}", ind)
         out_ = cb.get("output") or {}

@@ -6,7 +6,7 @@
   "input_dir": "strategy_zoo/大小周期共振",
   "scheme_id": "role_x_phase",
   "created_at": "2026-09-23T18:21:11+08:00",
-  "updated_at": "2026-10-01T18:19:08+08:00",
+  "updated_at": "2026-10-01T19:35:11+08:00",
   "current_stage": "S8",
   "stages": {
     "S1": {
@@ -67,44 +67,44 @@
     },
     "S6": {
       "status": "done",
-      "started_at": "2026-09-23T22:25:29+08:00",
-      "completed_at": "2026-09-23T23:29:31+08:00",
-      "accepted_at": "2026-09-23T23:38:43+08:00",
+      "started_at": "2026-10-01T19:00:31+08:00",
+      "completed_at": "2026-10-01T19:34:48+08:00",
+      "accepted_at": "2026-10-01T19:34:48+08:00",
       "checkpoint_hashes": {
-        "S6_dialog.json": "2175a8fcb85b22cc4b06ca84230555af6e2a6bf7e6f3bf77076b2039f9babbcb",
-        "S6_dialog.md": "86c99ffaefceba333338ad16b7e95357d531e03de7d7b05c5e2a41f2230f1634",
-        "S6_terms_defined.json": "65a762197f746ba421bcc9ed805139fe3202718dd79e310f373415b7c7dfeb0a",
-        "S6_terms_defined.xlsx": "f795f6372d8f7a13365006dfa12f994fc1a9cdfc9dc10c074ae68fba0b53a2aa",
-        "S6_conflict_log.md": "d0752f1924083ff7221b644ff4d5700bf64312250265b9be46b09027d62c2da9"
+        "S6_dialog.json": "e1589480f8a059fca09c0ad8cb189f820d7257fd86b3ab9895623761e940fa38",
+        "S6_dialog.md": "d7cff95dac32a8d78219b344c0c61793c8a1d82f82f141ce83e0fdc71a7a9190",
+        "S6_terms_defined.json": "e69817a728bc84b5fb4ead6c2885dceb58b6d947a1b1f11096bff3254d7f5ebd",
+        "S6_terms_defined.xlsx": "89f685969aa7acc5be4da9c29408852328cad04b1fae990d30a3edf913dbd3ea",
+        "S6_conflict_log.md": "183a5b1e9cf67e555c104980b5f8033f366abb174ed139de4218247e3847104d"
       }
     },
     "S7": {
       "status": "done",
-      "started_at": "2026-10-01T18:18:21+08:00",
-      "completed_at": "2026-10-01T18:18:22+08:00",
-      "accepted_at": "2026-10-01T18:18:22+08:00",
+      "started_at": "2026-10-01T19:34:48+08:00",
+      "completed_at": "2026-10-01T19:35:11+08:00",
+      "accepted_at": "2026-10-01T19:35:11+08:00",
       "checkpoint_hashes": {
-        "S7_formal.json": "c99a6404720572963e5b72a456848215966b85c8287035e96f949c26bc54fdb1",
-        "S7_formal.xlsx": "429037e60a45b14aa8f84ca47cbb14656640b41aa55ca47e5ba317df5e037d58",
+        "S7_formal.json": "3a39135d1fa44c4001cf98be8c6e3c4c92c633e10cdb5eba02dccb6e64d38a2f",
+        "S7_formal.xlsx": "f03aff38b5fe2f98c0822fca908a59a430f0f9b0bbcaaff13925976fd7700de8",
         "S7_term_graph.mmd": "20aa7c16fdf1dc5c8772f6c3b9230e85305db03d9cc37be0f2281768c2fc5739",
         "S7_term_graph.dot": "81b522b6b7333345f2ffe120f74324f0919dac3446952ea035cec0e67d7394fa",
-        "S7_term_graph.pdf": "0df15799b43c95acbeba882311c45aa9bbc213ffe36f57306c6f0ca7b1feb023",
-        "S7_callbacks_stub.py": "7ffbdfba07882846fa23222306107e5fd25012de162855790a00a41e2afeb4d8",
-        "S7_strategy_driver.py": "f6e171afcb0d27534596c1cb59bb5e2e0c9f7fc96bea5145e9423c9c9c876430"
+        "S7_term_graph.pdf": "17c373c13f1108b4f80592783fa46f4efbff75602a5afb7273994dbb34bd85dc",
+        "S7_callbacks_stub.py": "1b116f50a5c38b586ef0aaa3a429f7bb089a60540ae78fc0fe7bd6b5c7d366b1",
+        "S7_strategy_driver.py": "ccf2aec82a4a83c716aea88e7b4b09348187bffd837c67bc4cc6bb39c40d60a7"
       }
     },
     "S8": {
       "status": "done",
-      "started_at": "2026-10-01T18:18:22+08:00",
-      "completed_at": "2026-10-01T18:19:08+08:00",
-      "accepted_at": "2026-10-01T18:19:08+08:00",
+      "started_at": "2026-10-01T19:35:11+08:00",
+      "completed_at": "2026-10-01T19:35:11+08:00",
+      "accepted_at": "2026-10-01T19:35:11+08:00",
       "checkpoint_hashes": {
-        "S8_check_report.md": "9df8268e28907f5f255014c0973c34cc7f2115e83e880ba7aba4935557e0d000",
+        "S8_check_report.md": "b01d41774254a71448992ec9419e6715b57810a993760097d22bb144b1e56e14",
         "final/strategy.md": "606138d5457b0d5815efd85d0b8c01ab6544e8824f35a04fed9b3d002eba050b",
-        "final/terms.json": "65a762197f746ba421bcc9ed805139fe3202718dd79e310f373415b7c7dfeb0a",
-        "final/formal.json": "c99a6404720572963e5b72a456848215966b85c8287035e96f949c26bc54fdb1",
-        "final/callbacks_stub.py": "7ffbdfba07882846fa23222306107e5fd25012de162855790a00a41e2afeb4d8",
-        "final/strategy_driver.py": "b781bb09f51ee104cd92ac94632dae8c62c2505ef29edd5df696bf98460b3589"
+        "final/terms.json": "e69817a728bc84b5fb4ead6c2885dceb58b6d947a1b1f11096bff3254d7f5ebd",
+        "final/formal.json": "3a39135d1fa44c4001cf98be8c6e3c4c92c633e10cdb5eba02dccb6e64d38a2f",
+        "final/callbacks_stub.py": "1b116f50a5c38b586ef0aaa3a429f7bb089a60540ae78fc0fe7bd6b5c7d366b1",
+        "final/strategy_driver.py": "f0aa9d921cf227b8a7712a302ef5e7233d15a8c0b3a9f97e28afb325b2d16b5f"
       }
     }
   }
