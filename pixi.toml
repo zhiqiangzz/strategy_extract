@@ -14,6 +14,9 @@ platforms = ["osx-arm64", "osx-64", "linux-64"]
 # graphviz provides `dot`, used by scripts/sf_graph.py --pdf to render the
 # S7 term-relationship graph. The .mmd/.dot files are written without it.
 graphviz = ">=12"
+# rust toolchain (cargo/rustc) to build and test the strategy crate in third_party/quant_trading/rust_core
+# 用于编译/测试 third_party/quant_trading/rust_core 的 strategy crate 的 rust 工具链
+rust = ">=1.85"
 
 [tasks]
 # Usage: pixi run dot -Tpdf in.dot -o out.pdf
@@ -21,3 +24,5 @@ graphviz = ">=12"
 # (sf_graph.py does this automatically). 首次使用需 `pixi run dot -c` 注册插件（脚本会自动执行）。
 dot = "dot"
 graphviz-register = "dot -c"
+# Usage: pixi run cargo test -p strategy   (run from third_party/quant_trading/rust_core)
+cargo = "cargo"

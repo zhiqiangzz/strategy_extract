@@ -4,3 +4,4 @@
 [submodule "third_party/quant_trading"]
 	path = third_party/quant_trading
 	url = git@github.com:zhiqiangzz/quant_trading.git
+	branch = resonance-strategy

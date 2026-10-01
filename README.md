@@ -17,6 +17,7 @@ strategy_zoo/<name>/                  input folders (git-ignored: private transc
 workspace/<name>/                     one folder per pipeline run; committed; see SKILL.md §7 for every file
 workspace/ACTIVE                      name of the workspace that `continue` resumes
 scripts/db_smoke_test.py              read-only smoke test of the quant_trading database API
+strategies/resonance/                 downstream implementation of 大小周期共振: LLM debate judge (Python) + Rust strategy on branch resonance-strategy of the submodule
 pyproject.toml, uv.lock, .venv/       python deps managed by uv (openpyxl, pydantic, networkx, pytest)
 pixi.toml, .pixi/                     non-python deps managed by pixi (graphviz for the S7 graph pdf)
 third_party/quant_trading             git submodule: market data, DB access, backtesting (zhiqiangzz/quant_trading)
@@ -99,6 +100,7 @@ strategy_zoo/<名称>/                  输入目录（gitignore：私有转写�
 workspace/<名称>/                     每次流水线运行一个目录；提交到 git；每个文件的含义见 SKILL.md 第 7 节
 workspace/ACTIVE                      `continue` 恢复的 workspace 名称
 scripts/db_smoke_test.py              quant_trading 数据库接口的只读冒烟测试
+strategies/resonance/                 大小周期共振 的下游实现：LLM 辩论判断（Python）+ 子模块 resonance-strategy 分支上的 Rust 策略
 pyproject.toml, uv.lock, .venv/       uv 管理的 python 依赖（openpyxl、pydantic、networkx、pytest）
 pixi.toml, .pixi/                     pixi 管理的非 python 依赖（S7 关系图 pdf 所需的 graphviz）
 third_party/quant_trading             git submodule：行情数据、数据库访问、回测（zhiqiangzz/quant_trading）

@@ -23,3 +23,8 @@ __pycache__/
 OutputDir/
 
 # workspace/ (pipeline outputs) IS tracked on purpose; do not ignore it.
+
+# strategies/resonance: keep decisions + reports, drop per-call LLM transcripts and decision caches
+strategies/resonance/runs/**/*.prompt.md
+strategies/resonance/runs/**/*.response.json
+strategies/resonance/runs/**/decision.*.json
