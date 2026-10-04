@@ -1,0 +1,27 @@
+/* Base only: the design tokens and page defaults of
+   third_party/quant_trading/web/frontend/src/style.css, copied so this template
+   looks the same standalone as it will inside that frontend. All layout and
+   component styling is UnoCSS utilities in the .vue files; add nothing else here. */
+:root {
+  --bg: #f5f6fa;
+  --surface: #fff;
+  --border: #e1e4eb;
+  --text: #23272f;
+  --muted: #6b7280;
+  --primary: #2563eb;
+  --danger: #dc2626;
+  --warning: #d97706;
+  --success: #16a34a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial,
+    "PingFang SC", "Microsoft YaHei", sans-serif;
+}

@@ -17,6 +17,11 @@ graphviz = ">=12"
 # rust toolchain (cargo/rustc) to build and test the strategy crate in third_party/quant_trading/rust_core
 # 用于编译/测试 third_party/quant_trading/rust_core 的 strategy crate 的 rust 工具链
 rust = ">=1.85"
+# node + npm for the web page template in strategies/resonance/web (Vite + Vue + UnoCSS, the same
+# toolchain as third_party/quant_trading/web/frontend); npm packages go to that folder's node_modules/
+# strategies/resonance/web 页面模板所需的 node + npm（Vite + Vue + UnoCSS，与 third_party/quant_trading/web/frontend
+# 同一套工具链）；npm 包安装到该目录的 node_modules/
+nodejs = ">=22,<23"
 
 [tasks]
 # Usage: pixi run dot -Tpdf in.dot -o out.pdf
@@ -26,3 +31,13 @@ dot = "dot"
 graphviz-register = "dot -c"
 # Usage: pixi run cargo test -p strategy   (run from third_party/quant_trading/rust_core)
 cargo = "cargo"
+# Web page template of the resonance judge (strategies/resonance/web). Install once, build after
+# changing the template; a judge run only writes data and needs neither.
+# resonance 判断层的网页模板（strategies/resonance/web）。安装一次，改了模板后重新构建；跑判断只写数据，
+# 不需要这两步。
+web-install = { cmd = "npm install --no-audit --no-fund", cwd = "strategies/resonance/web" }
+web-build = { cmd = "npm run build", cwd = "strategies/resonance/web" }
+web-test = { cmd = "npm test", cwd = "strategies/resonance/web" }
+# live-reload dev server; reads data through `uv run python -m strategies.resonance.cli web`
+# 热更新开发服务；数据经由 `uv run python -m strategies.resonance.cli web` 读取
+web-dev = { cmd = "npm run dev", cwd = "strategies/resonance/web" }

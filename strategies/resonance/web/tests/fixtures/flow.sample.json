@@ -1,0 +1,902 @@
+{
+ "schema": 1,
+ "symbol": "CU",
+ "name": "沪铜",
+ "packDate": "2026-09-29",
+ "lastSession": "2026-09-28",
+ "config": {
+  "model": "opus",
+  "effort": "xhigh",
+  "maxRounds": 3
+ },
+ "position": {
+  "direction": "short",
+  "volume": 2
+ },
+ "decision": {
+  "direction": "long",
+  "confidence": 0.7,
+  "quality": "good",
+  "reversal": true,
+  "uncertainIsHighConfidence": false,
+  "summary": "多方占优",
+  "reasoning": "理由",
+  "drivers": [
+   "多1: 技术指标.macd"
+  ],
+  "risks": []
+ },
+ "rounds": 3,
+ "rulings": [
+  {
+   "round": 1,
+   "by": "moderator",
+   "continue": true,
+   "reason": "多1 上还有未回应的新证据。",
+   "focus": [
+    "多1"
+   ]
+  },
+  {
+   "round": 2,
+   "by": "moderator",
+   "continue": true,
+   "reason": "多1 上还有未回应的新证据。",
+   "focus": [
+    "多1"
+   ]
+  },
+  {
+   "round": 3,
+   "by": "rule",
+   "continue": false,
+   "reason": "已达到 3 轮上限。",
+   "focus": []
+  }
+ ],
+ "cost": 6.0,
+ "wall": 928,
+ "clock0": 31503.0,
+ "steps": [
+  {
+   "id": "long_thesis",
+   "role": "long",
+   "kind": "thesis",
+   "round": 0,
+   "phase": "立论",
+   "label": "多方立论",
+   "template": "long_thesis.md",
+   "job": "多方只看证据包，写出判断为 long 的最强论证，列出 3–6 条论据。",
+   "start": "08:45:03",
+   "end": "08:46:21",
+   "t0": 0.0,
+   "t1": 78.0,
+   "seconds": 78,
+   "cost": 0.5,
+   "attempts": 1,
+   "promptChars": 8291,
+   "blocks": [
+    {
+     "label": "角色与规则",
+     "note": "这一步的任务、输出字段和约束",
+     "chars": 1379
+    },
+    {
+     "label": "决策时点",
+     "note": "站在包日期开盘前；此后的数据是被判断的未来，不是缺失",
+     "chars": 1290
+    },
+    {
+     "label": "策略定义",
+     "note": "T011 / T005 / T021 / T010 / T007 原文",
+     "chars": 1784
+    },
+    {
+     "label": "证据包",
+     "note": "数据覆盖表 + 技术指标 / 基本面 / 新闻 / 研报 / 日线",
+     "chars": 3838
+    }
+   ],
+   "result": "2 条论据，编号 多1–多2；自评置信度 0.6",
+   "items": [
+    {
+     "id": "多1",
+     "tag": "中",
+     "text": "均线向上"
+    },
+    {
+     "id": "多2",
+     "tag": "弱",
+     "text": "基差走强"
+    }
+   ],
+   "glue": ""
+  },
+  {
+   "id": "short_thesis",
+   "role": "short",
+   "kind": "thesis",
+   "round": 0,
+   "phase": "立论",
+   "label": "空方立论",
+   "template": "short_thesis.md",
+   "job": "空方只看证据包，写出判断为 short 的最强论证，列出 3–6 条论据。",
+   "start": "08:45:03",
+   "end": "08:47:27",
+   "t0": 0.0,
+   "t1": 144.0,
+   "seconds": 144,
+   "cost": 0.5,
+   "attempts": 1,
+   "promptChars": 8297,
+   "blocks": [
+    {
+     "label": "角色与规则",
+     "note": "这一步的任务、输出字段和约束",
+     "chars": 1385
+    },
+    {
+     "label": "决策时点",
+     "note": "站在包日期开盘前；此后的数据是被判断的未来，不是缺失",
+     "chars": 1290
+    },
+    {
+     "label": "策略定义",
+     "note": "T011 / T005 / T021 / T010 / T007 原文",
+     "chars": 1784
+    },
+    {
+     "label": "证据包",
+     "note": "数据覆盖表 + 技术指标 / 基本面 / 新闻 / 研报 / 日线",
+     "chars": 3838
+    }
+   ],
+   "result": "1 条论据，编号 空1–空1；自评置信度 0.3",
+   "items": [
+    {
+     "id": "空1",
+     "tag": "弱",
+     "text": "期限结构转弱"
+    }
+   ],
+   "glue": "给论据编号并建线程：多1–多2、空1–空1，一条论据一个线程。"
+  },
+  {
+   "id": "debate_r1_rebuttal_short",
+   "role": "short",
+   "kind": "rebuttal",
+   "round": 1,
+   "phase": "反驳",
+   "label": "空方反驳",
+   "template": "debate_rebuttal.md",
+   "job": "空方逐条反驳多方仍在争议的论据，每条指明攻击类型。",
+   "start": "08:47:30",
+   "end": "08:48:30",
+   "t0": 147.0,
+   "t1": 207.0,
+   "seconds": 60,
+   "cost": 0.5,
+   "attempts": 1,
+   "promptChars": 9021,
+   "blocks": [
+    {
+     "label": "角色与规则",
+     "note": "这一步的任务、输出字段和约束",
+     "chars": 1883
+    },
+    {
+     "label": "决策时点",
+     "note": "站在包日期开盘前；此后的数据是被判断的未来，不是缺失",
+     "chars": 1290
+    },
+    {
+     "label": "策略定义",
+     "note": "T011 / T005 / T021 / T010 / T007 原文",
+     "chars": 1784
+    },
+    {
+     "label": "己方立论",
+     "note": "自己的总论点和论据标题，用于保持前后一致",
+     "chars": 89
+    },
+    {
+     "label": "对方论据",
+     "note": "要逐条反驳的线程，含已有交锋",
+     "chars": 137
+    },
+    {
+     "label": "证据包",
+     "note": "数据覆盖表 + 技术指标 / 基本面 / 新闻 / 研报 / 日线",
+     "chars": 3838
+    }
+   ],
+   "result": "2 条反驳",
+   "items": [
+    {
+     "id": "多1",
+     "tag": "举反例",
+     "text": "反例"
+    },
+    {
+     "id": "多2",
+     "tag": "举反例",
+     "text": "反例"
+    }
+   ],
+   "glue": ""
+  },
+  {
+   "id": "debate_r1_rebuttal_long",
+   "role": "long",
+   "kind": "rebuttal",
+   "round": 1,
+   "phase": "反驳",
+   "label": "多方反驳",
+   "template": "debate_rebuttal.md",
+   "job": "多方逐条反驳空方仍在争议的论据，每条指明攻击类型。",
+   "start": "08:47:30",
+   "end": "08:49:56",
+   "t0": 147.0,
+   "t1": 293.0,
+   "seconds": 146,
+   "cost": 0.5,
+   "attempts": 1,
+   "promptChars": 8973,
+   "blocks": [
+    {
+     "label": "角色与规则",
+     "note": "这一步的任务、输出字段和约束",
+     "chars": 1882
+    },
+    {
+     "label": "决策时点",
+     "note": "站在包日期开盘前；此后的数据是被判断的未来，不是缺失",
+     "chars": 1290
+    },
+    {
+     "label": "策略定义",
+     "note": "T011 / T005 / T021 / T010 / T007 原文",
+     "chars": 1784
+    },
+    {
+     "label": "己方立论",
+     "note": "自己的总论点和论据标题，用于保持前后一致",
+     "chars": 95
+    },
+    {
+     "label": "对方论据",
+     "note": "要逐条反驳的线程，含已有交锋",
+     "chars": 84
+    },
+    {
+     "label": "证据包",
+     "note": "数据覆盖表 + 技术指标 / 基本面 / 新闻 / 研报 / 日线",
+     "chars": 3838
+    }
+   ],
+   "result": "1 条反驳，其中 空1 撤回异议",
+   "items": [
+    {
+     "id": "空1",
+     "tag": "撤回异议",
+     "text": "反例"
+    }
+   ],
+   "glue": "把 3 条反驳挂到各自线程上。空1 的异议被撤回，线程关闭，不再需要答辩。"
+  },
+  {
+   "id": "debate_r1_defence_long",
+   "role": "long",
+   "kind": "defence",
+   "round": 1,
+   "phase": "再反驳",
+   "label": "多方再反驳",
+   "template": "debate_defence.md",
+   "job": "多方对自己论据受到的反驳逐条回应：坚持、收窄或认输。",
+   "start": "08:49:59",
+   "end": "08:51:15",
+   "t0": 296.0,
+   "t1": 372.0,
+   "seconds": 76,
+   "cost": 0.5,
+   "attempts": 1,
+   "promptChars": 8442,
+   "blocks": [
+    {
+     "label": "角色与规则",
+     "note": "这一步的任务、输出字段和约束",
+     "chars": 1322
+    },
+    {
+     "label": "决策时点",
+     "note": "站在包日期开盘前；此后的数据是被判断的未来，不是缺失",
+     "chars": 1290
+    },
+    {
+     "label": "策略定义",
+     "note": "T011 / T005 / T021 / T010 / T007 原文",
+     "chars": 1784
+    },
+    {
+     "label": "己方论据与对方反驳",
+     "note": "自己的线程，每个线程最后一条是对方刚给出的反驳",
+     "chars": 208
+    },
+    {
+     "label": "证据包",
+     "note": "数据覆盖表 + 技术指标 / 基本面 / 新闻 / 研报 / 日线",
+     "chars": 3838
+    }
+   ],
+   "result": "2 条再反驳：坚持 1，认输 1",
+   "items": [
+    {
+     "id": "多1",
+     "tag": "坚持",
+     "text": "答辩"
+    },
+    {
+     "id": "多2",
+     "tag": "认输",
+     "text": "答辩"
+    }
+   ],
+   "glue": "把 2 条再反驳挂到线程上。多2 认输，线程关闭。还剩 1 个争议线程。未到轮数上限，于是询问主持人。"
+  },
+  {
+   "id": "debate_r1_moderator",
+   "role": "mod",
+   "kind": "moderator",
+   "round": 1,
+   "phase": "主持人",
+   "label": "主持人",
+   "template": "debate_moderator.md",
+   "job": "读完第 1 轮的全部交锋，判断是否值得再打一轮，并给出理由。",
+   "start": "08:51:18",
+   "end": "08:51:23",
+   "t0": 375.0,
+   "t1": 380.0,
+   "seconds": 5,
+   "cost": 0.5,
+   "attempts": 1,
+   "promptChars": 4735,
+   "blocks": [
+    {
+     "label": "角色与规则",
+     "note": "这一步的任务、输出字段和约束",
+     "chars": 1302
+    },
+    {
+     "label": "决策时点",
+     "note": "站在包日期开盘前；此后的数据是被判断的未来，不是缺失",
+     "chars": 1290
+    },
+    {
+     "label": "策略定义",
+     "note": "T011 / T005 / T021 / T010 / T007 原文",
+     "chars": 1784
+    },
+    {
+     "label": "辩论记录",
+     "note": "到目前为止全部线程的交锋",
+     "chars": 359
+    }
+   ],
+   "result": "继续下一轮，附理由",
+   "items": [
+    {
+     "id": "理由",
+     "tag": "继续",
+     "text": "多1 上还有未回应的新证据。"
+    }
+   ],
+   "glue": "记录主持人的判断和理由。判断为继续，第 2 轮只辩：多1。"
+  },
+  {
+   "id": "debate_r2_rebuttal_short",
+   "role": "short",
+   "kind": "rebuttal",
+   "round": 2,
+   "phase": "反驳",
+   "label": "空方反驳",
+   "template": "debate_rebuttal.md",
+   "job": "空方逐条反驳多方仍在争议的论据，每条指明攻击类型。须针对对方上一轮的再反驳，不得重复已有的攻击。",
+   "start": "08:51:26",
+   "end": "08:53:52",
+   "t0": 383.0,
+   "t1": 529.0,
+   "seconds": 146,
+   "cost": 0.5,
+   "attempts": 1,
+   "promptChars": 9221,
+   "blocks": [
+    {
+     "label": "角色与规则",
+     "note": "这一步的任务、输出字段和约束",
+     "chars": 2093
+    },
+    {
+     "label": "决策时点",
+     "note": "站在包日期开盘前；此后的数据是被判断的未来，不是缺失",
+     "chars": 1290
+    },
+    {
+     "label": "策略定义",
+     "note": "T011 / T005 / T021 / T010 / T007 原文",
+     "chars": 1784
+    },
+    {
+     "label": "己方立论",
+     "note": "自己的总论点和论据标题，用于保持前后一致",
+     "chars": 89
+    },
+    {
+     "label": "对方论据",
+     "note": "要逐条反驳的线程，含已有交锋",
+     "chars": 127
+    },
+    {
+     "label": "证据包",
+     "note": "数据覆盖表 + 技术指标 / 基本面 / 新闻 / 研报 / 日线",
+     "chars": 3838
+    }
+   ],
+   "result": "1 条反驳",
+   "items": [
+    {
+     "id": "多1",
+     "tag": "举反例",
+     "text": "反例"
+    }
+   ],
+   "glue": "把 1 条反驳挂到各自线程上。"
+  },
+  {
+   "id": "debate_r2_defence_long",
+   "role": "long",
+   "kind": "defence",
+   "round": 2,
+   "phase": "再反驳",
+   "label": "多方再反驳",
+   "template": "debate_defence.md",
+   "job": "多方对自己论据受到的反驳逐条回应：坚持、收窄或认输。",
+   "start": "08:53:55",
+   "end": "08:55:11",
+   "t0": 532.0,
+   "t1": 608.0,
+   "seconds": 76,
+   "cost": 0.5,
+   "attempts": 1,
+   "promptChars": 8406,
+   "blocks": [
+    {
+     "label": "角色与规则",
+     "note": "这一步的任务、输出字段和约束",
+     "chars": 1322
+    },
+    {
+     "label": "决策时点",
+     "note": "站在包日期开盘前；此后的数据是被判断的未来，不是缺失",
+     "chars": 1290
+    },
+    {
+     "label": "策略定义",
+     "note": "T011 / T005 / T021 / T010 / T007 原文",
+     "chars": 1784
+    },
+    {
+     "label": "己方论据与对方反驳",
+     "note": "自己的线程，每个线程最后一条是对方刚给出的反驳",
+     "chars": 172
+    },
+    {
+     "label": "证据包",
+     "note": "数据覆盖表 + 技术指标 / 基本面 / 新闻 / 研报 / 日线",
+     "chars": 3838
+    }
+   ],
+   "result": "1 条再反驳：坚持 1",
+   "items": [
+    {
+     "id": "多1",
+     "tag": "坚持",
+     "text": "答辩"
+    }
+   ],
+   "glue": "把 1 条再反驳挂到线程上。还剩 1 个争议线程。未到轮数上限，于是询问主持人。"
+  },
+  {
+   "id": "debate_r2_moderator",
+   "role": "mod",
+   "kind": "moderator",
+   "round": 2,
+   "phase": "主持人",
+   "label": "主持人",
+   "template": "debate_moderator.md",
+   "job": "读完第 2 轮的全部交锋，判断是否值得再打一轮，并给出理由。",
+   "start": "08:55:14",
+   "end": "08:55:19",
+   "t0": 611.0,
+   "t1": 616.0,
+   "seconds": 5,
+   "cost": 0.5,
+   "attempts": 1,
+   "promptChars": 4780,
+   "blocks": [
+    {
+     "label": "角色与规则",
+     "note": "这一步的任务、输出字段和约束",
+     "chars": 1302
+    },
+    {
+     "label": "决策时点",
+     "note": "站在包日期开盘前；此后的数据是被判断的未来，不是缺失",
+     "chars": 1290
+    },
+    {
+     "label": "策略定义",
+     "note": "T011 / T005 / T021 / T010 / T007 原文",
+     "chars": 1784
+    },
+    {
+     "label": "辩论记录",
+     "note": "到目前为止全部线程的交锋",
+     "chars": 404
+    }
+   ],
+   "result": "继续下一轮，附理由",
+   "items": [
+    {
+     "id": "理由",
+     "tag": "继续",
+     "text": "多1 上还有未回应的新证据。"
+    }
+   ],
+   "glue": "记录主持人的判断和理由。判断为继续，第 3 轮只辩：多1。"
+  },
+  {
+   "id": "debate_r3_rebuttal_short",
+   "role": "short",
+   "kind": "rebuttal",
+   "round": 3,
+   "phase": "反驳",
+   "label": "空方反驳",
+   "template": "debate_rebuttal.md",
+   "job": "空方逐条反驳多方仍在争议的论据，每条指明攻击类型。须针对对方上一轮的再反驳，不得重复已有的攻击。",
+   "start": "08:55:22",
+   "end": "08:57:48",
+   "t0": 619.0,
+   "t1": 765.0,
+   "seconds": 146,
+   "cost": 0.5,
+   "attempts": 1,
+   "promptChars": 9266,
+   "blocks": [
+    {
+     "label": "角色与规则",
+     "note": "这一步的任务、输出字段和约束",
+     "chars": 2093
+    },
+    {
+     "label": "决策时点",
+     "note": "站在包日期开盘前；此后的数据是被判断的未来，不是缺失",
+     "chars": 1290
+    },
+    {
+     "label": "策略定义",
+     "note": "T011 / T005 / T021 / T010 / T007 原文",
+     "chars": 1784
+    },
+    {
+     "label": "己方立论",
+     "note": "自己的总论点和论据标题，用于保持前后一致",
+     "chars": 89
+    },
+    {
+     "label": "对方论据",
+     "note": "要逐条反驳的线程，含已有交锋",
+     "chars": 172
+    },
+    {
+     "label": "证据包",
+     "note": "数据覆盖表 + 技术指标 / 基本面 / 新闻 / 研报 / 日线",
+     "chars": 3838
+    }
+   ],
+   "result": "1 条反驳",
+   "items": [
+    {
+     "id": "多1",
+     "tag": "举反例",
+     "text": "反例"
+    }
+   ],
+   "glue": "把 1 条反驳挂到各自线程上。"
+  },
+  {
+   "id": "debate_r3_defence_long",
+   "role": "long",
+   "kind": "defence",
+   "round": 3,
+   "phase": "再反驳",
+   "label": "多方再反驳",
+   "template": "debate_defence.md",
+   "job": "多方对自己论据受到的反驳逐条回应：坚持、收窄或认输。",
+   "start": "08:57:51",
+   "end": "08:59:07",
+   "t0": 768.0,
+   "t1": 844.0,
+   "seconds": 76,
+   "cost": 0.5,
+   "attempts": 1,
+   "promptChars": 8451,
+   "blocks": [
+    {
+     "label": "角色与规则",
+     "note": "这一步的任务、输出字段和约束",
+     "chars": 1322
+    },
+    {
+     "label": "决策时点",
+     "note": "站在包日期开盘前；此后的数据是被判断的未来，不是缺失",
+     "chars": 1290
+    },
+    {
+     "label": "策略定义",
+     "note": "T011 / T005 / T021 / T010 / T007 原文",
+     "chars": 1784
+    },
+    {
+     "label": "己方论据与对方反驳",
+     "note": "自己的线程，每个线程最后一条是对方刚给出的反驳",
+     "chars": 217
+    },
+    {
+     "label": "证据包",
+     "note": "数据覆盖表 + 技术指标 / 基本面 / 新闻 / 研报 / 日线",
+     "chars": 3838
+    }
+   ],
+   "result": "1 条再反驳：坚持 1",
+   "items": [
+    {
+     "id": "多1",
+     "tag": "坚持",
+     "text": "答辩"
+    }
+   ],
+   "glue": "把 1 条再反驳挂到线程上。还剩 1 个争议线程。代码直接终止辩论：已达到 3 轮上限。"
+  },
+  {
+   "id": "manager",
+   "role": "mgr",
+   "kind": "manager",
+   "round": 0,
+   "phase": "Manager",
+   "label": "Manager",
+   "template": "manager.md",
+   "job": "对每条论据给出裁定，再根据存活的论据决定方向。证据包只用来核对双方的引用。",
+   "start": "08:59:10",
+   "end": "09:00:31",
+   "t0": 847.0,
+   "t1": 928.0,
+   "seconds": 81,
+   "cost": 0.5,
+   "attempts": 1,
+   "promptChars": 10065,
+   "blocks": [
+    {
+     "label": "角色与规则",
+     "note": "这一步的任务、输出字段和约束",
+     "chars": 2548
+    },
+    {
+     "label": "决策时点",
+     "note": "站在包日期开盘前；此后的数据是被判断的未来，不是缺失",
+     "chars": 1290
+    },
+    {
+     "label": "策略定义",
+     "note": "T011 / T005 / T021 / T010 / T007 原文",
+     "chars": 1784
+    },
+    {
+     "label": "双方立论",
+     "note": "双方的总论点、自评置信度、证伪条件",
+     "chars": 82
+    },
+    {
+     "label": "辩论记录",
+     "note": "全部线程的完整交锋",
+     "chars": 396
+    },
+    {
+     "label": "终止理由",
+     "note": "每轮之后主持人或规则的判断",
+     "chars": 127
+    },
+    {
+     "label": "证据包",
+     "note": "数据覆盖表 + 技术指标 / 基本面 / 新闻 / 研报 / 日线",
+     "chars": 3838
+    }
+   ],
+   "result": "方向 long，置信度 0.7；裁定 成立 1，被削弱 0，被驳倒 1",
+   "items": [
+    {
+     "id": "多1",
+     "tag": "成立",
+     "text": "反驳未能动摇"
+    },
+    {
+     "id": "空1",
+     "tag": "被驳倒",
+     "text": "被举反例"
+    }
+   ],
+   "glue": "丢弃不存在的论据编号；按 T021 用代码重算反转标志（持有 short 2 手，结果为 True）；写出缓存 decision.6ec610770305.json。全部品种跑完后由 cli.py 渲染 debate.md、report.md、decisions.json 和 flow.json。"
+  }
+ ],
+ "threads": [
+  {
+   "id": "多1",
+   "owner": "long",
+   "strength": "中",
+   "status": "争议中",
+   "claim": "均线向上",
+   "reasoning": "因为…",
+   "refs": [
+    "技术指标.macd"
+   ],
+   "verdict": "成立",
+   "verdictReason": "反驳未能动摇",
+   "exchanges": [
+    {
+     "round": 1,
+     "speaker": "short",
+     "kind": "反驳",
+     "unanswered": false,
+     "tag": "举反例",
+     "text": "反例",
+     "revised": "",
+     "refs": [
+      "日线"
+     ]
+    },
+    {
+     "round": 1,
+     "speaker": "long",
+     "kind": "再反驳",
+     "unanswered": false,
+     "tag": "坚持",
+     "text": "答辩",
+     "revised": "",
+     "refs": []
+    },
+    {
+     "round": 2,
+     "speaker": "short",
+     "kind": "反驳",
+     "unanswered": false,
+     "tag": "举反例",
+     "text": "反例",
+     "revised": "",
+     "refs": [
+      "日线"
+     ]
+    },
+    {
+     "round": 2,
+     "speaker": "long",
+     "kind": "再反驳",
+     "unanswered": false,
+     "tag": "坚持",
+     "text": "答辩",
+     "revised": "",
+     "refs": []
+    },
+    {
+     "round": 3,
+     "speaker": "short",
+     "kind": "反驳",
+     "unanswered": false,
+     "tag": "举反例",
+     "text": "反例",
+     "revised": "",
+     "refs": [
+      "日线"
+     ]
+    },
+    {
+     "round": 3,
+     "speaker": "long",
+     "kind": "再反驳",
+     "unanswered": false,
+     "tag": "坚持",
+     "text": "答辩",
+     "revised": "",
+     "refs": []
+    }
+   ]
+  },
+  {
+   "id": "多2",
+   "owner": "long",
+   "strength": "弱",
+   "status": "所有方认输",
+   "claim": "基差走强",
+   "reasoning": "因为…",
+   "refs": [
+    "基本面.basis"
+   ],
+   "verdict": null,
+   "verdictReason": "",
+   "exchanges": [
+    {
+     "round": 1,
+     "speaker": "short",
+     "kind": "反驳",
+     "unanswered": false,
+     "tag": "举反例",
+     "text": "反例",
+     "revised": "",
+     "refs": [
+      "日线"
+     ]
+    },
+    {
+     "round": 1,
+     "speaker": "long",
+     "kind": "再反驳",
+     "unanswered": false,
+     "tag": "认输",
+     "text": "答辩",
+     "revised": "",
+     "refs": []
+    }
+   ]
+  },
+  {
+   "id": "空1",
+   "owner": "short",
+   "strength": "弱",
+   "status": "对方撤回异议",
+   "claim": "期限结构转弱",
+   "reasoning": "因为…",
+   "refs": [
+    "基本面.curve"
+   ],
+   "verdict": "被驳倒",
+   "verdictReason": "被举反例",
+   "exchanges": [
+    {
+     "round": 1,
+     "speaker": "long",
+     "kind": "反驳",
+     "unanswered": false,
+     "tag": "撤回异议",
+     "text": "反例",
+     "revised": "",
+     "refs": [
+      "日线"
+     ]
+    }
+   ]
+  }
+ ],
+ "theses": {
+  "long": {
+   "thesis": "多",
+   "confidence": 0.6,
+   "falsifiers": [
+    "f"
+   ]
+  },
+  "short": {
+   "thesis": "空",
+   "confidence": 0.3,
+   "falsifiers": []
+  }
+ },
+ "cacheFile": "decision.6ec610770305.json"
+}
