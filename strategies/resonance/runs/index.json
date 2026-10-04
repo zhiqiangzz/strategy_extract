@@ -1,0 +1,50 @@
+{
+ "schema": 1,
+ "runs": [
+  {
+   "packDate": "2026-09-30",
+   "symbols": [
+    {
+     "symbol": "AG",
+     "name": "沪银",
+     "direction": "short",
+     "confidence": 0.57,
+     "rounds": 1,
+     "cost": 3.33
+    },
+    {
+     "symbol": "CU",
+     "name": "沪铜",
+     "direction": "uncertain",
+     "confidence": 0.7,
+     "rounds": 1,
+     "cost": 3.5
+    },
+    {
+     "symbol": "LC",
+     "name": "碳酸锂",
+     "direction": "short",
+     "confidence": 0.68,
+     "rounds": 1,
+     "cost": 3.28
+    },
+    {
+     "symbol": "P",
+     "name": "棕榈油",
+     "direction": "short",
+     "confidence": 0.66,
+     "rounds": 1,
+     "cost": 3.13
+    },
+    {
+     "symbol": "TA",
+     "name": "精对苯二甲酸",
+     "direction": "uncertain",
+     "confidence": 0.55,
+     "rounds": 1,
+     "cost": 3.73
+    }
+   ]
+  }
+ ]
+}
