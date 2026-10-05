@@ -1,0 +1,67 @@
+# Parameters of the order plan that follows the manager's decision (strategies/resonance/orders.py).
+# The manager decides direction and confidence; every number in an order is computed from this
+# file, the database and the evidence pack. Unknown keys are rejected, so a typo cannot pass silently.
+# Use another file with `--plan-config PATH`.
+#
+# Manager 决策之后生成订单计划所用的参数（strategies/resonance/orders.py）。Manager 只决定方向和置信度；
+# 订单里的每个数字都由本文件、数据库和证据包算出。未知的键会报错，拼错不会被悄悄忽略。
+# 用 `--plan-config PATH` 可指定别的文件。
+
+[budget]
+# Margin budget per symbol in CNY at confidence 1.0.
+# 每个品种在置信度为 1.0 时的保证金预算（元）。
+default_cny = 100000
+# true: budget used = budget × confidence (0.8 → 80 000). false: always the full budget.
+# true：实际使用的预算 = 预算 × 置信度（0.8 → 8 万）；false：始终使用全额预算。
+scale_by_confidence = true
+# No order below this confidence. 0 disables the filter.
+# 置信度低于此值不出单；0 表示不过滤。
+min_confidence = 0.0
+
+# Per-symbol budgets that replace default_cny, e.g. CU = 150000.
+# 按品种覆盖 default_cny 的预算，例如 CU = 150000。
+[budget.symbols]
+
+[risk]
+# Largest loss of one order in CNY at confidence 1.0: filled at the worst price of the entry range
+# and stopped out.
+# 置信度为 1.0 时单笔订单的最大亏损（元）：按入场区间内最差价成交并被止损时的亏损。
+max_loss_cny = 15000
+# true: loss limit used = max_loss_cny × confidence (0.8 → 12 000). false: always the full amount.
+# true：实际使用的亏损上限 = max_loss_cny × 置信度（0.8 → 1.2 万）；false：始终使用全额。
+scale_by_confidence = true
+# The stop is at least this many daily ATRs away from the worst entry price; lots are reduced
+# until it is. 0 turns the rule off: lots come from the margin budget alone.
+# 止损距离最差入场价至少这么多倍日线 ATR，不够就减手数。0 表示关闭：手数只由保证金预算决定。
+min_stop_atr = 1.0
+
+[entry]
+# The entry range is the reference price ± this many daily ATRs.
+# 入场区间为参考价 ± 这么多倍日线 ATR。
+range_atr = 0.25
+# Decision time on the pack date (Asia/Shanghai). The reference price is the last trade before
+# it; when the plan is made earlier than that, the last trade before now.
+# 包日期当天的决策时点（北京时间）。参考价取该时点之前的最后一笔成交；若生成计划时还没到该时点，
+# 则取当前时间之前的最后一笔成交。
+decision_clock = "09:00:00"
+
+[margin]
+# Added to the margin ratio of the database (the exchange standard), for the broker's surcharge.
+# 在数据库的保证金比率（交易所标准）之上加收的部分，用于期货公司的加收。
+addon = 0.0
+
+[order]
+strategy_id = "major_minor_timeframe_resonance"
+source = "manager"
+# plan_id = "<plan_id_prefix>-<pack date>"
+plan_id_prefix = "manager"
+plan_version = 1
+# target_price = worst entry price ± target_r × stop distance. 0 writes null.
+# target_price = 最差入场价 ± target_r × 止损距离；0 表示填 null。
+target_r = 3.0
+# The major timeframe is daily, so a position is meant to be held across days.
+# 大周期是日线，持仓本来就要跨日。
+hold_overnight = true
+# An order may be executed until this time on the pack date (Asia/Shanghai).
+# 订单在包日期当天的这个时间之前有效（北京时间）。
+valid_until_clock = "15:00:00"

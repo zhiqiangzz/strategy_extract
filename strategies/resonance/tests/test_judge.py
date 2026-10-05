@@ -271,7 +271,7 @@ def test_cli_judge_and_report(pack: Path, tmp_path: Path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     runs = ["--runs-dir", "runs"]
     monkeypatch.setattr(cli, "from_control_api", lambda url, account: ({}, None))
-    assert cli.main(["judge", "--pack", str(pack), "--symbols", "CU", "--dry-run", "--capital", "1000000", "--max-rounds", "2", "--workers", "5", *runs]) == 0
+    assert cli.main(["judge", "--pack", str(pack), "--symbols", "CU", "--dry-run", "--no-plan", "--capital", "1000000", "--max-rounds", "2", "--workers", "5", *runs]) == 0
     run_dir = tmp_path / "runs" / "2026-09-29"
     saved = json.loads((run_dir / "decisions.json").read_text(encoding="utf-8"))
     assert saved["debates"]["CU"]["rounds_held"] == 1 and set(saved["theses"]["CU"]) == {"long", "short"} and set(saved["verdicts"]["CU"]) == {TECHNICAL, FUNDAMENTAL, NEWS, RESEARCH}

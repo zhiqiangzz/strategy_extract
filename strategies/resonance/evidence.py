@@ -177,6 +177,23 @@ class Evidence:
         return (self.technical or {}).get("contract_code") or ""
 
     @property
+    def daily_atr(self) -> Optional[float]:
+        """
+        Daily ATR as of the last session: the value of the 技术指标 `atr_14`
+        indicator, else the mean true range of the daily bars in the pack
+        (at most the last 14), else None.
+
+        截至最后交易日的日线 ATR：取技术指标 `atr_14` 的值；没有则用证据包内日线（最多最近 14 根）的
+        平均真实波幅；仍没有则为 None。
+        """
+        value = ((((self.technical or {}).get("single_indicator_results") or {}).get("atr_14") or {}).get("current_values") or {}).get("atr")
+        if isinstance(value, (int, float)) and value > 0:
+            return float(value)
+        bars = [b for b in self.daily_bars if all(isinstance(b.get(k), (int, float)) for k in ("high", "low", "close"))]
+        ranges = [max(b["high"] - b["low"], abs(b["high"] - p["close"]), abs(b["low"] - p["close"])) for p, b in zip(bars, bars[1:])][-14:]
+        return sum(ranges) / len(ranges) if ranges else None
+
+    @property
     def news_usable(self) -> bool:
         """
         True when a 新闻 payload exists and is not marked unusable upstream.

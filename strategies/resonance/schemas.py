@@ -13,7 +13,9 @@ points, or its replies to the rebuttals of its own points, in one round),
 the value of callback CB01 `major_timeframe_direction`, and when a position
 is open also of CB05 `major_trend_reversal`). `Debate` is the record the
 code assembles from them: one `DebateThread` per point with its `Exchange`s,
-and one `RoundRuling` per round. `ResonanceSetting` / `ContractSetting`
+and one `RoundRuling` per round. `OrderPlan` / `Order` are the order plan
+handed to the trading system (built by `orders.py`); their field names and
+order are that system's file format. `ResonanceSetting` / `ContractSetting`
 mirror the serde structs of the Rust strategy; changing a field here
 requires the same change in rust_core's resonance.rs.
 
@@ -22,14 +24,15 @@ schemas.py 定义所有结构化 LLM 输出、组装后的辩论记录和交接�
 `DefenceTurn`（一轮中一方对对方论据的反驳，或对己方论据所受反驳的再反驳）、`ModeratorRuling`
 （一轮结束后继续或终止及理由）、`Decision`（Manager 对每条论据的裁定和方向；即回调 CB01 大周期方向
 判定 的值，持仓时也是 CB05 趋势反转 的值）。`Debate` 是代码据此组装的记录：每条论据一个
-`DebateThread`（含若干 `Exchange`），每轮一个 `RoundRuling`。`ResonanceSetting` / `ContractSetting`
+`DebateThread`（含若干 `Exchange`），每轮一个 `RoundRuling`。`OrderPlan` / `Order` 是交给交易系统的订单计划
+（由 `orders.py` 生成），字段名和顺序就是该系统的文件格式。`ResonanceSetting` / `ContractSetting`
 与 Rust 策略的 serde 结构一一对应；改这里的字段必须同步改 rust_core 的 resonance.rs。
 """
 from __future__ import annotations
 
 from typing import Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from .config import ResonanceParams
 
@@ -215,6 +218,60 @@ class Decision(BaseModel):
     key_drivers: list[str]
     risk_flags: list[str] = Field(default_factory=list)
     evidence_quality: Literal["good", "partial", "poor"]
+
+
+class Order(BaseModel):
+    """
+    One order of a plan. `limit_price` is the entry range `[low, high]` of an
+    opening order: the trading system may enter anywhere inside it, and
+    `stop_price` is placed so that the worst fill in the range (the top for
+    a buy, the bottom for a sell) loses the allowed maximum. A closing order
+    has no prices and names its position in `position_id`.
+
+    计划中的一张订单。开仓单的 `limit_price` 是入场区间 `[下沿, 上沿]`：交易系统可在区间内任意位置
+    入场，`stop_price` 的位置使区间内最差成交（买单为上沿，卖单为下沿）恰好亏到允许的上限。平仓单
+    不带价格，用 `position_id` 指明持仓。
+    """
+    order_id: str
+    contract: str
+    action: Literal["open", "close"]
+    side: Literal["buy", "sell"]
+    lots: int = Field(ge=1)
+    limit_price: Optional[list[float]] = None
+    stop_price: Optional[float] = None
+    target_price: Optional[float] = None
+    position_id: Optional[str] = None
+    strategy_id: str
+    source: str
+    reason: str
+    hold_overnight: bool
+    valid_until: str
+    depends_on: list[str] = Field(default_factory=list)
+    hedge_for: list[str] = Field(default_factory=list)
+
+    @field_validator("limit_price")
+    @classmethod
+    def _range(cls, v: Optional[list[float]]) -> Optional[list[float]]:
+        """A range is two prices, low first.
+
+        区间是两个价格，下沿在前。
+        """
+        if v is not None and (len(v) != 2 or v[0] > v[1]):
+            raise ValueError("limit_price must be [low, high]")
+        return v
+
+
+class OrderPlan(BaseModel):
+    """
+    The order plan of one pack date, as the trading system reads it.
+
+    一个包日期的订单计划，即交易系统读取的文件内容。
+    """
+    plan_id: str
+    version: int = 1
+    snapshot_id: str
+    created_at: str
+    orders: list[Order] = Field(default_factory=list)
 
 
 class Position(BaseModel):

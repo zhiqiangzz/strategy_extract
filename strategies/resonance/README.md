@@ -31,6 +31,7 @@ uv run python -m strategies.resonance.cli judge --pack <dir> --account <user>
         │  runs/<date>/<symbol>/debate.md   (the debate record)
         │  runs/<date>/<symbol>/flow.json   (data for the web page template in web/) + runs/index.json
         │  runs/<date>/decisions.json + report.md
+        │  runs/<date>/order_plan.json   (orders for the trading system: entry range, lots, stop; see "Order plan")
         ▼
 rust_core/.vntrader/resonance_setting_<user>.json   (direction, reversal, risk budget, params, warm-up bars)
         │  POST /api/strategy/reload?account=<user>
@@ -48,6 +49,26 @@ Every call stands at the same decision time: before the open of the pack date D.
 3. **Moderator (主持人).** After each round the moderator decides whether another round is worth holding and gives the reason; when it continues it names the threads to focus on. The code ends the debate without asking when no thread is contested or after `max_debate_rounds` (default and maximum 3). Every ruling is kept with its reason.
 4. **Manager.** Rules on every thread (stands / weakened / refuted, with the reason) and decides the direction from the surviving arguments. The evidence pack is given to the manager only to check what the debaters cite; it may not add arguments of its own.
 
+## Order plan
+
+After the manager's decision the judge writes `runs/<date>/order_plan.json`, the orders for the trading system in its own file format (`plan_id`, `version`, `snapshot_id`, `created_at`, `orders[]`). The manager decides direction and confidence only; every number in an order is computed by `orders.py` from the parameter file `order_plan.toml`, the database and the evidence pack, so the same inputs always give the same plan.
+
+For a symbol that is flat with direction long or short, one `open` order:
+
+1. Reference price `P`: the last trade before the decision time (the pack date at `decision_clock`, 09:00 by default; when the plan is made earlier, the last trade before now). A plan rebuilt days later therefore still uses the price of that morning.
+2. Entry range: `P ± range_atr × ATR(1d)`, rounded inward to the price tick, written as `limit_price = [low, high]`. The trading system may enter anywhere inside it on the minor timeframe.
+3. Budget: `default_cny × confidence` (100 000 × 0.68 = 68 000), or a per-symbol budget from `[budget.symbols]`.
+4. Loss limit: `max_loss_cny × confidence` (15 000 × 0.68 = 10 200). Like the budget, it shrinks with the confidence; `scale_by_confidence = false` under `[risk]` or `[budget]` uses the full amount.
+5. Lots: the smaller of `floor(budget / (high × lot size × margin ratio))` and `floor(loss limit / (min_stop_atr × ATR × lot size))`. The second keeps the stop at least `min_stop_atr` daily ATRs away; without it a large position would get a stop inside ordinary daily noise.
+6. Stop: `loss limit / (lots × lot size)` away from the worst fill of the range (the top for a buy, the bottom for a sell), rounded toward the entry. A fill at the worst price that is stopped out loses at most the loss limit; any other fill in the range loses less. The stop always lies outside the range.
+7. Target: `target_r ×` the stop distance beyond the worst fill (3 by default; 0 writes null).
+
+Direction uncertain gives no order. An open position that the judgement reverses gives a `close` order (no prices, `position_id` = the position's vt_symbol), followed by an `open` order that `depends_on` it when the new direction is the opposite one. A position in the same direction gives no order. A symbol also gets no order when one lot does not fit the budget or the loss limit, or when the database has no main contract, margin ratio or trade for it; the reason is listed in `report.md` and in `order_plan.audit.json`, which also records how every order was sized.
+
+Fixed fields: `strategy_id` `major_minor_timeframe_resonance`, `source` `manager`, `plan_id` `manager-<date>`, `snapshot_id` `pack-<date>`, `created_at` the decision time, `valid_until` 15:00 of the pack date, `hold_overnight` true. All of them and every number above are parameters in `order_plan.toml`; an unknown key in that file is an error. The margin ratio in the database is the exchange standard; `[margin] addon` adds a broker's surcharge.
+
+The Rust `ResonanceStrategy` does not read this plan. It still takes `resonance_setting_<user>.json` and applies its own entry and stop rules; the two outputs exist side by side.
+
 ## Files
 
 | File | Purpose |
@@ -56,16 +77,17 @@ Every call stands at the same decision time: before the open of the pack date D.
 | `evidence.py` | Loads a pack, works out the last completed session before the pack date, and renders one symbol's evidence: decision time, 数据覆盖 table, then the four sources with stable ids (`技术指标.macd`, `基本面.curve`, `新闻.20260929_001`, `研报.ev1`, `日线`). The upstream directory names of a pack appear only in its `SOURCES` table. |
 | `claude_cli.py` | One structured call through the logged-in Claude Code CLI (`claude -p … --json-schema`), nested-session safe, transcripts recorded. |
 | `prompts/*.md` | Role prompts: `long_thesis`, `short_thesis`, `debate_rebuttal`, `debate_defence` (one template each, filled per side), `debate_moderator`, `manager`. `_definitions.md` (T011/T005/T021/T010/T007 verbatim) and `_time_anchor.md` (decision time) are embedded in every prompt. |
-| `schemas.py` | pydantic models for the LLM outputs (Thesis, RebuttalTurn, DefenceTurn, ModeratorRuling, Decision), the assembled `Debate` record, the hand-off `ResonanceSetting`, and the JSON schemas sent to the CLI (every field required, no extras). |
+| `schemas.py` | pydantic models for the LLM outputs (Thesis, RebuttalTurn, DefenceTurn, ModeratorRuling, Decision), the assembled `Debate` record, the order plan (`OrderPlan`, `Order`), the hand-off `ResonanceSetting`, and the JSON schemas sent to the CLI (every field required, no extras). |
 | `debate.py` | `judge_symbol` (opening statements, `run_debate`, manager, reversal rule, cache), the Markdown rendering of threads and rulings, and `judge_many` (thread pool over symbols; the two sides of a step run concurrently). |
 | `positions.py` | Open positions and capital from the control API (`/api/positions`, `/api/account`) or a file. |
 | `signal_writer.py` | Decisions → setting file: main contract from the v2 DB, `VARIETY_META` multipliers/ticks, risk budget, warm-up bars (30m from `tick_ctp`, daily from `market_data`), atomic write, reload call. |
 | `export_ticks.py` | Exports `tick_ctp` ticks of a contract for the Rust replay example. |
 | `flow.py` | Builds `<symbol>/flow.json` after every run: the calls in order with their timing, cost, prompt composition and results, what the code did in between, and the threads. Also rebuilds `runs/index.json`. This is the data contract of the web page (`FLOW_SCHEMA`). |
+| `orders.py`, `order_plan.toml` | The order plan: parameters (`OrderPlanConfig`), market data from the v2 DB (`DbMarketData`: main contract, margin ratio, lot size, last trade before the decision time), sizing (`size_open`), `build_order_plan`, and the plan and audit files. |
 | `serve.py` | Localhost server for the built page template and its data; under `/runs/` it serves only `index.json` and `flow.json`. |
 | `web/` | The page template: a Vite + Vue 3 + UnoCSS project with the toolchain and theme of `third_party/quant_trading/web/frontend`. It holds no data and reads the flow files. See `web/README.md`. |
-| `cli.py` | `judge`, `report` and `web` commands; renders `report.md` and `<symbol>/debate.md` and writes the flow files. |
-| `tests/` | Fake-runner tests: evidence and coverage table, decision-time block, debate rounds (moderator, round limit, focus, concessions, withdrawn objections, unanswered threads), reversal rule, cache, report, flow data and index, the server's allow-list, setting round-trip, positions parsing. `make_web_fixture.py` regenerates the sample flow the page template is tested with. |
+| `cli.py` | `judge`, `report`, `plan` and `web` commands; renders `report.md` and `<symbol>/debate.md`, writes the flow files and the order plan. |
+| `tests/` | Fake-runner tests: evidence and coverage table, decision-time block, debate rounds (moderator, round limit, focus, concessions, withdrawn objections, unanswered threads), reversal rule, cache, report, flow data and index, the server's allow-list, the order plan (fake market: sizing, invariants, skip reasons, positions, parameter file, CLI), setting round-trip, positions parsing. `make_web_fixture.py` regenerates the sample flow the page template is tested with. |
 | `runs/` | Per-pack decisions, reports and debate records; the per-call prompts/responses and decision caches are git-ignored. `runs/2026-09-29/` is the output of the earlier single-pass version. |
 
 Rust side (branch `resonance-strategy` of `third_party/quant_trading`): `crates/strategy/src/bars.rs` (tick → 30m/daily bars, ATR, Donchian), `crates/strategy/src/resonance.rs` (the strategy, serde structs mirroring `schemas.py`, 7 tests), `crates/strategy/examples/resonance_replay.rs` (dry-run replay on exported ticks), `trading-core/src/main.rs` + `accounts.rs` (registration, per-strategy trigger file, subscriptions), `strategy/src/lib.rs` (`symbols_of`).
@@ -96,7 +118,9 @@ uv run python -m strategies.resonance.cli judge --pack scratchpad/2026-09-30 --s
 # 2. full: writes rust_core/.vntrader/resonance_setting_<user>.json (DB lookups + warm-up) and reloads the core
 uv run python -m strategies.resonance.cli judge --pack scratchpad/2026-09-30 --account <user>
 #    add --no-reload to only write the file; --positions file.json / --capital N when the core is not running
+#    the order plan is written to runs/<date>/order_plan.json (needs the v2 DB); --plan-out FILE copies it, --no-plan skips it
 #    re-render report.md, the debate records and the flow files from decisions.json: cli report --pack-date 2026-09-30
+#    recompute the order plan after editing order_plan.toml, without judging again:  cli plan --pack-date 2026-09-30 [--plan-config FILE]
 # 3. web page of a run (template in web/, data written by the judge; node comes from pixi)
 pixi run web-install && pixi run web-build           # once, and again after changing the template
 uv run python -m strategies.resonance.cli web        # http://127.0.0.1:8770/#2026-09-30/LC
@@ -149,9 +173,29 @@ strategy-formalizer 在 `workspace/大小周期共振/final/` 产出的第一个
 3. **主持人。** 每轮结束后由主持人判断是否值得再打一轮并给出理由；继续时点名下一轮聚焦的线程。已无争议线程、或达到 `max_debate_rounds`（默认值和上限都是 3）时由代码直接终止。每次判断及其理由都会保留。
 4. **Manager。** 对每个线程给出裁定（成立 / 被削弱 / 被驳倒及理由），并根据存活的论据决定方向。证据包只供 Manager 核对双方的引用，不得自行引入新论点。
 
+## 订单计划
+
+Manager 给出决策后，判断层写出 `runs/<日期>/order_plan.json`，即按交易系统自己的文件格式（`plan_id`、`version`、`snapshot_id`、`created_at`、`orders[]`）给出的订单。Manager 只决定方向和置信度；订单里的每个数字都由 `orders.py` 根据参数文件 `order_plan.toml`、数据库和证据包算出，相同输入必得相同计划。
+
+空仓且方向为多或空的品种出一张 `open` 单：
+
+1. 参考价 `P`：决策时点之前的最后一笔成交（决策时点为包日期的 `decision_clock`，默认 09:00；若生成计划时还没到，则取当前时间之前的最后一笔）。因此几天后重新生成的计划仍然使用当天早上的价格。
+2. 入场区间：`P ± range_atr × 日线 ATR`，向区间内侧取整到最小变动价位，写成 `limit_price = [下沿, 上沿]`。交易系统可在小周期上于区间内任意位置入场。
+3. 预算：`default_cny × 置信度`（100 000 × 0.68 = 68 000），或 `[budget.symbols]` 里按品种设置的预算。
+4. 亏损上限：`max_loss_cny × 置信度`（15 000 × 0.68 = 10 200）。和预算一样随置信度缩小；把 `[risk]` 或 `[budget]` 下的 `scale_by_confidence` 设为 false 则使用全额。
+5. 手数：取 `floor(预算 / (上沿 × 每手数量 × 保证金比率))` 与 `floor(亏损上限 / (min_stop_atr × ATR × 每手数量))` 中较小者。后者保证止损距离不小于 `min_stop_atr` 倍日线 ATR；没有它，仓位大的品种止损会落在正常的日内波动之内。
+6. 止损：距离区间内最差成交价（买单为上沿，卖单为下沿）`亏损上限 / (手数 × 每手数量)`，向入场方向取整。按最差价成交后被止损，亏损不超过亏损上限；区间内其他位置成交亏损更小。止损一定在区间之外。
+7. 目标：在最差成交价之外 `target_r ×` 止损距离处（默认 3；配成 0 则填 null）。
+
+方向不确定时不出单。持仓被判定反转时出一张 `close` 单（不带价格，`position_id` 为持仓的 vt_symbol）；新方向相反时，随后有一张 `depends_on` 它的 `open` 单。持有同向仓位时不出单。一手放不进预算或亏损上限，或数据库里没有该品种的主力合约、保证金比率或成交时，同样不出单；原因列在 `report.md` 和 `order_plan.audit.json` 里，后者还记录每张单是怎么算出来的。
+
+固定字段：`strategy_id` 为 `major_minor_timeframe_resonance`，`source` 为 `manager`，`plan_id` 为 `manager-<日期>`，`snapshot_id` 为 `pack-<日期>`，`created_at` 为决策时点，`valid_until` 为包日期 15:00，`hold_overnight` 为 true。这些字段和上面所有数字都是 `order_plan.toml` 里的参数；该文件出现未知的键会报错。数据库里的保证金比率是交易所标准，`[margin] addon` 用于加上期货公司的加收。
+
+Rust 的 `ResonanceStrategy` 不读这份计划，它仍然读取 `resonance_setting_<user>.json` 并按自己的规则入场和止损；两个出口并存。
+
 ## 文件
 
-见英文部分的表格。`flow.py` 在每次运行后生成 `<品种>/flow.json`（按顺序的调用及其时间、费用、提示词构成和返回结果，调用之间代码做的事，以及各线程）并重建 `runs/index.json`，这是网页的数据约定；`serve.py` 是页面模板及其数据的本机服务，`/runs/` 下只放行 `index.json` 和 `flow.json`；`web/` 是页面模板（Vite + Vue 3 + UnoCSS 工程，工具链和主题与 `third_party/quant_trading/web/frontend` 一致），本身不含数据，详见 `web/README.md`。上游证据包的目录名只出现在 `evidence.py` 的 `SOURCES` 表里；`runs/2026-09-29/` 是早先单次质证版本的产出。Rust 侧在 `third_party/quant_trading` 的 `resonance-strategy` 分支：`bars.rs`（tick → 30m/日线、ATR、Donchian）、`resonance.rs`（策略本体与 serde 结构，7 个测试）、`examples/resonance_replay.rs`（导出 tick 的干跑回放）、`main.rs`/`accounts.rs`（注册、每策略独立触发文件、订阅）、`lib.rs`（`symbols_of`）。
+见英文部分的表格。`orders.py` 与 `order_plan.toml` 负责订单计划：参数、来自 v2 库的行情（主力合约、保证金比率、每手数量、决策时点前的最后一笔成交）、手数与止损的计算，以及计划文件和审计文件。`flow.py` 在每次运行后生成 `<品种>/flow.json`（按顺序的调用及其时间、费用、提示词构成和返回结果，调用之间代码做的事，以及各线程）并重建 `runs/index.json`，这是网页的数据约定；`serve.py` 是页面模板及其数据的本机服务，`/runs/` 下只放行 `index.json` 和 `flow.json`；`web/` 是页面模板（Vite + Vue 3 + UnoCSS 工程，工具链和主题与 `third_party/quant_trading/web/frontend` 一致），本身不含数据，详见 `web/README.md`。上游证据包的目录名只出现在 `evidence.py` 的 `SOURCES` 表里；`runs/2026-09-29/` 是早先单次质证版本的产出。Rust 侧在 `third_party/quant_trading` 的 `resonance-strategy` 分支：`bars.rs`（tick → 30m/日线、ATR、Donchian）、`resonance.rs`（策略本体与 serde 结构，7 个测试）、`examples/resonance_replay.rs`（导出 tick 的干跑回放）、`main.rs`/`accounts.rs`（注册、每策略独立触发文件、订阅）、`lib.rs`（`symbols_of`）。
 
 ## 交接文件
 
@@ -159,7 +203,7 @@ strategy-formalizer 在 `workspace/大小周期共振/final/` 产出的第一个
 
 ## 运行手册
 
-命令见英文部分：`cli judge --dry-run` 只出决策、报告和辩论记录（每品种 8–17 次 opus/xhigh 调用，取决于辩论打了几轮；在 2026-09-30 证据包上实测，一轮辩论每品种约 3.4 美元、约 10 分钟）；`--max-rounds` 设置轮数上限（默认 3，主持人可提前终止），`--workers N` 设置同时判断的品种数；`cli report` 从 decisions.json 重新渲染报告、辩论记录和 flow 文件；`pixi run web-install && pixi run web-build` 构建网页模板（一次性，改了模板后重做；node 来自 pixi），`cli web` 在 http://127.0.0.1:8770/ 提供页面和数据；`judge`、`report`、`web` 默认都在 `strategies/resonance/runs` 下读写，`--runs-dir 目录` 可换到别处（三个命令要传同一个目录）；去掉 `--dry-run` 则写设置文件（含 DB 查询与预热 K 线）并通知 core 重载（`--no-reload` 只写文件）；Rust 侧在 `rust_core` 内用本仓库 pixi 环境的工具链 `cargo test -p strategy`，`resonance_replay` 用 `export_ticks` 导出的 tick 回放。持仓来自 `/api/positions`，资金来自 `/api/account` 的 `balance`。同一（包日期、品种、提示词版本、模型、effort、证据粒度、轮数上限、持仓状态）的决策会被缓存复用，`--no-cache` 强制重跑。同一步的多空两侧并行调用，所以 `--workers N` 时最多同时有 2 × N 个 `claude` 进程。
+命令见英文部分：`cli judge --dry-run` 只出决策、报告和辩论记录（每品种 8–17 次 opus/xhigh 调用，取决于辩论打了几轮；在 2026-09-30 证据包上实测，一轮辩论每品种约 3.4 美元、约 10 分钟）；`--max-rounds` 设置轮数上限（默认 3，主持人可提前终止），`--workers N` 设置同时判断的品种数；订单计划写到 `runs/<日期>/order_plan.json`（需要能连上 v2 库；`--plan-out 文件` 另存一份，`--no-plan` 跳过）；`cli report` 从 decisions.json 重新渲染报告、辩论记录和 flow 文件；`cli plan --pack-date 日期` 在修改 `order_plan.toml` 之后不重新判断、直接重算订单计划；`pixi run web-install && pixi run web-build` 构建网页模板（一次性，改了模板后重做；node 来自 pixi），`cli web` 在 http://127.0.0.1:8770/ 提供页面和数据；`judge`、`report`、`web` 默认都在 `strategies/resonance/runs` 下读写，`--runs-dir 目录` 可换到别处（三个命令要传同一个目录）；去掉 `--dry-run` 则写设置文件（含 DB 查询与预热 K 线）并通知 core 重载（`--no-reload` 只写文件）；Rust 侧在 `rust_core` 内用本仓库 pixi 环境的工具链 `cargo test -p strategy`，`resonance_replay` 用 `export_ticks` 导出的 tick 回放。持仓来自 `/api/positions`，资金来自 `/api/account` 的 `balance`。同一（包日期、品种、提示词版本、模型、effort、证据粒度、轮数上限、持仓状态）的决策会被缓存复用，`--no-cache` 强制重跑。同一步的多空两侧并行调用，所以 `--workers N` 时最多同时有 2 × N 个 `claude` 进程。
 
 ## 局限
 
