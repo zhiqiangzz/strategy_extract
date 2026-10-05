@@ -1,0 +1,116 @@
+{
+  "as_of": "2026-09-30T09:00:00+08:00",
+  "config": {
+    "budget": {
+      "default_cny": 100000.0,
+      "scale_by_confidence": true,
+      "min_confidence": 0.0,
+      "symbols": {}
+    },
+    "risk": {
+      "max_loss_cny": 15000.0,
+      "scale_by_confidence": true,
+      "min_stop_atr": 1.0
+    },
+    "entry": {
+      "range_atr": 0.25,
+      "decision_clock": "09:00:00"
+    },
+    "margin": {
+      "addon": 0.0
+    },
+    "order": {
+      "strategy_id": "major_minor_timeframe_resonance",
+      "source": "manager",
+      "plan_id_prefix": "manager",
+      "plan_version": 1,
+      "target_r": 3.0,
+      "hold_overnight": true,
+      "valid_until_clock": "15:00:00"
+    }
+  },
+  "sizing": [
+    {
+      "symbol": "AG",
+      "order_id": "M001",
+      "contract": "AG2612",
+      "side": "sell",
+      "confidence": 0.57,
+      "budget_cny": 57000.0,
+      "loss_limit_cny": 8550.0,
+      "reference_price": 15000.0,
+      "reference_time": "2026-09-30 08:59:00",
+      "atr": 494.5,
+      "multiplier": 15.0,
+      "margin_ratio": 0.22,
+      "price_tick": 1.0,
+      "lots": 1,
+      "lots_by_margin": 1,
+      "lots_by_risk": 1,
+      "limited_by": "保证金",
+      "worst": 14877.0,
+      "stop_distance": 570.0,
+      "stop_atr": 1.15,
+      "margin_used": 49905.9,
+      "max_loss": 8550.0
+    },
+    {
+      "symbol": "LC",
+      "order_id": "M002",
+      "contract": "LC2701",
+      "side": "sell",
+      "confidence": 0.68,
+      "budget_cny": 68000.0,
+      "loss_limit_cny": 10200.0,
+      "reference_price": 119500.0,
+      "reference_time": "2026-09-30 08:59:00",
+      "atr": 6114.2857,
+      "multiplier": 1.0,
+      "margin_ratio": 0.17,
+      "price_tick": 20.0,
+      "lots": 1,
+      "lots_by_margin": 3,
+      "lots_by_risk": 1,
+      "limited_by": "止损下限",
+      "worst": 117980.0,
+      "stop_distance": 10200.0,
+      "stop_atr": 1.67,
+      "margin_used": 20573.4,
+      "max_loss": 10200.0
+    },
+    {
+      "symbol": "P",
+      "order_id": "M003",
+      "contract": "P2701",
+      "side": "sell",
+      "confidence": 0.66,
+      "budget_cny": 66000.0,
+      "loss_limit_cny": 9900.0,
+      "reference_price": 9575.0,
+      "reference_time": "2026-09-30 08:59:00",
+      "atr": 166.0,
+      "multiplier": 10.0,
+      "margin_ratio": 0.11,
+      "price_tick": 2.0,
+      "lots": 5,
+      "lots_by_margin": 6,
+      "lots_by_risk": 5,
+      "limited_by": "止损下限",
+      "worst": 9534.0,
+      "stop_distance": 198.0,
+      "stop_atr": 1.19,
+      "margin_used": 52888.0,
+      "max_loss": 9900.0
+    }
+  ],
+  "skipped": [
+    {
+      "symbol": "CU",
+      "reason": "方向不确定，不开新仓"
+    },
+    {
+      "symbol": "TA",
+      "reason": "方向不确定，不开新仓"
+    }
+  ]
+}

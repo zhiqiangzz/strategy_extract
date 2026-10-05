@@ -1,0 +1,71 @@
+{
+  "plan_id": "manager-2026-09-30",
+  "version": 1,
+  "snapshot_id": "pack-2026-09-30",
+  "created_at": "2026-09-30T09:00:00+08:00",
+  "orders": [
+    {
+      "order_id": "M001",
+      "contract": "AG2612",
+      "action": "open",
+      "side": "sell",
+      "lots": 1,
+      "limit_price": [
+        14877.0,
+        15123.0
+      ],
+      "stop_price": 15447.0,
+      "target_price": 13167.0,
+      "position_id": null,
+      "strategy_id": "major_minor_timeframe_resonance",
+      "source": "manager",
+      "reason": "做空，置信度 0.57。多方开局即承认其立论实质是“空头确认不足”，并非“上行正在进行”，自评置信度0.14。四条多方论据中，多2（超跌位置）和多4（基本面未背书）被空方驳倒并撤回。多1（换月与两根K线）收窄为“方向向下，但确认度低”。多3（加息概率70%→约50%）收窄为“空头延续的风险项，不证明向上”。 空方的核心是空1：收盘跌破9月区间下沿15250，反抽不过，再创新低。",
+      "hold_overnight": true,
+      "valid_until": "2026-09-30T15:00:00+08:00",
+      "depends_on": [],
+      "hedge_for": []
+    },
+    {
+      "order_id": "M002",
+      "contract": "LC2701",
+      "action": "open",
+      "side": "sell",
+      "lots": 1,
+      "limit_price": [
+        117980.0,
+        121020.0
+      ],
+      "stop_price": 128180.0,
+      "target_price": 87380.0,
+      "position_id": null,
+      "strategy_id": "major_minor_timeframe_resonance",
+      "source": "manager",
+      "reason": "做空，置信度 0.68。辩论只进行了一轮，方向本身很快失去争议。多方立论即承认日线处于下跌状态，随后撤回对空1（价格结构）的异议，只做了两处不影响结论的细节更正。",
+      "hold_overnight": true,
+      "valid_until": "2026-09-30T15:00:00+08:00",
+      "depends_on": [],
+      "hedge_for": []
+    },
+    {
+      "order_id": "M003",
+      "contract": "P2701",
+      "action": "open",
+      "side": "sell",
+      "lots": 5,
+      "limit_price": [
+        9534.0,
+        9616.0
+      ],
+      "stop_price": 9732.0,
+      "target_price": 8940.0,
+      "position_id": null,
+      "strategy_id": "major_minor_timeframe_resonance",
+      "source": "manager",
+      "reason": "做空，置信度 0.66。辩论只进行一轮即在事实层面收敛。多方开局自评置信度仅 0.15，并承认其论据多属“下跌未被确认”而非“上涨正在进行”。四条多方论据中，多2（进口成本托底）与多4（统计极端位置）认输；多1 与多3 撤回“平仓盘耗尽”“上行结构中的回调”，并明确不否认当前日线方向向下，只保留对空头判断置信度的约束。空方的空1（价格结构逐级下移并创新低）未被动摇，多方明言价格事实不争。",
+      "hold_overnight": true,
+      "valid_until": "2026-09-30T15:00:00+08:00",
+      "depends_on": [],
+      "hedge_for": []
+    }
+  ]
+}
