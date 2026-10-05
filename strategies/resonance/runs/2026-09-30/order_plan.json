@@ -27,6 +27,90 @@
     },
     {
       "order_id": "M002",
+      "contract": "AO2701",
+      "action": "open",
+      "side": "sell",
+      "lots": 9,
+      "limit_price": [
+        2651.0,
+        2671.0
+      ],
+      "stop_price": 2696.0,
+      "target_price": 2514.0,
+      "position_id": null,
+      "strategy_id": "major_minor_timeframe_resonance",
+      "source": "manager",
+      "reason": "做空，置信度 0.55。多方四条论据中，多2、多4认输。多1、多3收窄后只保留“空头读数确认度偏低、缺现货确认”，并明确承认日线当前状态为下行，自己拿不出“方向向上”的证据。空方五条论据也都收窄：撤回了因果链、动量加速、未超卖、资金带头寸过节等表述，承认破位只有一根K线、约0.3个ATR、规则层置信0.385。",
+      "hold_overnight": true,
+      "valid_until": "2026-09-30T15:00:00+08:00",
+      "depends_on": [],
+      "hedge_for": []
+    },
+    {
+      "order_id": "M003",
+      "contract": "FG2701",
+      "action": "open",
+      "side": "sell",
+      "lots": 20,
+      "limit_price": [
+        890.0,
+        900.0
+      ],
+      "stop_price": 912.0,
+      "target_price": 823.0,
+      "position_id": null,
+      "strategy_id": "major_minor_timeframe_resonance",
+      "source": "manager",
+      "reason": "做空，置信度 0.60。多方开局自评置信度只有 0.15，并承认日线不呈现进行中的上行，四条论据的性质是“下行受限、可能企稳”。第1轮后多3（成本底）认输；多1（基差）、多2（缺量与延伸）、多4（边际未恶化）均由多方自行收窄为“只降低看空置信度，不构成偏多理由”。",
+      "hold_overnight": true,
+      "valid_until": "2026-09-30T15:00:00+08:00",
+      "depends_on": [],
+      "hedge_for": []
+    },
+    {
+      "order_id": "M004",
+      "contract": "I2701",
+      "action": "open",
+      "side": "sell",
+      "lots": 8,
+      "limit_price": [
+        702.5,
+        707.5
+      ],
+      "stop_price": 713.5,
+      "target_price": 669.0,
+      "position_id": null,
+      "strategy_id": "major_minor_timeframe_resonance",
+      "source": "manager",
+      "reason": "做空，置信度 0.60。辩论一轮即终止，方向层面已无实质争议。多方开场就承认日线没有进行中的上行、价格在下行的EMA20之下，三条论据都只是削弱空头确定性：多3认输；多2撤回仓单约束的因果链，收窄为“基本面混合中性、方向由日线技术面裁决”；多1接受ADX、MACD、support_score均指空，明确“只限定置信度，不再主张改判方向”。",
+      "hold_overnight": true,
+      "valid_until": "2026-09-30T15:00:00+08:00",
+      "depends_on": [],
+      "hedge_for": []
+    },
+    {
+      "order_id": "M005",
+      "contract": "JM2701",
+      "action": "open",
+      "side": "sell",
+      "lots": 2,
+      "limit_price": [
+        1432.0,
+        1458.0
+      ],
+      "stop_price": 1510.5,
+      "target_price": 1196.0,
+      "position_id": null,
+      "strategy_id": "major_minor_timeframe_resonance",
+      "source": "manager",
+      "reason": "做空，置信度 0.63。多方开局只主张“弱多”（自评0.15），并承认日线价格仍在下行、四项方向指标偏空；其依据是深贴水、供给扰动、缩量减仓和零仓单。第1轮中，多1（深贴水）与多4（交割端偏紧）被空方用同一份数据驳倒，多方认输：贴水加深与新低同步，JM2611远低于现货，Back只在两个非主力合约之间。多2、多3被窗口内反例收窄，多方明言二者“不构成判多依据、不改变方向”，只约束跌幅或下调置信度。",
+      "hold_overnight": true,
+      "valid_until": "2026-09-30T15:00:00+08:00",
+      "depends_on": [],
+      "hedge_for": []
+    },
+    {
+      "order_id": "M006",
       "contract": "LC2701",
       "action": "open",
       "side": "sell",
@@ -47,7 +131,49 @@
       "hedge_for": []
     },
     {
-      "order_id": "M003",
+      "order_id": "M007",
+      "contract": "M2701",
+      "action": "open",
+      "side": "sell",
+      "lots": 11,
+      "limit_price": [
+        3353.0,
+        3379.0
+      ],
+      "stop_price": 3407.0,
+      "target_price": 3189.0,
+      "position_id": null,
+      "strategy_id": "major_minor_timeframe_resonance",
+      "source": "manager",
+      "reason": "做空，置信度 0.40。一轮后事实层面基本一致。多方的多头立论瓦解：多4、多5认输，多1、多2、多3各自撤回核心表述（“上行仍在进行”、“下跌缩量/健康回撤”、“下跌强度弱”），只留下三条反对判short的约束——按收盘尚无破位、没有新空增仓、规则层合成分-0.06且置信0.0，并承认没有一项指标指多。",
+      "hold_overnight": true,
+      "valid_until": "2026-09-30T15:00:00+08:00",
+      "depends_on": [],
+      "hedge_for": []
+    },
+    {
+      "order_id": "M008",
+      "contract": "NI2611",
+      "action": "open",
+      "side": "sell",
+      "lots": 4,
+      "limit_price": [
+        121140.0,
+        122080.0
+      ],
+      "stop_price": 123240.0,
+      "target_price": 114840.0,
+      "position_id": null,
+      "strategy_id": "major_minor_timeframe_resonance",
+      "source": "manager",
+      "reason": "做空，置信度 0.56。多方开局自评置信度仅0.24，承认没有已确认的上升趋势，立论靠“前低120270未破+成本供给托底”。第1轮后多1、多2、多3全部收窄为“不构成long依据，只降低short置信度”，多4认输。",
+      "hold_overnight": true,
+      "valid_until": "2026-09-30T15:00:00+08:00",
+      "depends_on": [],
+      "hedge_for": []
+    },
+    {
+      "order_id": "M009",
       "contract": "P2701",
       "action": "open",
       "side": "sell",
@@ -62,6 +188,48 @@
       "strategy_id": "major_minor_timeframe_resonance",
       "source": "manager",
       "reason": "做空，置信度 0.66。辩论只进行一轮即在事实层面收敛。多方开局自评置信度仅 0.15，并承认其论据多属“下跌未被确认”而非“上涨正在进行”。四条多方论据中，多2（进口成本托底）与多4（统计极端位置）认输；多1 与多3 撤回“平仓盘耗尽”“上行结构中的回调”，并明确不否认当前日线方向向下，只保留对空头判断置信度的约束。空方的空1（价格结构逐级下移并创新低）未被动摇，多方明言价格事实不争。",
+      "hold_overnight": true,
+      "valid_until": "2026-09-30T15:00:00+08:00",
+      "depends_on": [],
+      "hedge_for": []
+    },
+    {
+      "order_id": "M010",
+      "contract": "SA2701",
+      "action": "open",
+      "side": "sell",
+      "lots": 17,
+      "limit_price": [
+        998.0,
+        1008.0
+      ],
+      "stop_price": 1022.0,
+      "target_price": 925.0,
+      "position_id": null,
+      "strategy_id": "major_minor_timeframe_resonance",
+      "source": "manager",
+      "reason": "做空，置信度 0.55。多方开场自评置信度只有0.24，立论是“下跌停止延续、低位偏多的早期上行”。一轮交锋后，多3（成本与去库）和多4（空头回补）认输；多1、多2、多5被多方自己收窄为方向中性的事实：破位后10日收盘净位移约为零，空头读数强度弱且同源，量能在涨跌日之间对称。多方明确承认这些都不构成转多证据，做多一侧已无存活的方向性论据。",
+      "hold_overnight": true,
+      "valid_until": "2026-09-30T15:00:00+08:00",
+      "depends_on": [],
+      "hedge_for": []
+    },
+    {
+      "order_id": "M011",
+      "contract": "SH2611",
+      "action": "open",
+      "side": "sell",
+      "lots": 7,
+      "limit_price": [
+        1808.0,
+        1826.0
+      ],
+      "stop_price": 1849.0,
+      "target_price": 1684.0,
+      "position_id": null,
+      "strategy_id": "major_minor_timeframe_resonance",
+      "source": "manager",
+      "reason": "做空，置信度 0.58。一轮后双方在事实层面基本收敛。多方开局即承认日线上没有进行中的上涨段，立论自评置信度仅0.15；辩论中撤回多4（动能衰竭），并把多1（基差/零仓单）、多2（低估值）、多3（量仓不确认）全部收窄为“只限制空头的空间与置信度，不提供多头方向读数”。",
       "hold_overnight": true,
       "valid_until": "2026-09-30T15:00:00+08:00",
       "depends_on": [],
