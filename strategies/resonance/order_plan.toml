@@ -10,7 +10,7 @@
 [budget]
 # Margin budget per symbol in CNY at confidence 1.0.
 # 每个品种在置信度为 1.0 时的保证金预算（元）。
-default_cny = 100000
+default_cny = 200000
 # true: budget used = budget × confidence (0.8 → 80 000). false: always the full budget.
 # true：实际使用的预算 = 预算 × 置信度（0.8 → 8 万）；false：始终使用全额预算。
 scale_by_confidence = true

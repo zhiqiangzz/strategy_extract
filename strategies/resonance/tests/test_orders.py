@@ -255,14 +255,19 @@ def test_orders_for_an_open_position():
 
 def test_parameter_file(tmp_path: Path):
     """
-    The shipped order_plan.toml equals the built-in defaults; another file
-    overrides them; an unknown key is an error.
+    The shipped order_plan.toml loads and spells out every parameter (its
+    values are the user's to tune, so they are not pinned here); another
+    file overrides the built-in defaults; an unknown key is an error.
 
-    随包提供的 order_plan.toml 与内置默认值一致；别的文件可以覆盖；出现未知的键即报错。
+    随包提供的 order_plan.toml 能读取，并写出了每一个参数（取值由用户调整，这里不固定）；别的文件可以
+    覆盖内置默认值；出现未知的键即报错。
     """
-    assert load_plan_config() == OrderPlanConfig()
-    assert (load_plan_config().budget.default_cny, load_plan_config().risk.max_loss_cny, load_plan_config().order.strategy_id) == (
-        100_000, 15_000, "major_minor_timeframe_resonance")
+    import tomllib
+    from strategies.resonance.orders import DEFAULT_PLAN_CONFIG
+    shipped = tomllib.loads(DEFAULT_PLAN_CONFIG.read_text(encoding="utf-8"))
+    defaults = OrderPlanConfig().model_dump()
+    assert set(shipped) == set(defaults) and all(set(shipped[k]) == set(defaults[k]) for k in defaults)
+    assert load_plan_config().order.strategy_id == "major_minor_timeframe_resonance"
     custom = tmp_path / "plan.toml"
     custom.write_text('[budget]\ndefault_cny = 50000\n[budget.symbols]\nCU = 150000\n[risk]\nmax_loss_cny = 8000\n', encoding="utf-8")
     cfg = load_plan_config(custom)
@@ -326,7 +331,11 @@ def test_cli_writes_and_recomputes_the_plan(pack: Path, tmp_path: Path, monkeypa
     monkeypatch.setattr(cli, "DbMarketData", lambda: market)
     runs = ["--runs-dir", str(tmp_path / "runs")]
     out = tmp_path / "inbox" / "plan.json"
-    assert cli.main(["judge", "--pack", str(pack), "--symbols", "CU", "--dry-run", "--plan-out", str(out), *runs]) == 0
+    # the shipped parameter file is the user's to tune, so the test pins its own budget
+    base = tmp_path / "base.toml"
+    base.write_text("[budget]\ndefault_cny = 100000\n", encoding="utf-8")
+    pinned = ["--plan-config", str(base)]
+    assert cli.main(["judge", "--pack", str(pack), "--symbols", "CU", "--dry-run", "--plan-out", str(out), *pinned, *runs]) == 0
     run_dir = tmp_path / "runs" / "2026-09-29"
     first = (run_dir / PLAN_FILE).read_text(encoding="utf-8")
     order = json.loads(first)["orders"][0]
@@ -338,7 +347,7 @@ def test_cli_writes_and_recomputes_the_plan(pack: Path, tmp_path: Path, monkeypa
     assert "## 订单计划" in report and "| M001 | CU2611 | open buy | 1 | 109710 – 109710 | 107610 | 116010 |" in report and "| 60,340 / 70,000 | 10,500 / 10,500 | 保证金 |" in report
 
     (run_dir / PLAN_FILE).unlink()
-    assert cli.main(["plan", "--pack-date", "2026-09-29", *runs]) == 0 and (run_dir / PLAN_FILE).read_text(encoding="utf-8") == first
+    assert cli.main(["plan", "--pack-date", "2026-09-29", *pinned, *runs]) == 0 and (run_dir / PLAN_FILE).read_text(encoding="utf-8") == first
     assert cli.main(["report", "--pack-date", "2026-09-29", *runs]) == 0 and "## 订单计划" in (run_dir / "report.md").read_text(encoding="utf-8")
     tight = tmp_path / "tight.toml"
     tight.write_text("[budget]\ndefault_cny = 50000\n", encoding="utf-8")
